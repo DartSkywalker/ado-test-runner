@@ -2,15 +2,9 @@ import requests
 import json
 import sqlite3
 from sqlite3 import Error
-import parser
+from utils.api import ado_parser
+from utils.constants import ADO_TOKEN, QUERY_LINK, WIQL_LINK, HEADERS, DB_NAME
 
-
-ADO_TOKEN = ""
-QUERY_ID = "abb94139-79de-4924-b2f1-73468d05fc20"
-QUERY_LINK = "https://dev.azure.com/HAL-LMKRD/RESDEV/_apis/wit/queries/"
-WIQL_LINK = "https://dev.azure.com/HAL-LMKRD/RESDEV/_apis/wit/wiql/"
-HEADERS = {'Content-type': 'application/json'}
-DB_NAME = "ado.db"
 
 def create_db_connection(db_file):
     """
@@ -62,8 +56,15 @@ def create_new_test_suite_in_db(query_id):
                           f"VALUES (?, ?, ?)", (test_suite_name, id, url))
         db_conn.commit()
     db_conn.close()
+# create_new_test_suite_in_db("967b4daa-19d7-4966-a63c-0750ca1b56b8")
 
-# ==========================  Parse Steps  ====================================================
+
+def get_test_suites_from_database():
+    db_conn = create_db_connection(DB_NAME)
+    db_cursor = db_conn.cursor()
+    test_suites_db = db_cursor.execute("select distinct TEST_SUITE_NAME from TEST_SUITES").fetchall()
+    test_suites_list = [suite[0] for suite in test_suites_db]
+    return test_suites_list
 
 def get_test_case_steps_by_url(test_case_url):
     """
@@ -77,6 +78,6 @@ def get_test_case_steps_by_url(test_case_url):
         parsed_data = json.loads(str(r_query.text))
         steps = parsed_data['fields']['Microsoft.VSTS.TCM.Steps']
         # print(steps)
-        steps_list = parser.parse_html_steps(steps)
+        steps_list = ado_parser.parse_html_steps(steps)
         return steps_list
-print(get_test_case_steps_by_url("https://dev.azure.com/HAL-LMKRD/d54c5f94-240d-4817-b74e-82588f96c6ba/_apis/wit/workItems/7018"))
+# print(get_test_case_steps_by_url("https://dev.azure.com/HAL-LMKRD/d54c5f94-240d-4817-b74e-82588f96c6ba/_apis/wit/workItems/7018"))
