@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route('/suites', methods=['GET'])
 def test_suites():
-    return render_template('suites.html', test_suite_list=ado_api.get_test_suites_from_database())
+    return render_template('index.html', test_suite_list=ado_api.get_test_suites_from_database())
 
 @app.route('/suites', methods=['POST'])
 def add_test_suite():

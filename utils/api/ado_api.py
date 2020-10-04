@@ -58,7 +58,6 @@ def create_new_test_suite_in_db(query_id):
     db_conn.close()
 # create_new_test_suite_in_db("967b4daa-19d7-4966-a63c-0750ca1b56b8")
 
-
 def get_test_suites_from_database():
     db_conn = create_db_connection(DB_NAME)
     db_cursor = db_conn.cursor()
