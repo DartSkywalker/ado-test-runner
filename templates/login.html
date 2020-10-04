@@ -53,9 +53,13 @@
                             <div class="col-2">
                                 <div>
                                     <input class="btn btn-default btn--radius-2 btn--blue" type="submit" value="Login">
-<!--                                    {% if error %}-->
-<!--                                      <p class="error"><strong>Error:</strong> {{ error }}-->
-<!--                                    {% endif %}-->
+                                    {% with messages = get_flashed_messages() %}
+                                        {% if messages %}
+                                            <div class="notification is-danger">
+                                                {{ messages[0] }}
+                                            </div>
+                                        {% endif %}
+                                    {% endwith %}
                                 </div>
                             </div>
                       </div>

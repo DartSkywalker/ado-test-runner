@@ -17,7 +17,6 @@ def add_test_suite():
         if request.method == 'POST':
             return redirect(url_for('main.test_cases_list', test_suite_name=request.form.get('test_suites')))
     query_id = request.form['query_id']
-    print(query_id)
     ado_api.create_new_test_suite_in_db(str(query_id))
     return redirect(url_for('main.test_suites'))
 
