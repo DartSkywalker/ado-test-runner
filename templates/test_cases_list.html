@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test cases for TEST_SUITE_NAME</title>
+</head>
+<body>
+<p>{{ test_suite_name }}</p>
+<br/>
+<table border="1">
+    {% for test_case in test_cases_list %}
+        <tr>
+        <td>
+        {{test_case}}
+        </td>
+        </tr>
+    {% endfor %}
+</table>
+</body>
+</html>
