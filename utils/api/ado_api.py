@@ -2,8 +2,8 @@ import requests
 import json
 import sqlite3
 from sqlite3 import Error
-from utils.api import ado_parser
-from utils.constants import ADO_TOKEN, QUERY_LINK, WIQL_LINK, HEADERS, DB_NAME
+from . import ado_parser
+from ..constants import ADO_TOKEN, QUERY_LINK, WIQL_LINK, HEADERS, DB_NAME
 
 
 def create_db_connection(db_file):
