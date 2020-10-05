@@ -13,7 +13,7 @@ def test_suites():
 @main.route('/suites', methods=['POST'])
 @login_required
 def add_test_suite():
-    if request.form["selectSuite"] == "selectSuite":
+    if request.form["btn"] == "selectSuite":
         if request.method == 'POST':
             return redirect(url_for('main.test_cases_list', test_suite_name=request.form.get('test_suites')))
     query_id = request.form['query_id']
