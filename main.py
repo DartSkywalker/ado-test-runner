@@ -1,7 +1,7 @@
 from flask import Blueprint, Flask, request, render_template, redirect, url_for
 from .utils.api import ado_api
 from flask_login import login_required, current_user
-
+from loguru import logger
 
 main = Blueprint('main', __name__)
 

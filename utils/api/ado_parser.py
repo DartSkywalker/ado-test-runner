@@ -37,3 +37,4 @@ def parse_html_steps(xml):
             ]
             steps_expected_list.append(clean_step_expected_list)
     return steps_expected_list
+

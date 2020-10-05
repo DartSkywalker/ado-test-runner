@@ -2,6 +2,7 @@ import requests
 import json
 import sqlite3
 from sqlite3 import Error
+from loguru import logger
 from . import ado_parser
 from ..constants import ADO_TOKEN, QUERY_LINK, WIQL_LINK, HEADERS, DB_NAME
 # from utils.constants import ADO_TOKEN, QUERY_LINK, WIQL_LINK, HEADERS, DB_NAME
@@ -15,10 +16,10 @@ def create_db_connection(db_file):
     conn = None
     try:
         conn = sqlite3.connect(db_file)
-        print(sqlite3.version)
+        logger.debug(sqlite3.version)
         return conn
     except Error as e:
-        print(e)
+        logger.critical(f"Cannot connect to {db_file} database")
 
 def get_query_name_by_query_id(query_id):
     """
@@ -46,19 +47,20 @@ def get_test_cases_urls_by_query_id(query_id):
         test_cases_ids_list = [test_case['id'] for test_case in parsed_data['workItems']]
         return dict(zip(test_cases_ids_list, test_case_urls_list))
     else:
-        print("Handle something")
+        logger.critical(f"ADO returns status code {str(r_query.status_code)}. Check your ADO_TOKEN.")
 
 def create_new_test_suite_in_db(query_id):
-    print(query_id)
-    print(ADO_TOKEN)
+    logger.debug(query_id)
+    logger.debug(ADO_TOKEN)
     test_cases_dict, test_suite_name = get_test_cases_urls_by_query_id(query_id), get_query_name_by_query_id(query_id)
     db_conn = create_db_connection(DB_NAME)
     db_cursor = db_conn.cursor()
     for id, url in test_cases_dict.items():
-        print(id, url, test_suite_name)
+        logger.debug(id, url, test_suite_name)
         db_cursor.execute(f"INSERT INTO TEST_SUITES (TEST_SUITE_NAME, TEST_CASE_ID, TEST_CASE_URL) "
                           f"VALUES (?, ?, ?)", (test_suite_name, id, url))
         db_conn.commit()
+    logger.info(f"{test_suite_name} was successfully added to the database. Contains {len(test_cases_dict)} test cases.")
     db_conn.close()
 # create_new_test_suite_in_db("967b4daa-19d7-4966-a63c-0750ca1b56b8")
 
@@ -93,5 +95,6 @@ def get_test_cases_from_db_by_suite_name(test_suite):
     db_cursor = db_conn.cursor()
     test_cases_db = db_cursor.execute("select TEST_CASE_URL from TEST_SUITES where TEST_SUITE_NAME=(?)", (str(test_suite),)).fetchall()
     test_cases_list = [test_case[0] for test_case in test_cases_db]
+    logger.info("something")
     return test_cases_list
 # get_test_cases_from_db_by_suite_name('Velocity Test Cases')
