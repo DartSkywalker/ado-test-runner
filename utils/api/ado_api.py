@@ -16,7 +16,6 @@ def create_db_connection(db_file):
     conn = None
     try:
         conn = sqlite3.connect(db_file)
-        logger.debug(sqlite3.version)
         return conn
     except Error as e:
         logger.critical(f"Cannot connect to {db_file} database")
@@ -95,6 +94,5 @@ def get_test_cases_from_db_by_suite_name(test_suite):
     db_cursor = db_conn.cursor()
     test_cases_db = db_cursor.execute("select TEST_CASE_URL from TEST_SUITES where TEST_SUITE_NAME=(?)", (str(test_suite),)).fetchall()
     test_cases_list = [test_case[0] for test_case in test_cases_db]
-    logger.info("something")
     return test_cases_list
 # get_test_cases_from_db_by_suite_name('Velocity Test Cases')
