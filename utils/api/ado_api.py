@@ -95,19 +95,3 @@ def get_test_cases_from_db_by_suite_name(test_suite):
     test_cases_list = [test_case[0] for test_case in test_cases_db]
     return test_cases_list
 # get_test_cases_from_db_by_suite_name('Velocity Test Cases')
-
-def get_test_cases_from_db_by_suite_name(test_suite):
-    db_conn = create_db_connection(DB_NAME)
-    db_cursor = db_conn.cursor()
-    test_cases_db = db_cursor.execute("select TEST_CASE_URL from TEST_SUITES where TEST_SUITE_NAME=(?)", (str(test_suite),)).fetchall()
-    test_cases_list = [test_case[0] for test_case in test_cases_db]
-    return test_cases_list
-# get_test_cases_from_db_by_suite_name('Velocity Test Cases')
-
-def get_test_cases_from_db_by_suite_name(test_suite):
-    db_conn = create_db_connection(DB_NAME)
-    db_cursor = db_conn.cursor()
-    test_cases_db = db_cursor.execute("select TEST_CASE_URL from TEST_SUITES where TEST_SUITE_NAME=(?)", (str(test_suite),)).fetchall()
-    test_cases_list = [test_case[0] for test_case in test_cases_db]
-    return test_cases_list
-# get_test_cases_from_db_by_suite_name('Velocity Test Cases')
