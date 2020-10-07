@@ -24,5 +24,7 @@ def add_test_suite():
 @login_required
 def test_cases_list():
     test_suite_name = request.args.get('test_suite_name')
-    test_cases_list = ado_api.get_test_cases_from_db_by_suite_name(test_suite_name)
-    return render_template('test_cases_list.html', test_suite_name=test_suite_name, test_cases_list=test_cases_list)
+    test_cases_dict = ado_api.get_test_cases_from_db_by_suite_name(test_suite_name)
+
+    return render_template('test_cases_list.html', test_suite_name=test_suite_name, test_cases_dict=test_cases_dict)
+
