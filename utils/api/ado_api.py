@@ -55,7 +55,7 @@ def create_new_test_suite_in_db(query_id):
     db_conn = create_db_connection(DB_NAME)
     db_cursor = db_conn.cursor()
     for id, url in test_cases_dict.items():
-        logger.debug(id, url, test_suite_name)
+        logger.debug(str(id), url, test_suite_name)
         db_cursor.execute(f"INSERT INTO TEST_SUITES (TEST_SUITE_NAME, TEST_CASE_ID, TEST_CASE_URL) "
                           f"VALUES (?, ?, ?)", (test_suite_name, id, url))
         db_conn.commit()
