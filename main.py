@@ -3,6 +3,7 @@ from .utils.api import ado_api
 from flask_login import login_required, current_user
 from loguru import logger
 
+
 main = Blueprint('main', __name__)
 
 @main.route('/suites', methods=['GET'])

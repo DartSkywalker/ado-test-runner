@@ -41,13 +41,13 @@
             <th scope="col">Tester</th>
         </tr>
         </thead>
-        {% for test_case_id, test_case_link in test_cases_dict.items() %}
+        {% for test_case_id, test_case_data_list in test_cases_dict.items() %}
         <tr>
             <td>
-                <a class="text-dark" href="{{ test_case_link }}">{{test_case_id}}</a>
+                <a class="text-dark" href="{{ test_case_data_list[1] }}">{{test_case_id}}</a>
             </td>
             <td>
-                <p class="text-dark">Funny Test Case Name</p>
+                <p class="text-dark">{{ test_case_data_list[0] }}</p>
             </td>
             <td width="160px">
                 <select class="form-control">

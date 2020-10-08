@@ -14,24 +14,25 @@ class User(Base):
     username = Column(String(100), unique=True)
     password = Column(String(100))
     token = Column(String(100))
-    test_case=relationship("TEST_CASES")
+    # test_case=relationship("TEST_CASES")
 
 class Test_Suites(Base):
     __tablename__ = 'TEST_SUITES'
     TEST_SUITE_ID = Column(Integer, primary_key=True)
     TEST_SUITE_NAME = Column(String)
     CREATED_BY = Column(String)
-    test_case = relationship("TEST_CASES")
+    # test_case = relationship("TEST_CASES")
 
 class Test_Cases(Base):
     __tablename__ = 'TEST_CASES'
     TEST_SUITE_ID = Column(Integer, ForeignKey('TEST_SUITES.TEST_SUITE_ID'))
     TEST_CASE_ID = Column(Integer, primary_key=True)
     TEST_CASE_ADO_ID = Column(Integer)
+    TEST_CASE_NAME = Column(String)
     STATUS = Column(String)
     DURATION_SEC = Column(Integer)
     EXECUTED_BY = Column(String, ForeignKey('User.username'))
-    test_step = relationship("TEST_STEPS")
+    # test_step = relationship("TEST_STEPS")
 
 class Test_Steps(Base):
     __tablename__ = 'TEST_STEPS'
