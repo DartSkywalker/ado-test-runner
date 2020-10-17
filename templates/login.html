@@ -12,11 +12,14 @@
     <!-- Title Page-->
     <title>Login</title>
 
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <!-- Icons font CSS-->
     <link href="../static/vendor/mdi-font/css/material-design-iconic-font.min.css" rel="stylesheet" media="all">
     <link href="../static/vendor/font-awesome-4.7/css/font-awesome.min.css" rel="stylesheet" media="all">
     <!-- Font special for pages-->
-    <link href="https://fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i"
+          rel="stylesheet">
 
     <!-- Vendor CSS-->
     <link href="../static/vendor/select2/select2.min.css" rel="stylesheet" media="all">
@@ -27,44 +30,69 @@
 </head>
 
 <body>
-<div class="container my-auto">
+<nav class="navbar navbar-dark bg-primary navbar-expand-lg">
+    <a class="navbar-brand" href="">
+        <img src="static/css/running.svg" width="30" height="30" class="d-inline-block align-top" alt="">
+        TRunner</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+            aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="navbar-collapse collapse  order-3 dual-collapse2">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="/login">Login</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="/signup">Registration</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="/about">About</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
 
     <div class="page-wrapper bg-gra-03 p-t-130 p-b-100 font-poppins">
-        <div class="wrapper wrapper--w680">
+        <div class="wrapper wrapper--w450">
             <div class="card card-4">
                 <div class="card-body">
                     <h2 class="title">Sign In</h2>
                     <form method="POST">
                         <div class="row row-space">
-                            <div class="col-2">
+                            <div class="col-12">
                                 <div class="input-group">
                                     <label class="label">Login</label>
-                                    <input class="input--style-4" type="text" placeholder="Username" name="username" value="{{request.form.username }}">
+                                    <input class="input--style-4" type="text" placeholder="Username" name="username"
+                                           value="{{request.form.username }}">
                                 </div>
                             </div>
                         </div>
-                      <div class="row row-space">
-                            <div class="col-2">
+                        <div class="row row-space">
+                            <div class="col-12">
                                 <div class="input-group">
                                     <label class="label">Password</label>
-                                    <input class="input--style-4" type="password" placeholder="Password" name="password" value="{{request.form.password }}">
+                                    <input class="input--style-4" type="password" placeholder="Password" name="password"
+                                           value="{{request.form.password }}">
                                 </div>
                             </div>
                         </div>
-                      <div class="row row-space">
-                            <div class="col-2">
+                        <div class="row row-space">
+                            <div class="col-12">
                                 <div>
                                     <input class="btn btn-default btn--radius-2 btn--blue" type="submit" value="Login">
                                     {% with messages = get_flashed_messages() %}
-                                        {% if messages %}
-                                            <div class="notification is-danger">
-                                                {{ messages[0] }}
-                                            </div>
-                                        {% endif %}
+                                    {% if messages %}
+                                    <div class="notification is-danger">
+                                        {{ messages[0] }}
+                                    </div>
+                                    {% endif %}
                                     {% endwith %}
                                 </div>
                             </div>
-                      </div>
+                        </div>
 
                     </form>
                 </div>
@@ -72,7 +100,7 @@
         </div>
     </div>
 </div>
-    <!-- Jquery JS-->
+<!-- Jquery JS-->
 <!--    <script src="../static/vendor/jquery/jquery.min.js"></script>-->
 <!--    &lt;!&ndash; Vendor JS&ndash;&gt;-->
 <!--    <script src="../static/vendor/select2/select2.min.js"></script>-->

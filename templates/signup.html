@@ -13,7 +13,8 @@
 
     <!-- Title Page-->
     <title>Sign Up</title>
-
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <!-- Icons font CSS-->
     <link href="../static/vendor/mdi-font/css/material-design-iconic-font.min.css" rel="stylesheet" media="all">
     <link href="../static/vendor/font-awesome-4.7/css/font-awesome.min.css" rel="stylesheet" media="all">
@@ -27,24 +28,51 @@
 
     <!-- Main CSS-->
     <link href="../static/css/main.css" rel="stylesheet" media="all">
+
+
+
 </head>
 <body>
-<div class="container my-auto">
+<nav class="navbar navbar-dark bg-primary navbar-expand-lg">
+    <a class="navbar-brand" href="">
+        <img src="static/css/running.svg" width="30" height="30" class="d-inline-block align-top" alt="">
+        TRunner</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+            aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="navbar-collapse collapse  order-3 dual-collapse2">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="/login">Login</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="/signup">Registration</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="/about">About</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!--<div class="container my-auto">-->
     <div class="page-wrapper bg-gra-03 p-t-130 p-b-100 font-poppins">
-        <div class="wrapper wrapper--w680">
+        <div class="wrapper wrapper--w450">
             <div class="card card-4">
                 <div class="card-body">
                     <h2 class="title">Sign Up</h2>
                     <form method="POST" action="/signup">
                         <div class="row row-space">
-                            <div class="col-2">
+                            <div class="col-12">
                                 <div class="input-group">
                                     <input class="input--style-4 input is-large" name="username" placeholder="Username" autofocus="">
                                 </div>
                             </div>
                         </div>
                         <div class="row row-space">
-                            <div class="col-2">
+                            <div class="col-12">
                                 <div class="input-group">
                                     <input class="input--style-4 input is-large" type="text" name="token" placeholder="ADO Token"
                                            autofocus="">
@@ -52,15 +80,15 @@
                             </div>
                         </div>
                         <div class="row row-space">
-                            <div class="col-2">
+                            <div class="col-12">
                                 <div class="input-group">
                                     <input class="input--style-4 input is-large" type="password" name="password"
                                            placeholder="Password">
                                 </div>
                             </div>
                         </div>
-                        <div class="row row-space">
-                            <div class="col-2">
+                        <div class="row row-space flex">
+                            <div class="col-12">
                         <input class="btn btn-default btn--radius-2 btn--blue" type="submit" value="Sign Up">
                             </div>
                         </div>

@@ -246,8 +246,17 @@ h6 {
     max-width: 780px;
 }
 
+.wrapper--w450 {
+    max-width: 450px;
+}
+
 .wrapper--w680 {
     max-width: 680px;
+}
+
+.auto-margin {
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
 /* ==========================================================================

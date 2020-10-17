@@ -9,7 +9,7 @@ main = Blueprint('main', __name__)
 @main.route('/suites', methods=['GET'])
 @login_required
 def test_suites():
-    return render_template('index.html', test_suite_list=ado_api.get_test_suites_from_database())
+    return render_template('index.html', test_suite_list=ado_api.get_test_suites_from_database(), username=ado_api.get_current_user())
 
 @main.route('/suites', methods=['POST'])
 @login_required
