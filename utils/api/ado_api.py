@@ -145,3 +145,11 @@ def get_test_cases_from_db_by_suite_name(test_suite):
     test_case_dict = dict(zip(test_cases_id_list, zip(test_cases_name_list, test_cases_link_list)))
     return test_case_dict
 # get_test_cases_from_db_by_suite_name('Velocity Test Cases')
+
+def get_current_user():
+    connection, meta = sql_connection()
+    g.user = current_user.get_id()
+    table = Table('User', meta)
+    query = select([table.columns['username']]).where(table.columns['id'] == g.user)
+    user = connection.execute(query).fetchall()
+    return str(user[0][0])
