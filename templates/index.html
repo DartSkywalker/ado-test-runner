@@ -12,6 +12,8 @@
     <!-- Title Page-->
     <title>Test Suites</title>
 
+
+
     <!-- Icons font CSS-->
     <link href="../static/vendor/mdi-font/css/material-design-iconic-font.min.css" rel="stylesheet" media="all">
     <link href="../static/vendor/font-awesome-4.7/css/font-awesome.min.css" rel="stylesheet" media="all">
@@ -27,14 +29,16 @@
 </head>
 
 <body>
-    <div class="page-wrapper bg-gra-02 p-t-130 p-b-100 font-poppins">
+    <div class="page-wrapper bg-gra-03 p-t-130 p-b-100 font-poppins">
         <div class="wrapper wrapper--w680">
             <div class="card card-4">
                 <div class="card-body">
                     <h2 class="title">Test Suites Options</h2>
+
                     <form method="POST">
                         <div class="row row-space">
                             <div class="col-2">
+
                                 <div class="input-group">
                                     <label class="label">Add Test Suite</label>
                                     <input class="input--style-4" type="text" name="query_id" placeholder="Query ID">
@@ -43,10 +47,12 @@
                             <div class="col-2">
 
                                 <div style="display: flex; justify-content: center; align-items: center; height: 103%">
-                                    <button class="align-self-end btn btn--radius-2 btn--blue" type="submit" name="btn" value="addSuite">Add Suite</button>
+                                    <button class="align-self-end btn btn--radius-2 btn--blue" type="submit" name="btn" id="addSuite" value="addSuite">Add Suite</button>
+
                                 </div>
 
                             </div>
+
                         </div>
                     </form>
                     <form method="POST" >
@@ -81,8 +87,22 @@
 
     <!-- Main JS-->
     <script src="../static/js/global.js"></script>
+    <script>
+        $(document).ready(function() {
+    $("#addSuite").click(function() {
+      // disable button
+      // $(this).prop("disabled", true);
+      // add spinner to button
+      $(this).html(
+        `<span class="spinner-border" role="status" aria-hidden="true"></span> Processing...`
+      );
+    });
+});
+    </script>
 
-</body><!-- This templates was made by Colorlib (https://colorlib.com) -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
 
+</body>
 </html>
-<!-- end document-->
