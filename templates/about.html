@@ -4,13 +4,14 @@
 <head>
     <!-- Required meta tags-->
     <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
-    <meta content="Colorlib Templates" name="description">
-    <meta content="Colorlib" name="author">
-    <meta content="Colorlib Templates" name="keywords">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Colorlib Templates">
+    <meta name="author" content="Colorlib">
+    <meta name="keywords" content="Colorlib Templates">
 
     <!-- Title Page-->
-    <title>{{ test_suite_name }}</title>
+    <title>About</title>
+
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
@@ -28,8 +29,8 @@
 
     <!-- Main CSS-->
     <link href="../static/css/main.css" rel="stylesheet" media="all">
-
 </head>
+
 <body>
 <nav class="navbar navbar-dark bg-primary navbar-expand-lg">
     <a class="navbar-brand" href="">
@@ -50,11 +51,8 @@
             <a class="nav-link" href="/about">About<span class="sr-only">(current)</span></a>
         </li>
     </ul>
-    <div class="navbar-collapse collapse  order-3 dual-collapse2">
+    <div class="navbar-collapse collapse order-3 dual-collapse2">
         <ul class="navbar-nav ml-auto">
-            <li class="nav-item active">
-                <a class="nav-link">Current Suite - {{ test_suite_name }}<span class="sr-only">(current)</span></a>
-            </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -67,52 +65,17 @@
         </ul>
     </div>
 </nav>
-
-<div class="container-fluid">
-
-    <table class="table mt-3" style="text-align: center;" id="mt">
-        <thead class="bg-primary font-weight-light" style="color: #ffffff">
-        <tr>
-            <th scope="col">ID</th>
-            <th scope="col">Test Case</th>
-            <th scope="col">State</th>
-            <th scope="col">Tester</th>
-        </tr>
-        </thead>
-        {% for test_case_id, test_case_data_list in test_cases_dict.items() %}
-        <tr>
-            <td>
-                <a class="text-dark" href="{{ test_case_data_list[1] }}">{{test_case_id}}</a>
-            </td>
-            <td>
-                <p class="text-dark">{{ test_case_data_list[0] }}</p>
-            </td>
-            <td width="160px">
-                <select class="form-control">
-                    <option selected value="">❕ &nbsp;Ready</option>
-                    <option value="1">✅ &nbsp;Passed</option>
-                    <option value="2">❌ &nbsp;Failed</option>
-                    <option value="4">🚫 &nbsp;Blocked</option>
-                    <option value="5">⏳ &nbsp;In-Progress</option>
-                </select>
-            </td>
-            <td>
-<!--                <p class="text-dark">Samiran</p>-->
-                <select class="form-control">
-                    {% for user_id, user_name in users_dict.items() %}
-                    <option value="{{ user_id }}">{{user_name}}</option>
-                    {% endfor %}
-                </select>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-    <div id="contextMenu" class="dropdown clearfix" style="position: absolute;display: none;">
-        <ul class="list-group dropdown-menu" role="menu" aria-labelledby="dropdownMenu"
-            style="display:block;position:static;margin-bottom:5px;">
-            <li class="list-group-item"><a tabindex="-1" href="#">Run Test Case</a></li>
-            <li class="list-group-item"><a tabindex="-1" href="#">Statistics</a></li>
-        </ul>
+<div class="page-wrapper bg-gra-03 p-t-130 p-b-100 font-poppins">
+    <div class="wrapper wrapper--w960">
+        <div class="card card-4">
+            <div class="card-body">
+                <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+                    <h1 class="display-4">Test Runner</h1>
+                    <p class="lead">An Open Source solution to run test cases independently using Azure DevOps systems.
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <script crossorigin="anonymous" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
@@ -121,26 +84,7 @@
         src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 <script crossorigin="anonymous" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
         src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script>
-    //Table MB3
-    $(function () {
-
-        var $contextMenu = $("#contextMenu");
-
-        $("body").on("contextmenu", "table tr", function (e) {
-            $contextMenu.css({
-                display: "block",
-                left: e.pageX,
-                top: e.pageY
-            });
-            return false;
-        });
-
-        $contextMenu.on("click", "a", function () {
-            $contextMenu.hide();
-        });
-
-    });
-</script>
 </body>
+
 </html>
+<!-- end document-->

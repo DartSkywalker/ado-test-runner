@@ -26,6 +26,12 @@ def add_test_suite():
 def test_cases_list():
     test_suite_name = request.args.get('test_suite_name')
     test_cases_dict = ado_api.get_test_cases_from_db_by_suite_name(test_suite_name)
+    return render_template('test_cases_list.html', test_suite_name=test_suite_name, test_cases_dict=test_cases_dict, username=ado_api.get_current_user(),
+                           users_dict=ado_api.get_all_users())
 
-    return render_template('test_cases_list.html', test_suite_name=test_suite_name, test_cases_dict=test_cases_dict, username=ado_api.get_current_user())
-
+@main.route('/about', methods=['GET', 'POST'])
+def about_page():
+    if current_user.is_authenticated:
+         return render_template("about.html", username=ado_api.get_current_user())
+    else:
+         return render_template("about_not_auth.html")

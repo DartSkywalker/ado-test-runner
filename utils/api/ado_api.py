@@ -153,3 +153,13 @@ def get_current_user():
     query = select([table.columns['username']]).where(table.columns['id'] == g.user)
     user = connection.execute(query).fetchall()
     return str(user[0][0])
+
+def get_all_users():
+    connection, meta = sql_connection()
+    table = Table('User', meta)
+    query = select([table.columns['username'], table.columns['id']])
+    users = connection.execute(query).fetchall()
+    user_ids_list = [ids[1] for ids in users]
+    user_names_list = [ids[0] for ids in users]
+    users_dict = dict(zip(user_ids_list, user_names_list))
+    return users_dict
