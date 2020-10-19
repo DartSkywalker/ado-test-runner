@@ -39,7 +39,8 @@ class Test_Cases(Base):
 
 class Test_Steps(Base):
     __tablename__ = 'TEST_STEPS'
-    TEST_CASE_ID = Column(Integer, ForeignKey('TEST_CASES.TEST_CASE_ID'), primary_key=True)
+    ID = Column(Integer, primary_key=True)
+    TEST_CASE_ID = Column(Integer, ForeignKey('TEST_CASES.TEST_CASE_ID'))
     STEP_NUMBER = Column(Integer)
     DESCRIPTION = Column(String)
     EXPECTED_RESULT = Column(String)
