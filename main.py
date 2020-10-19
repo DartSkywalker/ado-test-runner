@@ -2,9 +2,10 @@ from flask import Blueprint, Flask, request, render_template, redirect, url_for
 from .utils.api import ado_api
 from flask_login import login_required, current_user
 from loguru import logger
-
+import models_data
 
 main = Blueprint('main', __name__)
+models_data.create_table()
 
 @main.route('/suites', methods=['GET'])
 @login_required
