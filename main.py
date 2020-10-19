@@ -2,10 +2,10 @@ from flask import Blueprint, Flask, request, render_template, redirect, url_for
 from .utils.api import ado_api
 from flask_login import login_required, current_user
 from loguru import logger
-import models_data
+from .models_data import create_table
 
 main = Blueprint('main', __name__)
-models_data.create_table()
+create_table()
 
 @main.route('/suites', methods=['GET'])
 @login_required
@@ -36,3 +36,12 @@ def about_page():
          return render_template("about.html", username=ado_api.get_current_user())
     else:
          return render_template("about_not_auth.html")
+
+@main.route('/')
+def redirect_from_main():
+    return redirect(url_for('main.test_suites'))
+
+@main.route('/run')
+# @main.route('/run/<test_id>')
+def test_run():
+    return render_template("run.html", test_case_name='TEST_CASE_NAME')

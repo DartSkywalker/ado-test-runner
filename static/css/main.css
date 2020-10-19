@@ -276,6 +276,7 @@ h6 {
     font-family: "Poppins", "Arial", "Helvetica Neue", sans-serif;
 }
 
+
 .btn--radius {
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
@@ -325,6 +326,10 @@ input[type="date" i] {
     font-size: 14px;
     font-family: "Roboto", "Arial", "Helvetica Neue", sans-serif;
     font-weight: 400;
+}
+
+th {
+    font-weight: normal;
 }
 
 .daterangepicker td {
@@ -740,4 +745,93 @@ input {
 
 .align-baseline {
     vertical-align: baseline !important
+}
+
+
+.btn-passed {
+    display: inline-block;
+    transition: all 0.4s ease;
+    color: #212529;
+    border-color: #037AFB;
+    width: 65px;
+    height: 35px;
+    line-height: 35px;
+    font-size: 14px;
+    text-align: center;
+    background-color: #fff;
+    padding: 0px;
+}
+
+.btn-passed::before {
+    border-color: #05e745;
+    background-color: #05e745;
+
+}
+
+.btn-passed:hover {
+    color: #fff;
+    background-color: #05e745;
+    border-color: #05e745
+}
+
+.btn-passed.focus, .btn-passed:focus {
+    box-shadow: 0 0 0 .2rem rgb(101, 217, 135)
+}
+
+.btn-secondary.disabled, .btn-secondary:disabled {
+    background-color: #6c757d;
+    border-color: #6c757d
+}
+
+.btn-passed:not(:disabled):not(.disabled).active, .btn-passed:not(:disabled):not(.disabled):active, .show > .btn-passed.dropdown-toggle {
+    border-color: #05e745;
+    background-color: #4dae3c;
+    border-width: 3px;
+}
+
+.btn-passed:not(:disabled):not(.disabled).active:focus, .btn-passed:not(:disabled):not(.disabled):active:focus, .show > .btn-passed.dropdown-toggle:focus {
+    box-shadow: 0 0 0 .2rem rgba(130, 138, 145, .5)
+}
+
+.btn-failed {
+    color: #212529;
+    border-color: #037AFB;
+    width: 65px;
+    padding: 0;
+    font-size: 14px;
+    background-color: #fff;
+    height: 35px;
+    line-height: 35px;
+}
+
+
+.btn-failed::before {
+    border-color: #ec0303;
+    background-color: #ec0303;
+
+}
+
+.btn-failed:hover {
+    color: #fff;
+    background-color: #ec0303;
+    border-color: #ec0303
+}
+
+.btn-failed.focus, .btn-failed:focus {
+    box-shadow: 0 0 0 .2rem rgb(255, 101, 101)
+}
+
+.btn-secondary.disabled, .btn-secondary:disabled {
+    background-color: #6c757d;
+    border-color: #6c757d
+}
+
+.btn-failed:not(:disabled):not(.disabled).active, .btn-failed:not(:disabled):not(.disabled):active, .show > .btn-failed.dropdown-toggle {
+    border-color: #ec0303;
+    background-color: #c10101;
+    border-width: 3px;
+}
+
+.btn-failed:not(:disabled):not(.disabled).active:focus, .btn-failed:not(:disabled):not(.disabled):active:focus, .show > .btn-failed.dropdown-toggle:focus {
+    box-shadow: 0 0 0 .2rem rgba(130, 138, 145, .5)
 }
