@@ -1,8 +1,9 @@
 from sqlalchemy import create_engine, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy import MetaData, Table
+from sqlalchemy.sql import func
 
 engine = create_engine('sqlite:///db.sqlite', echo=True)
 connection = engine.connect()
@@ -21,6 +22,7 @@ class Test_Suites(Base):
     TEST_SUITE_ID = Column(Integer, primary_key=True)
     TEST_SUITE_NAME = Column(String)
     CREATED_BY = Column(String)
+    CREATED_DATE = Column(DateTime(timezone=False), server_default=func.now())
     # test_case = relationship("TEST_CASES")
 
 class Test_Cases(Base):
@@ -32,6 +34,7 @@ class Test_Cases(Base):
     STATUS = Column(String)
     DURATION_SEC = Column(Integer)
     EXECUTED_BY = Column(String, ForeignKey('User.username'))
+    CHANGE_STATE_DATE = Column(DateTime(timezone=False), server_default=func.now())
     # test_step = relationship("TEST_STEPS")
 
 class Test_Steps(Base):
@@ -43,6 +46,9 @@ class Test_Steps(Base):
     STEP_STATUS = Column(String)
     COMMENT = Column(String)
 
+def create_table():
+    metadata = MetaData()
+    Base.metadata.create_all(engine)
+
 # Uncomment to create a new DB tables
-# metadata = MetaData()
-# Base.metadata.create_all(engine)
+# create_table()
