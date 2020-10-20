@@ -41,10 +41,10 @@
     </button>
     <ul class="navbar-nav">
         <li class="nav-item active">
-            <a class="nav-link" href="#">Save<span class="sr-only"></span></a>
+            <a class="nav-link" href="#" id="saveResult">Save<span class="sr-only"></span></a>
         </li>
         <li class="nav-item active">
-            <a class="nav-link" href="#">Save and Close<span class="sr-only"></span></a>
+            <a class="nav-link" href="#" id="saveResultClose">Save and Close<span class="sr-only"></span></a>
         </li>
         <li class="nav-item active">
             <a class="nav-link" href="#">Report a Bug<span class="sr-only"></span></a>
@@ -66,7 +66,7 @@
     <div class="row mt-2 mb-2">
         <div class="col-md-10">TC_id - Test_Case_Name</div>
         <div class="col-md-2">
-            <select id="status" class="form-control float-right"
+            <select id="testStatus" class="form-control float-right"
                     style="width:65% ;border: none; border-radius: 0; -webkit-box-shadow: none; box-shadow: none;">
                 <option active>💬</option>
                 <option>✅ &nbsp;Passed</option>
@@ -89,14 +89,14 @@
                 fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
                 deserunt mollit anim id est laborum.
             </td>
-            <td>
+            <td id="selector">
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                  <label class="btn btn-passed">
-                    <input type="radio" name="options" id="option1" autocomplete="off"> Passed
-                  </label>
-                  <label class="btn btn-failed">
-                    <input type="radio" name="options" id="option2" autocomplete="off"> Failed
-                  </label>
+                    <label class="btn btn-passed" id="passed_label">
+                        <input type="radio" name="options" id="passed" autocomplete="off"> Passed
+                    </label>
+                    <label class="btn btn-failed" id="failed_label">
+                        <input type="radio" name="options" id="failed" autocomplete="off"> Failed
+                    </label>
                 </div>
             </td>
         </tr>
@@ -108,14 +108,14 @@
                 fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
                 deserunt mollit anim id est laborum.
             </td>
-            <td>
+            <td id="selector">
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                  <label class="btn btn-passed">
-                    <input type="radio" name="options" id="option1" autocomplete="off"> Passed
-                  </label>
-                  <label class="btn btn-failed">
-                    <input type="radio" name="options" id="option2" autocomplete="off"> Failed
-                  </label>
+                    <label class="btn btn-passed" id="passed_label">
+                        <input type="radio" name="options" id="passed" autocomplete="off"> Passed
+                    </label>
+                    <label class="btn btn-failed" id="failed_label">
+                        <input type="radio" name="options" id="failed" autocomplete="off"> Failed
+                    </label>
                 </div>
             </td>
         </tr>
@@ -127,14 +127,14 @@
                 fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
                 deserunt mollit anim id est laborum.
             </td>
-            <td>
+            <td id="selector">
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                  <label class="btn btn-passed">
-                    <input type="radio" name="options" id="option1" autocomplete="off"> Passed
-                  </label>
-                  <label class="btn btn-failed">
-                    <input type="radio" name="options" id="option2" autocomplete="off"> Failed
-                  </label>
+                    <label class="btn btn-passed" id="passed_label">
+                        <input type="radio" name="options" id="passed" autocomplete="off"> Passed
+                    </label>
+                    <label class="btn btn-failed" id="failed_label">
+                        <input type="radio" name="options" id="failed" autocomplete="off"> Failed
+                    </label>
                 </div>
             </td>
         </tr>
@@ -147,8 +147,10 @@
     </div>
 
 </div>
-<script crossorigin="anonymous" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-        src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script
+        src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+        crossorigin="anonymous"></script>
 <script crossorigin="anonymous" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
         src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 <script crossorigin="anonymous" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
@@ -173,6 +175,34 @@
         });
 
     });
+</script>
+
+<script>
+    $("#saveResult").click(function () {
+        testResults = {};
+        testCaseOutcome = $('#testStatus').val();
+        testResults['testResult'] = {outcome: testCaseOutcome}
+        $('#tbl1 tr').each(function (index) {
+            $(this).find('#passed_label').each(function () {
+                if ($(this).hasClass('active')) {
+                    testResults[index] = {stepNum: index + 1, outcome: 'Passed'}
+                }
+            })
+            $(this).find('#failed_label').each(function () {
+                if ($(this).hasClass('active')) {
+                    testResults[index] = {stepNum: index + 1, outcome: 'Failed'}
+                }
+            })
+        })
+
+        $.ajax("/save_test_result", {
+            data: JSON.stringify(testResults),
+            contentType: 'application/json',
+            type: 'POST'
+        })
+
+    })
+
 </script>
 </body>
 </html>
