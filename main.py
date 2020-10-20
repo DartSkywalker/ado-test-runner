@@ -60,4 +60,5 @@ def save_test_result():
 # @main.route('/run')
 @main.route('/run/<test_suite_id>/<test_case_id>')
 def test_run(test_suite_id, test_case_id):
+    ado_api.get_test_case_steps_by_id(1,16)
     return render_template("run.html", test_case_name='TEST_CASE_NAME')

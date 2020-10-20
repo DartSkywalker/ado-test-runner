@@ -11,7 +11,7 @@ from ..constants import ADO_TOKEN, QUERY_LINK, WIQL_LINK, HEADERS, DB_NAME, WORK
 # from utils.api import ado_parser
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.sql import table, column, select, update, insert
-from sqlalchemy import Table, MetaData, create_engine
+from sqlalchemy import Table, MetaData, create_engine, and_
 
 
 def sql_connection():
@@ -138,7 +138,7 @@ def create_new_test_suite_in_db(query_id):
                                                                   CREATED_BY=str(user[0][0])))
 
     test_suite_id = connection.execute(select([table_suites.columns['TEST_SUITE_ID']])
-                                       .where(
+        .where(
         table_suites.columns['TEST_SUITE_NAME'] == str(test_suite_name))).fetchone()[0]
 
     for id, url in test_cases_dict.items():
@@ -192,6 +192,7 @@ def get_test_suite_name_by_id(suite_id):
                                     where(table_suites.columns['TEST_SUITE_ID'] == suite_id)).fetchone()[0]
     return suite_name
 
+
 def get_test_cases_from_db_by_suite_name(test_suite_id):
     connection, meta = sql_connection()
     test_cases_table = Table('TEST_CASES', meta)
@@ -201,7 +202,7 @@ def get_test_cases_from_db_by_suite_name(test_suite_id):
 
     test_cases_list_db = connection.execute(select([test_cases_table.columns['TEST_CASE_ADO_ID'],
                                                     test_cases_table.columns['TEST_CASE_NAME']])
-                                            .where(
+        .where(
         test_cases_table.columns['TEST_SUITE_ID'] == test_suite_id)).fetchall()
 
     test_cases_id_list = [test_case[0] for test_case in test_cases_list_db]
@@ -235,6 +236,19 @@ def get_all_users():
     return users_dict
 
 
-def get_test_case_steps_by_id():
-    # Get Test Suite id
-    pass
+def get_test_case_steps_by_id(suite_id, case_id):
+    """
+    Return steps/expected results based on suite_id and case_id
+    """
+    connection, meta = sql_connection()
+    test_cases_table = Table('TEST_CASES', meta)
+    test_steps_table = Table('TEST_STEPS', meta)
+    steps_expected = connection.execute(select([test_steps_table.columns['STEP_NUMBER'],
+                                                test_steps_table.columns['DESCRIPTION'],
+                                                test_steps_table.columns['EXPECTED_RESULT']]).distinct()
+                                        .where(and_(test_cases_table.columns['TEST_SUITE_ID'] == suite_id,
+                                               test_steps_table.columns['TEST_CASE_ID'] == case_id))).fetchall()
+    step_num = [data[0] for data in steps_expected]
+    step_description = [data[1] for data in steps_expected]
+    step_expected = [data[2] for data in steps_expected]
+    print(list((zip(step_num, step_description, step_expected))))
