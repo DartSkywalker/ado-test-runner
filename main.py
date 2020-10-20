@@ -4,8 +4,9 @@ from flask_login import login_required, current_user
 from loguru import logger
 from .models_data import create_table
 
-main = Blueprint('main', __name__)
+main = Blueprint('main', __name__, static_folder="static", static_url_path="")
 create_table()
+
 
 
 @main.route('/suites', methods=['GET'])
@@ -34,7 +35,8 @@ def test_cases_list(suite_id):
     test_suite_name = ado_api.get_test_suite_name_by_id(suite_id)
     return render_template('test_cases_list.html', test_suite_name=test_suite_name, test_cases_dict=test_cases_dict,
                            username=ado_api.get_current_user(),
-                           users_dict=ado_api.get_all_users())
+                           users_dict=ado_api.get_all_users(),
+                           test_suite_id=suite_id)
 
 
 @main.route('/about', methods=['GET', 'POST'])
@@ -60,5 +62,6 @@ def save_test_result():
 # @main.route('/run')
 @main.route('/run/<test_suite_id>/<test_case_id>')
 def test_run(test_suite_id, test_case_id):
-    ado_api.get_test_case_steps_by_id(1,16)
-    return render_template("run.html", test_case_name='TEST_CASE_NAME')
+    steps_data_list = ado_api.get_test_case_steps_by_id(test_suite_id, test_case_id)
+    test_case_name = ado_api.get_test_case_name_by_id(test_case_id)
+    return render_template("run.html", test_case_name=test_case_name, steps_data_list=steps_data_list)

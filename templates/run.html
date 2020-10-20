@@ -10,30 +10,30 @@
     <meta content="Colorlib Templates" name="keywords">
 
     <!-- Title Page-->
-    <title>{{ test_suite_name }}</title>
+    <title>{{ test_case_name }}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
 
     <!-- Icons font CSS-->
-    <link href="../static/vendor/mdi-font/css/material-design-iconic-font.min.css" rel="stylesheet" media="all">
-    <link href="../static/vendor/font-awesome-4.7/css/font-awesome.min.css" rel="stylesheet" media="all">
+    <link href="{{ url_for('static', filename='vendor/mdi-font/css/material-design-iconic-font.min.css') }}" rel="stylesheet" media="all">
+    <link href="{{ url_for('static', filename='vendor/font-awesome-4.7/css/font-awesome.min.css') }}" rel="stylesheet" media="all">
     <!-- Font special for pages-->
     <link href="https://fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i"
           rel="stylesheet">
 
     <!-- Vendor CSS-->
-    <link href="../static/vendor/select2/select2.min.css" rel="stylesheet" media="all">
-    <link href="../static/vendor/datepicker/daterangepicker.css" rel="stylesheet" media="all">
+    <link href="{{ url_for('static', filename='vendor/select2/select2.min.css') }}" rel="stylesheet" media="all">
+    <link href="{{ url_for('static', filename='vendor/datepicker/daterangepicker.css') }}" rel="stylesheet" media="all">
 
     <!-- Main CSS-->
-    <link href="../static/css/main.css" rel="stylesheet" media="all">
+    <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet" media="all">
 
 </head>
 <body>
 <nav class="navbar navbar-dark bg-primary navbar-expand-lg">
     <a class="navbar-brand" href="">
-        <img src="static/css/running.svg" width="30" height="30" class="d-inline-block align-top" alt="">
+        <img src="{{ url_for('static', filename='css/running.svg') }}" width="30" height="30" class="d-inline-block align-top" alt="">
         TRunner</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
             aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,9 +53,6 @@
     <div class="navbar-collapse collapse  order-3 dual-collapse2">
         <ul class="navbar-nav ml-auto">
             <li class="nav-item active">
-                <a class="nav-link">{{ test_case_name }}<span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item active">
                 <a class="nav-link">Back to Suite<span class="sr-only"></span></a>
             </li>
         </ul>
@@ -64,7 +61,7 @@
 
 <div class="container-fluid">
     <div class="row mt-2 mb-2">
-        <div class="col-md-10">TC_id - Test_Case_Name</div>
+        <div class="col-md-10">{{ test_case_name }}</div>
         <div class="col-md-2">
             <select id="testStatus" class="form-control float-right"
                     style="width:65% ;border: none; border-radius: 0; -webkit-box-shadow: none; box-shadow: none;">
@@ -81,13 +78,13 @@
         <col width="3%"/>
         <col width="90%"/>
         <col width="5%"/>
-        <tr>
-            <td>1</td>
-            <td>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-                deserunt mollit anim id est laborum.
+        {% for step_data in steps_data_list %}
+        <tr class="clickable-row">
+            <td>{{ step_data[0] }}</td>
+            <td>Step: \n
+                {{ step_data[1] }}
+                Expected Result: \n
+                {{ step_data[2] }}
             </td>
             <td id="selector">
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -100,44 +97,7 @@
                 </div>
             </td>
         </tr>
-        <tr>
-            <td>2</td>
-            <td>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-                deserunt mollit anim id est laborum.
-            </td>
-            <td id="selector">
-                <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                    <label class="btn btn-passed" id="passed_label">
-                        <input type="radio" name="options" id="passed" autocomplete="off"> Passed
-                    </label>
-                    <label class="btn btn-failed" id="failed_label">
-                        <input type="radio" name="options" id="failed" autocomplete="off"> Failed
-                    </label>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>3</td>
-            <td>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-                deserunt mollit anim id est laborum.
-            </td>
-            <td id="selector">
-                <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                    <label class="btn btn-passed" id="passed_label">
-                        <input type="radio" name="options" id="passed" autocomplete="off"> Passed
-                    </label>
-                    <label class="btn btn-failed" id="failed_label">
-                        <input type="radio" name="options" id="failed" autocomplete="off"> Failed
-                    </label>
-                </div>
-            </td>
-        </tr>
+        {% endfor %}
     </table>
     <div id="contextMenu" class="dropdown clearfix" style="position: absolute;display: none;">
         <ul class="list-group dropdown-menu" role="menu" aria-labelledby="dropdownMenu"
@@ -202,7 +162,7 @@
         })
 
     })
-
 </script>
+
 </body>
 </html>

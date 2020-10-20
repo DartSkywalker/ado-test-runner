@@ -251,4 +251,13 @@ def get_test_case_steps_by_id(suite_id, case_id):
     step_num = [data[0] for data in steps_expected]
     step_description = [data[1] for data in steps_expected]
     step_expected = [data[2] for data in steps_expected]
-    print(list((zip(step_num, step_description, step_expected))))
+    steps_list = [list(a) for a in zip(step_num, step_description, step_expected)]
+    return steps_list
+
+def get_test_case_name_by_id(test_case_id):
+    connection, meta = sql_connection()
+    test_cases_table = Table('TEST_CASES', meta)
+    test_case_name = connection.execute(select([test_cases_table.columns['TEST_CASE_NAME']]).
+                                    where(test_cases_table.columns['TEST_CASE_ID'] == test_case_id)).fetchone()[0]
+    return test_case_name
+

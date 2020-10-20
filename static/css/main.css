@@ -100,6 +100,10 @@ table {
     border-spacing: 0;
 }
 
+tr.active {
+    background-color: #f8f8f8;
+}
+
 /**
  * 1. Reset Chrome and Firefox behaviour which sets a `min-width: min-content;`
  *    on fieldsets.
