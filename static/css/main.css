@@ -120,6 +120,13 @@ button {
     border: none;
 }
 
+.border-right{
+    border-right: 3px solid white;
+}
+
+.border-left{
+    border-left: 3px solid white;
+}
 /* ==========================================================================
    #PAGE WRAPPER
    ========================================================================== */

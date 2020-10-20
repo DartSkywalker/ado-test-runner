@@ -52,6 +52,12 @@
     </ul>
     <div class="navbar-collapse collapse  order-3 dual-collapse2">
         <ul class="navbar-nav ml-auto">
+            <li class="nav-item active runTest" style="display: none">
+                <a class="nav-link border-left" href="">Run Test <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item active statistics" style="display: none">
+                <a class="nav-link border-right" href="">Statistics<span class="sr-only">(current)</span></a>
+            </li>
             <li class="nav-item active">
                 <a class="nav-link">Current Suite - {{ test_suite_name }}<span class="sr-only">(current)</span></a>
             </li>
@@ -146,8 +152,13 @@
 $('#mt').on('click', '.clickable-row', function(event) {
   if($(this).hasClass('active')){
     $(this).removeClass('active');
+    $('.runTest').hide();
+    $('.statistics').hide();
+
   } else {
     $(this).addClass('active').siblings().removeClass('active');
+    $('.runTest').show();
+    $('.statistics').show();
   }
 });
 </script>
