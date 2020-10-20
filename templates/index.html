@@ -93,9 +93,9 @@
                             <div class="rs-select2 js-select-simple select--no-search col-7">
                                 <label class="label">Test Suites</label>
                                 <select name="test_suites">
-                                    {% for test_suite in test_suite_list %}
-                                    <option value="{{test_suite}}">
-                                        {{test_suite}}
+                                    {% for suite_id, suite_name in test_suite_dict.items() %}
+                                    <option value="{{suite_id}}">
+                                        {{suite_name}}
                                     </option>
                                     {% endfor %}
                                 </select>
