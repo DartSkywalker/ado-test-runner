@@ -18,6 +18,7 @@ def parse_xml_steps(xml):
         parsed_html_steps.append([step_action, expected_result])
     return parsed_html_steps
 
+
 def parse_html_steps(xml):
     if xml == "Test Case does not contain steps":
         steps_expected_list = [['\n','\n']]
@@ -26,14 +27,7 @@ def parse_html_steps(xml):
         steps_expected_list = []
         for html_step in html_list:
             clean_step_expected_list = [
-                action\
-                .replace("<BR/>", "\n")\
-                .replace("<BR />", "\n")\
-                .replace("&gt", "")\
-                .replace("</P>", "\n")\
-                .replace("<P>", "")\
-                .replace("</DIV>", "")\
-                .replace("<DIV>", "") for action in html_step
+                action for action in html_step
             ]
             steps_expected_list.append(clean_step_expected_list)
     return steps_expected_list
