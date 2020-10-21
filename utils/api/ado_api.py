@@ -247,17 +247,27 @@ def get_test_case_steps_by_id(suite_id, case_id):
                                                 test_steps_table.columns['DESCRIPTION'],
                                                 test_steps_table.columns['EXPECTED_RESULT']]).distinct()
                                         .where(and_(test_cases_table.columns['TEST_SUITE_ID'] == suite_id,
-                                               test_steps_table.columns['TEST_CASE_ID'] == case_id))).fetchall()
+                                                    test_steps_table.columns['TEST_CASE_ID'] == case_id))).fetchall()
     step_num = [data[0] for data in steps_expected]
     step_description = [data[1] for data in steps_expected]
     step_expected = [data[2] for data in steps_expected]
     steps_list = [list(a) for a in zip(step_num, step_description, step_expected)]
     return steps_list
 
+
 def get_test_case_name_by_id(test_case_id):
     connection, meta = sql_connection()
     test_cases_table = Table('TEST_CASES', meta)
     test_case_name = connection.execute(select([test_cases_table.columns['TEST_CASE_NAME']]).
-                                    where(test_cases_table.columns['TEST_CASE_ID'] == test_case_id)).fetchone()[0]
+                                        where(test_cases_table.columns['TEST_CASE_ID'] == test_case_id)).fetchone()[0]
     return test_case_name
+
+def get_test_case_id_by_ado_id(suite_id, test_case_ado_id):
+    connection, meta = sql_connection()
+    test_cases_table = Table('TEST_CASES', meta)
+    test_case_id = connection.execute(select([test_cases_table.columns['TEST_CASE_ID']])
+                                      .where(and_(test_cases_table.columns['TEST_SUITE_ID'] == suite_id,
+                                                  test_cases_table.columns[
+                                                      'TEST_CASE_ADO_ID'] == test_case_ado_id))).fetchone()[0]
+    return test_case_id
 

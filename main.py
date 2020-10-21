@@ -39,6 +39,12 @@ def test_cases_list(suite_id):
                            test_suite_id=suite_id)
 
 
+@main.route('/cases/<suite_id>/<test_case_ado_id>', methods=['GET', 'POST'])
+def redirect_from_suite_to_run(suite_id, test_case_ado_id):
+    test_case_id = ado_api.get_test_case_id_by_ado_id(suite_id, test_case_ado_id)
+    return redirect(url_for('main.test_run', test_suite_id=suite_id, test_case_id=test_case_id))
+
+
 @main.route('/about', methods=['GET', 'POST'])
 def about_page():
     if current_user.is_authenticated:
@@ -65,3 +71,4 @@ def test_run(test_suite_id, test_case_id):
     steps_data_list = ado_api.get_test_case_steps_by_id(test_suite_id, test_case_id)
     test_case_name = ado_api.get_test_case_name_by_id(test_case_id)
     return render_template("run.html", test_case_name=test_case_name, steps_data_list=steps_data_list)
+
