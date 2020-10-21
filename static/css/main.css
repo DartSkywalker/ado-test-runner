@@ -287,6 +287,19 @@ h6 {
     font-family: "Poppins", "Arial", "Helvetica Neue", sans-serif;
 }
 
+.btn-index {
+    display: inline-block;
+    line-height: 50px;
+    padding: 0 35px;
+    -webkit-transition: all 0.4s ease;
+    -o-transition: all 0.4s ease;
+    -moz-transition: all 0.4s ease;
+    transition: all 0.4s ease;
+    cursor: pointer;
+    font-size: 18px;
+    color: #fff;
+    font-family: "Poppins", "Arial", "Helvetica Neue", sans-serif;
+}
 
 .btn--radius {
     -webkit-border-radius: 3px;
@@ -701,8 +714,9 @@ input {
 
 .spinner-border {
     display: inline-block;
-    width: 2rem;
-    height: 2rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding-right: 5px;
     vertical-align: middle;
     border: .25em solid currentColor;
     border-right-color: transparent;

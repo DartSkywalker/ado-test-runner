@@ -53,7 +53,7 @@
     <div class="navbar-collapse collapse  order-3 dual-collapse2">
         <ul class="navbar-nav ml-auto">
             <li class="nav-item active">
-                <a class="nav-link">Back to Suite<span class="sr-only"></span></a>
+                <a class="nav-link" id="backToSuite" href="">Back to Suite<span class="sr-only"></span></a>
             </li>
         </ul>
     </div>
@@ -115,6 +115,11 @@
         src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 <script crossorigin="anonymous" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
         src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    $('#backToSuite').attr("href", window.location.href.substr(0,
+        window.location.href.lastIndexOf("/"))
+        .replace("run", "cases"))
+</script>
 <script>
     //Table MB3
     $(function () {
