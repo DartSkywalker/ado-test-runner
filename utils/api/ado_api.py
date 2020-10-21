@@ -15,7 +15,7 @@ from sqlalchemy import Table, MetaData, create_engine, and_
 
 
 def sql_connection():
-    engine = create_engine('sqlite:///db.sqlite', echo=True)
+    engine = create_engine('sqlite:///db.sqlite', echo=False)
     connection = engine.connect()
     meta = MetaData()
     meta.reflect(bind=engine)
@@ -96,6 +96,7 @@ def get_test_case_steps_by_url(test_case_url):
 
 # print(get_test_case_steps_by_url("https://dev.azure.com/HAL-LMKRD/d54c5f94-240d-4817-b74e-82588f96c6ba/_apis/wit/workItems/128710"))
 
+
 def get_all_test_case_data(tc_id):
     """
     Get list of cleaned steps of the test case
@@ -154,7 +155,7 @@ def create_new_test_suite_in_db(query_id):
         for test_steps in test_case[1]:
             test_sql_case_id = connection.execute(select([table_cases.columns['TEST_CASE_ID']])
                                                   .where(table_cases.columns['TEST_CASE_ADO_ID'] == id)).fetchone()[0]
-            print(test_sql_case_id)
+            # print(test_sql_case_id)
             connection.execute(meta.tables['TEST_STEPS'].insert().values(TEST_CASE_ID=int(test_sql_case_id),
                                                                          STEP_NUMBER=str(step_number),
                                                                          DESCRIPTION=test_steps[0],
@@ -216,6 +217,7 @@ def get_test_cases_from_db_by_suite_name(test_suite_id):
 
 # get_test_cases_from_db_by_suite_name('Velocity Test Cases')
 
+
 def get_current_user():
     connection, meta = sql_connection()
     g.user = current_user.get_id()
@@ -254,6 +256,7 @@ def get_test_case_steps_by_id(suite_id, case_id):
     steps_list = [list(a) for a in zip(step_num, step_description, step_expected)]
     return steps_list
 
+
 def get_test_case_name_by_id(test_case_id):
     connection, meta = sql_connection()
     test_cases_table = Table('TEST_CASES', meta)
@@ -261,3 +264,37 @@ def get_test_case_name_by_id(test_case_id):
                                     where(test_cases_table.columns['TEST_CASE_ID'] == test_case_id)).fetchone()[0]
     return test_case_name
 
+
+def set_test_case_state(test_case_id, json_with_step_states):
+    connection, meta = sql_connection()
+    g.user = current_user.get_id()
+    table = Table('User', meta)
+    table_cases = Table('TEST_CASES', meta)
+    test_steps = Table('TEST_STEPS', meta)
+    query = select([table.columns['username']]).where(table.columns['id'] == g.user)
+    user = connection.execute(query).fetchall()
+    for id, statistic in json_with_step_states.items():
+        if id != 'testResult':
+            step_number = list(statistic.values())[0]
+            step_status = list(statistic.values())[1]
+            try:
+                comment = list(statistic.values())[2]
+            except IndexError:
+                comment = ""
+            update_statement = test_steps.update().where(and_
+                                                     (test_steps.c.TEST_CASE_ID == int(test_case_id),
+                                                      test_steps.c.STEP_NUMBER == int(step_number)))\
+                                                    .values(STEP_STATUS=str(step_status), COMMENT=str(comment))
+            connection.execute(update_statement)
+        else:
+            test_case_result = list(statistic.values())[0]
+            update_statement = table_cases.update().where(table_cases.c.TEST_CASE_ID == int(test_case_id))\
+                .values(STATUS=str(test_case_result), EXECUTED_BY=str(user), DURATION_SEC='666')
+            connection.execute(update_statement)
+
+
+# json = {'0': {'stepNum': 1,'outcome': 'Passed', 'comment':"test"},'1': {'stepNum': 2,'outcome':'Failed'},
+#         '2': {'stepNum': 3,'outcome': 'Passed'},'3': {'stepNum': 4,'outcome':'Failed'},
+#         '4': {'stepNum': 5,'outcome': 'Passed'},'5': {'stepNum': 6,'outcome':'Passed'},
+#         '6': { 'stepNum': 7,'outcome': 'Passed'},'testResult': {'outcome': 'Failed'}}
+# set_test_case_state(1,json)
