@@ -8,7 +8,6 @@ main = Blueprint('main', __name__, static_folder="static", static_url_path="")
 create_table()
 
 
-
 @main.route('/suites', methods=['GET'])
 @login_required
 def test_suites():
@@ -40,12 +39,14 @@ def test_cases_list(suite_id):
 
 
 @main.route('/cases/<suite_id>/<test_case_ado_id>', methods=['GET', 'POST'])
+@login_required
 def redirect_from_suite_to_run(suite_id, test_case_ado_id):
     test_case_id = ado_api.get_test_case_id_by_ado_id(suite_id, test_case_ado_id)
     return redirect(url_for('main.test_run', test_suite_id=suite_id, test_case_id=test_case_id))
 
 
 @main.route('/about', methods=['GET', 'POST'])
+@login_required
 def about_page():
     if current_user.is_authenticated:
         return render_template("about.html", username=ado_api.get_current_user())
@@ -54,21 +55,36 @@ def about_page():
 
 
 @main.route('/')
+@login_required
 def redirect_from_main():
     return redirect(url_for('main.test_suites'))
 
 
 @main.route('/save_test_result', methods=['POST'])
+@login_required
 def save_test_result():
     data = request.get_json()
     print(data)
     return ("200")
 
 
-# @main.route('/run')
 @main.route('/run/<test_suite_id>/<test_case_id>')
+@login_required
 def test_run(test_suite_id, test_case_id):
     steps_data_list = ado_api.get_test_case_steps_by_id(test_suite_id, test_case_id)
     test_case_name = ado_api.get_test_case_name_by_id(test_case_id)
     return render_template("run.html", test_case_name=test_case_name, steps_data_list=steps_data_list)
 
+
+@main.route('/cases/<suite_id>/<test_case_ado_id>/stat', methods=['GET', 'POST'])
+@login_required
+def redirect_from_suite_to_statistics(suite_id, test_case_ado_id):
+    test_case_id = ado_api.get_test_case_id_by_ado_id(suite_id, test_case_ado_id)
+    return redirect(url_for('main.test_statistics', suite_id=suite_id, test_case_id=test_case_id))
+
+
+@main.route('/statistics/<suite_id>/<test_case_id>')
+@login_required
+def test_statistics(suite_id, test_case_id):
+    test_case_name = ado_api.get_test_case_name_by_id(test_case_id)
+    return render_template("statistics.html", test_case_name=test_case_name)

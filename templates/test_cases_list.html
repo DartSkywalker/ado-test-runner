@@ -57,7 +57,7 @@
                 <a class="nav-link border-left" id="runCase" href="">Run Test <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item active statistics" style="display: none">
-                <a class="nav-link border-right" href="">Statistics<span class="sr-only">(current)</span></a>
+                <a class="nav-link border-right" id="statCase" href="">Statistics<span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item active">
                 <a class="nav-link">Current Suite - {{ test_suite_name }}<span class="sr-only">(current)</span></a>
@@ -159,24 +159,12 @@ $('#mt').on('click', '.clickable-row', function(event) {
   } else {
     $(this).addClass('active').siblings().removeClass('active');
     $('#runCase').attr("href", window.location.href + "/" + $(this).children('td:first-child').text().trim())
+    $('#statCase').attr("href", window.location.href + "/" + $(this).children('td:first-child').text().trim() + "/stat")
     $('.runTest').show();
     $('.statistics').show();
 
   }
 });
 </script>
-{#<script>#}
-{#    $("#runCase").click(function () {#}
-{#        test_case_ado_id = 0;#}
-{##}
-{#        $('#mt tr').each(function (index) {#}
-{#                if ($(this).hasClass('active')) {#}
-{#                    console.log($(this).children('td:first-child').text());#}
-{#                }#}
-{#        })#}
-{##}
-{##}
-{#    })#}
-{#</script>#}
 </body>
 </html>
