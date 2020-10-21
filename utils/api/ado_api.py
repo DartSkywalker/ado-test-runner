@@ -298,3 +298,13 @@ def set_test_case_state(test_case_id, json_with_step_states):
 #         '4': {'stepNum': 5,'outcome': 'Passed'},'5': {'stepNum': 6,'outcome':'Passed'},
 #         '6': { 'stepNum': 7,'outcome': 'Passed'},'testResult': {'outcome': 'Failed'}}
 # set_test_case_state(1,json)
+
+
+def get_test_case_id_by_ado_id(suite_id, test_case_ado_id):
+    connection, meta = sql_connection()
+    test_cases_table = Table('TEST_CASES', meta)
+    test_case_id = connection.execute(select([test_cases_table.columns['TEST_CASE_ID']])
+                                      .where(and_(test_cases_table.columns['TEST_SUITE_ID'] == suite_id,
+                                                  test_cases_table.columns[
+                                                      'TEST_CASE_ADO_ID'] == test_case_ado_id))).fetchone()[0]
+    return test_case_id
