@@ -81,10 +81,13 @@
         {% for step_data in steps_data_list %}
         <tr class="clickable-row">
             <td>{{ step_data[0] }}</td>
-            <td>Step: \n
-                {{ step_data[1] }}
-                Expected Result: \n
-                {{ step_data[2] }}
+            <td>
+                <div>
+                {{ step_data[1] | safe }}
+                </div>
+                <div>
+                {{ step_data[2] | safe }}
+                </div>
             </td>
             <td id="selector">
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -115,6 +118,10 @@
         src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 <script crossorigin="anonymous" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
         src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+
+
 <script>
     $('#backToSuite').attr("href", window.location.href.substr(0,
         window.location.href.lastIndexOf("/"))
