@@ -88,6 +88,10 @@
                 <div class="expected">
                 {{ step_data[2] | safe }}
                 </div>
+                <div style="display: none">
+                    <br/><label for="exampleFormControlTextarea1">Comment:</label>
+                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                </div>
             </td>
             <td id="selector">
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -123,13 +127,9 @@
 
 
 <script>
-$('#tbl1 tr').each(function (index) {
-            $(this).find('.expected').each(function () {
-                if($(this).text() == 0) {
-                    $(this).css('display', 'none')
-                }
-            })
-    })
+$('td.step').on('dblclick', function() {
+    $(this).find('div:nth-child(3)').css('display', 'block')
+});
 </script>
 <script>
     $('#backToSuite').attr("href", window.location.href.substr(0,
