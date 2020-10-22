@@ -134,6 +134,14 @@ button {
     min-height: 100vh;
 }
 
+.expected {
+    border-top: 1px solid #DEE2E6;
+    margin-top: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+
 body {
     font-family: "Poppins", "Arial", "Helvetica Neue", sans-serif;
     font-weight: 400;
