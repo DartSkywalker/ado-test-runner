@@ -10,11 +10,10 @@
     <meta name="keywords" content="Colorlib Templates">
 
     <!-- Title Page-->
-    <title>Test Suites</title>
+    <title>Settings</title>
+
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
-
     <!-- Icons font CSS-->
     <link href="../static/vendor/mdi-font/css/material-design-iconic-font.min.css" rel="stylesheet" media="all">
     <link href="../static/vendor/font-awesome-4.7/css/font-awesome.min.css" rel="stylesheet" media="all">
@@ -66,60 +65,38 @@
     </div>
 </nav>
 
-<div class="page-wrapper bg-gra-03 p-t-130 p-b-100 font-poppins">
-    <div class="wrapper wrapper--w680">
-        <div class="card card-4">
-            <div class="card-body">
-                <h2 class="title">Test Suites Options</h2>
-                <form method="POST">
-                    <div class="row row-space">
-                        <div class="col-7">
-                            <div class="input-group">
-                                <label class="label">Add Test Suite</label>
-                                <input class="input--style-4" type="text" name="query_id" placeholder="Query ID">
+
+    <div class="page-wrapper bg-gra-03 p-t-130 p-b-100 font-poppins">
+        <div class="wrapper wrapper--w680">
+            <div class="card card-4">
+                <div class="card-body">
+                    <h2 class="title">{{ username }} settings</h2>
+                    <form method="POST">
+                        <div class="row row-space">
+                            <div class="col-12">
+                                <div class="input-group">
+                                    <label class="label">Azure DevOps token</label>
+                                    <input class="input--style-4" type="text" placeholder="Token" name="ado-token"
+                                           value="{{request.form.username }}">
+                                </div>
                             </div>
                         </div>
-                        <div class="col-5 auto-margin">
-                            <!--                            <div style="display: flex; justify-content: center; align-items: center; height: 77%">-->
-                            <button class="align-self-end btn-index btn--radius-2 btn--blue" type="submit" name="btn"
-                                    id="addSuite" value="addSuite">Add Suite
-                            </button>
-                            <!--                            </div>-->
-                        </div>
-                    </div>
-                </form>
-                <form method="POST">
-                    <div class="row row-space">
-                        <div class="input-group">
-                            <div class="rs-select2 js-select-simple select--no-search col-7">
-                                <label class="label">Test Suites</label>
-                                <select name="test_suites">
-                                    {% for suite_id, suite_name in test_suite_dict.items() %}
-                                    <option value="{{suite_id}}">
-                                        {{suite_name}}
-                                    </option>
-                                    {% endfor %}
-                                </select>
-                                <div class="select-dropdown"></div>
+
+                        <div class="row row-space">
+                            <div class="col-12">
+                                <div>
+                                    <input class="btn btn-default btn--radius-2 btn--blue" type="submit" value="Save">
+
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="p-t-15 row-space">
-                        <div class="col-7">
 
-                            <button class="btn btn--radius-2 btn--blue" type="submit" name="btn" value="selectSuite">
-                                Select
-                                Test Suite
-                            </button>
-                        </div>
-                    </div>
-
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
-
 <!-- Jquery JS-->
 <script src="../static/vendor/jquery/jquery.min.js"></script>
 <!-- Vendor JS-->
@@ -137,18 +114,7 @@
 <script crossorigin="anonymous" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
         src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-<script>
-    $(document).ready(function () {
-        $("#addSuite").click(function () {
-            // disable button
-            // $(this).prop("disabled", true);
-            // add spinner to button
-            $(this).html(
-                `<span class="spinner-border" role="status" aria-hidden="true"></span> Processing...`
-            );
-        });
-    });
-</script>
+</body><!-- This templates was made by Colorlib (https://colorlib.com) -->
 
-</body>
 </html>
+<!-- end document-->
