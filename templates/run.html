@@ -88,9 +88,9 @@
                 <div class="expected">
                 {{ step_data[2] | safe }}
                 </div>
-                <div style="display: none">
+                <div class style="display: none">
                     <br/><label for="exampleFormControlTextarea1">Comment:</label>
-                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                    <textarea class="form-control comment" id="exampleFormControlTextarea1" rows="3"></textarea>
                 </div>
             </td>
             <td id="selector">
@@ -136,57 +136,29 @@ $('td.step').on('dblclick', function() {
         window.location.href.lastIndexOf("/"))
         .replace("run", "cases"))
 </script>
-{#<script>#}
-{#    //Table MB3#}
-{#    $(function () {#}
-{##}
-{#        var $contextMenu = $("#contextMenu");#}
-{##}
-{#        $("body").on("contextmenu", "table tr .step", function (e) {#}
-{#            $contextMenu.css({#}
-{#                display: "block",#}
-{#                left: e.pageX,#}
-{#                top: e.pageY#}
-{#            });#}
-{#            return false;#}
-{#        });#}
-{##}
-{#        $contextMenu.on("click", "a", function () {#}
-{#            $contextMenu.hide();#}
-{#        });#}
-{##}
-{#        $('#leaveComment').click( function(e) {#}
-{#            $contextMenu.hide();#}
-{#            let cell = document.elementFromPoint(e.pageX, e.pageY)#}
-{#            if (cell.hasClass('active')) {#}
-{#                            var commentField = document.createElement("div");#}
-{##}
-{#                commentField.innerHTML = "<br/><label for=\"exampleFormControlTextarea1\">Comment:</label>\n" +#}
-{#                "    <textarea class=\"form-control\" id=\"exampleFormControlTextarea1\" rows=\"3\"></textarea>";#}
-{#            }#}
-{##}
-{#            cell.appendChild(commentField);#}
-{#        });#}
-{##}
-{#    });#}
-{#</script>#}
-
 <script>
     $("#saveResult").click(function () {
         testResults = {};
         testCaseOutcome = $('#testStatus').val();
-        testResults['testResult'] = {outcome: testCaseOutcome}
+        testResults['testResult'] = {outcome: testCaseOutcome};
         $('#tbl1 tr').each(function (index) {
+        var comment = ""
+            $(this).find('.comment').each(function () {
+                if ($(this).val().length !== 0) {
+                    comment = $(this).val();
+                }
+            })
             $(this).find('#passed_label').each(function () {
                 if ($(this).hasClass('active')) {
-                    testResults[index] = {stepNum: index + 1, outcome: 'Passed'}
+                    testResults[index] = {stepNum: index + 1, outcome: 'Passed', comment: comment}
                 }
             })
             $(this).find('#failed_label').each(function () {
                 if ($(this).hasClass('active')) {
-                    testResults[index] = {stepNum: index + 1, outcome: 'Failed'}
+                    testResults[index] = {stepNum: index + 1, outcome: 'Failed', comment: comment}
                 }
             })
+
         })
 
         $.ajax("/save_test_result", {
