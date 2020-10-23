@@ -95,14 +95,14 @@
             <td>
                 <p class="text-dark">{{ test_case_data_list[0] }}</p>
             </td>
-            <td width="160px">
-                <select class="form-control">
-                    <option selected value="">❕ &nbsp;Ready</option>
-                    <option value="1">✅ &nbsp;Passed</option>
-                    <option value="2">❌ &nbsp;Failed</option>
-                    <option value="4">🚫 &nbsp;Blocked</option>
-                    <option value="5">⏳ &nbsp;In-Progress</option>
-                </select>
+            <td width="160px" class="testCaseState">
+                <p class="text-dark"> {{ test_case_data_list[2] }} </p>
+{#                <select class="form-control">#}
+{#                    <option selected value="">❕ &nbsp;Ready</option>#}
+{#                    <option value="1">✅ &nbsp;Passed</option>#}
+{#                    <option value="2">❌ &nbsp;Failed</option>#}
+{#                    <option value="4">🚫 &nbsp;Blocked</option>#}
+{#                </select>#}
             </td>
             <td>
 <!--                <p class="text-dark">Samiran</p>-->
@@ -129,6 +129,22 @@
         src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 <script crossorigin="anonymous" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
         src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+        $('#mt tr').each(function (index) {
+            $(this).find('.testCaseState').each(function () {
+                var state = $(this).text()
+                if (state.indexOf("Ready") >= 0) {
+                    $(this).text('❕ ' + state)
+                } else if (state.indexOf("Failed")) {
+                    $(this).text('❌ ' + state)
+                } else if (state.indexOf("Blocked")) {
+                    $(this).text('🚫 ' + state)
+                }
+            })
+        })
+</script>
+
 <script>
     //Table MB3
     $(function () {

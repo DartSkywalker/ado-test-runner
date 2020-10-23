@@ -139,7 +139,17 @@ $('td.step').on('dblclick', function() {
 <script>
     $("#saveResult").click(function () {
         testResults = {};
-        testCaseOutcome = $('#testStatus').val();
+        testCaseOutcomeDirty = $('#testStatus').val();
+        if (testCaseOutcomeDirty.indexOf("Passed") >= 0) {
+            testCaseOutcome = 'Passed';
+        } else if (testCaseOutcomeDirty.indexOf("Failed")) {
+            testCaseOutcome = 'Failed';
+        } else if (testCaseOutcomeDirty.indexOf("Blocked")) {
+            testCaseOutcome = 'Blocked';
+        } else if (testCaseOutcomeDirty.indexOf("Pause")) {
+            testCaseOutcome = 'Pause';
+        }
+
         testResults['testResult'] = {outcome: testCaseOutcome};
         $('#tbl1 tr').each(function (index) {
         var comment = ""
@@ -161,7 +171,8 @@ $('td.step').on('dblclick', function() {
 
         })
 
-        $.ajax("/save_test_result", {
+        let testCaseId = window.location.href.substr(window.location.href.lastIndexOf("/")).replace("/","")
+        $.ajax("/save_test_result/" + testCaseId, {
             data: JSON.stringify(testResults),
             contentType: 'application/json',
             type: 'POST'

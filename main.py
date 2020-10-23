@@ -59,12 +59,17 @@ def about_page():
 def redirect_from_main():
     return redirect(url_for('main.test_suites'))
 
-
-@main.route('/save_test_result', methods=['POST'])
+@main.route('/settings')
 @login_required
-def save_test_result():
+def user_settings():
+    return render_template('settings.html', username=ado_api.get_current_user())
+
+@main.route('/save_test_result/<test_case_id>', methods=['POST'])
+@login_required
+def save_test_result(test_case_id):
     data = request.get_json()
-    print(data)
+    ado_api.set_test_case_state(test_case_id, data)
+    logger.warning(data)
     return ("200")
 
 

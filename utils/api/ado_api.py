@@ -202,16 +202,18 @@ def get_test_cases_from_db_by_suite_name(test_suite_id):
     #                                    where(table_suites.columns['TEST_SUITE_NAME'] == test_suite)).fetchone()[0]
 
     test_cases_list_db = connection.execute(select([test_cases_table.columns['TEST_CASE_ADO_ID'],
-                                                    test_cases_table.columns['TEST_CASE_NAME']])
+                                                    test_cases_table.columns['TEST_CASE_NAME'],
+                                                    test_cases_table.columns['STATUS']])
         .where(
         test_cases_table.columns['TEST_SUITE_ID'] == test_suite_id)).fetchall()
 
     test_cases_id_list = [test_case[0] for test_case in test_cases_list_db]
     test_cases_name_list = [test_case[1] for test_case in test_cases_list_db]
+    test_cases_status = [test_case[2] for test_case in test_cases_list_db]
     test_cases_link_list = ["https://dev.azure.com/HAL-LMKRD/RESDEV/_workitems/edit/" + str(tc_id) for tc_id in
                             test_cases_id_list]
 
-    test_case_dict = dict(zip(test_cases_id_list, zip(test_cases_name_list, test_cases_link_list)))
+    test_case_dict = dict(zip(test_cases_id_list, zip(test_cases_name_list, test_cases_link_list, test_cases_status)))
     return test_case_dict
 
 
@@ -272,7 +274,7 @@ def set_test_case_state(test_case_id, json_with_step_states):
     table_cases = Table('TEST_CASES', meta)
     test_steps = Table('TEST_STEPS', meta)
     query = select([table.columns['username']]).where(table.columns['id'] == g.user)
-    user = connection.execute(query).fetchall()
+    user = connection.execute(query).fetchone()[0]
     for id, statistic in json_with_step_states.items():
         if id != 'testResult':
             step_number = list(statistic.values())[0]
