@@ -3,6 +3,7 @@ from .utils.api import ado_api
 from flask_login import login_required, current_user
 from loguru import logger
 from .models_data import create_table
+import json
 
 main = Blueprint('main', __name__, static_folder="static", static_url_path="")
 create_table()
@@ -68,16 +69,20 @@ def user_settings():
 @login_required
 def save_test_result(test_case_id):
     data = request.get_json()
-    ado_api.set_test_case_state(test_case_id, data)
     logger.warning(data)
-    return ("200")
-
+    try:
+        ado_api.set_test_case_state(test_case_id, data)
+        return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+    except Exception as e:
+        logger.error(e)
+        return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
 
 @main.route('/run/<test_suite_id>/<test_case_id>')
 @login_required
 def test_run(test_suite_id, test_case_id):
     steps_data_list = ado_api.get_test_case_steps_by_id(test_suite_id, test_case_id)
     test_case_name = ado_api.get_test_case_name_by_id(test_case_id)
+    logger.critical(steps_data_list)
     return render_template("run.html", test_case_name=test_case_name, steps_data_list=steps_data_list)
 
 

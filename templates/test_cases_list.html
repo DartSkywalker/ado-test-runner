@@ -105,12 +105,15 @@
 {#                </select>#}
             </td>
             <td>
-<!--                <p class="text-dark">Samiran</p>-->
+                {% if test_case_data_list[3] != None %}
+                    <p class="text-dark">{{ test_case_data_list[3] }}</p>
+                {% else %}
                 <select class="form-control">
                     {% for user_id, user_name in users_dict.items() %}
                     <option value="{{ user_id }}">{{user_name}}</option>
                     {% endfor %}
                 </select>
+                {% endif %}
             </td>
         </tr>
         {% endfor %}
@@ -136,10 +139,12 @@
                 var state = $(this).text()
                 if (state.indexOf("Ready") >= 0) {
                     $(this).text('❕ ' + state)
-                } else if (state.indexOf("Failed")) {
-                    $(this).text('❌ ' + state)
-                } else if (state.indexOf("Blocked")) {
+                } else if (state.indexOf("Passed") >= 0) {
+                    $(this).text('✅ ' + state)
+                } else if (state.indexOf("Blocked") >= 0) {
                     $(this).text('🚫 ' + state)
+                } else if (state.indexOf("Failed") >= 0) {
+                    $(this).text('❌ ' + state)
                 }
             })
         })

@@ -203,17 +203,20 @@ def get_test_cases_from_db_by_suite_name(test_suite_id):
 
     test_cases_list_db = connection.execute(select([test_cases_table.columns['TEST_CASE_ADO_ID'],
                                                     test_cases_table.columns['TEST_CASE_NAME'],
-                                                    test_cases_table.columns['STATUS']])
+                                                    test_cases_table.columns['STATUS'],
+                                                    test_cases_table.columns['EXECUTED_BY']])
         .where(
         test_cases_table.columns['TEST_SUITE_ID'] == test_suite_id)).fetchall()
 
     test_cases_id_list = [test_case[0] for test_case in test_cases_list_db]
     test_cases_name_list = [test_case[1] for test_case in test_cases_list_db]
     test_cases_status = [test_case[2] for test_case in test_cases_list_db]
+    test_cases_executed = [test_case[3] for test_case in test_cases_list_db]
     test_cases_link_list = ["https://dev.azure.com/HAL-LMKRD/RESDEV/_workitems/edit/" + str(tc_id) for tc_id in
                             test_cases_id_list]
 
-    test_case_dict = dict(zip(test_cases_id_list, zip(test_cases_name_list, test_cases_link_list, test_cases_status)))
+    test_case_dict = dict(zip(test_cases_id_list, zip(test_cases_name_list, test_cases_link_list,
+                                                      test_cases_status, test_cases_executed)))
     return test_case_dict
 
 
@@ -249,13 +252,15 @@ def get_test_case_steps_by_id(suite_id, case_id):
     test_steps_table = Table('TEST_STEPS', meta)
     steps_expected = connection.execute(select([test_steps_table.columns['STEP_NUMBER'],
                                                 test_steps_table.columns['DESCRIPTION'],
-                                                test_steps_table.columns['EXPECTED_RESULT']]).distinct()
+                                                test_steps_table.columns['EXPECTED_RESULT'],
+                                                test_steps_table.columns['STEP_STATUS']]).distinct()
                                         .where(and_(test_cases_table.columns['TEST_SUITE_ID'] == suite_id,
                                                test_steps_table.columns['TEST_CASE_ID'] == case_id))).fetchall()
     step_num = [data[0] for data in steps_expected]
     step_description = [data[1] for data in steps_expected]
     step_expected = [data[2] for data in steps_expected]
-    steps_list = [list(a) for a in zip(step_num, step_description, step_expected)]
+    step_status = [data[3] for data in steps_expected]
+    steps_list = [list(a) for a in zip(step_num, step_description, step_expected, step_status)]
     return steps_list
 
 

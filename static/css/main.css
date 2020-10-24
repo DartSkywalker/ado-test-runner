@@ -870,3 +870,22 @@ input {
 .btn-failed:not(:disabled):not(.disabled).active:focus, .btn-failed:not(:disabled):not(.disabled):active:focus, .show > .btn-failed.dropdown-toggle:focus {
     box-shadow: 0 0 0 .2rem rgba(130, 138, 145, .5)
 }
+
+.inner {
+    position: absolute;
+    left: 75%;
+}
+
+.success-save {
+    height: 50px;
+    width: 200px;
+    padding-left: 17px;
+    display: flex;
+    color: #fff;
+    align-items: center;
+    border-radius: 15px;
+    justify-content: left;
+    background: rgb(0,123,255);
+    background: linear-gradient(146deg, rgba(0,123,255,1) 0%, rgba(0,123,255,1) 35%, rgba(0,123,255,0.3617822128851541) 100%);
+
+}

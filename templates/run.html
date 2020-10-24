@@ -62,6 +62,7 @@
 <div class="container-fluid">
     <div class="row mt-2 mb-2">
         <div class="col-md-10">{{ test_case_name }}</div>
+            <div id='saveSuccess' class="inner success-save" style="display: none">Saved</div>
         <div class="col-md-2">
             <select id="testStatus" class="form-control float-right"
                     style="width:65% ;border: none; border-radius: 0; -webkit-box-shadow: none; box-shadow: none;">
@@ -93,10 +94,10 @@
                     <textarea class="form-control comment" id="exampleFormControlTextarea1" rows="3"></textarea>
                 </div>
             </td>
-            <td id="selector">
-                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <td class="selector">
+                <div class="btn-group btn-group-toggle {{ step_data[3] }}" data-toggle="buttons">
                     <label class="btn btn-passed" id="passed_label">
-                        <input type="radio" name="options" id="passed" autocomplete="off"> Passed
+                        <input type="radio" name="options" id="passed" autocomplete="off" value=""> Passed
                     </label>
                     <label class="btn btn-failed" id="failed_label">
                         <input type="radio" name="options" id="failed" autocomplete="off"> Failed
@@ -125,7 +126,24 @@
         src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 
+<script>
+    $('#tbl1 tr').each(function (index) {
+        $(this).find('.selector').each(function () {
+            $(this).find('div.btn-group-toggle').each(function () {
+                if ($(this).hasClass('Failed')) {
+                    $(this).find('input[id="failed"]').each(function(){
+                        $(this).attr("checked", "checked")
+                     });
+                } else if ($(this).hasClass('Passed')){
+                    $(this).find('input[id="passed"]').each(function(){
+                        $(this).attr("checked", "checked")
+                     });
+                }
+            })
+        })
+    })
 
+</script>
 <script>
 $('td.step').on('dblclick', function() {
     $(this).find('div:nth-child(3)').css('display', 'block')
@@ -175,7 +193,11 @@ $('td.step').on('dblclick', function() {
         $.ajax("/save_test_result/" + testCaseId, {
             data: JSON.stringify(testResults),
             contentType: 'application/json',
-            type: 'POST'
+            type: 'POST',
+            success: function () {
+                $("#saveSuccess").css('display', 'flex')
+                $("#saveSuccess").fadeOut(3000)
+            }
         })
 
     })
