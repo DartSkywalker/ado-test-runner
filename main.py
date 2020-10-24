@@ -82,7 +82,6 @@ def save_test_result(test_case_id):
 def test_run(test_suite_id, test_case_id):
     steps_data_list = ado_api.get_test_case_steps_by_id(test_suite_id, test_case_id)
     test_case_name = ado_api.get_test_case_name_by_id(test_case_id)
-    logger.critical(steps_data_list)
     return render_template("run.html", test_case_name=test_case_name, steps_data_list=steps_data_list)
 
 
@@ -98,3 +97,9 @@ def redirect_from_suite_to_statistics(suite_id, test_case_ado_id):
 def test_statistics(suite_id, test_case_id):
     test_case_name = ado_api.get_test_case_name_by_id(test_case_id)
     return render_template("statistics.html", test_case_name=test_case_name)
+
+@main.route('/suitify')
+@login_required
+def suites_list():
+    suite_info_dict = ado_api.get_test_suites_info()
+    return render_template("suite_list.html", username=ado_api.get_current_user(), suite_info=suite_info_dict)

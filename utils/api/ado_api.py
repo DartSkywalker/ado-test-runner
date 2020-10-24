@@ -263,6 +263,44 @@ def get_test_case_steps_by_id(suite_id, case_id):
     steps_list = [list(a) for a in zip(step_num, step_description, step_expected, step_status)]
     return steps_list
 
+def get_test_suites_info():
+    connection, meta = sql_connection()
+    test_suites_table = Table('TEST_SUITES', meta)
+    test_cases_table = Table('TEST_CASES', meta)
+    suites_info_db = connection.execute(select([test_suites_table.columns['TEST_SUITE_ID'],
+                                                test_suites_table.columns['TEST_SUITE_NAME'],
+                                                test_suites_table.columns['CREATED_BY'],
+                                                test_suites_table.columns['CREATED_DATE']]).distinct()).fetchall()
+    suite_ids = [data[0] for data in suites_info_db]
+    suite_names = [data[1] for data in suites_info_db]
+    suite_created_by = [data[2] for data in suites_info_db]
+    suite_created_date = [data[3] for data in suites_info_db]
+    suite_cases_num = []
+    suite_cases_passed = []
+    suite_cases_failed = []
+    suite_cases_not_executed = []
+
+    for suite_id in suite_ids:
+        num_of_cases = connection.execute(select([test_cases_table.columns['TEST_CASE_ID']])\
+            .where(test_cases_table.columns['TEST_SUITE_ID'] == suite_id).count()).fetchone()[0]
+        suite_cases_num.append(num_of_cases)
+
+        num_of_passed = connection.execute(select([test_cases_table.columns['TEST_CASE_ID']])\
+            .where(and_(test_cases_table.columns['TEST_SUITE_ID'] == suite_id,
+                        test_cases_table.columns['STATUS'] == 'Passed')).count()).fetchone()[0]
+        suite_cases_passed.append(num_of_passed)
+
+        num_of_failed = connection.execute(select([test_cases_table.columns['TEST_CASE_ID']])\
+            .where(and_(test_cases_table.columns['TEST_SUITE_ID'] == suite_id,
+                        test_cases_table.columns['STATUS'] == 'Failed')).count()).fetchone()[0]
+        suite_cases_failed.append(num_of_failed)
+
+        suite_cases_not_executed.append(num_of_cases - (num_of_passed + num_of_failed))
+
+    suite_info_dict = dict(zip(suite_ids, zip(suite_names, suite_cases_num, suite_cases_passed,
+                                              suite_cases_failed, suite_cases_not_executed,
+                                              suite_created_by, suite_created_date)))
+    return suite_info_dict
 
 def get_test_case_name_by_id(test_case_id):
     connection, meta = sql_connection()
