@@ -96,7 +96,17 @@
                 <p class="text-dark">{{ test_case_data_list[0] }}</p>
             </td>
             <td width="160px" class="testCaseState">
-                <p class="text-dark"> {{ test_case_data_list[2] }} </p>
+                <p class="text-dark">
+                    {% if test_case_data_list[2] == "Passed" %}
+                        ✅ &nbsp;Passed
+                    {% elif test_case_data_list[2] == "Failed" %}
+                        ❌ &nbsp;Failed
+                    {% elif test_case_data_list[2] == "Blocked" %}
+                        🚫 &nbsp;Blocked
+                    {% elif test_case_data_list[2] == "Ready" %}
+                        ❕ &nbsp;Ready
+                    {% endif %}
+                </p>
 {#                <select class="form-control">#}
 {#                    <option selected value="">❕ &nbsp;Ready</option>#}
 {#                    <option value="1">✅ &nbsp;Passed</option>#}
