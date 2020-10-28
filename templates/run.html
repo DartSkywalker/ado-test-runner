@@ -43,12 +43,12 @@
         <li class="nav-item active">
             <a class="nav-link" href="#" id="saveResult">Save<span class="sr-only"></span></a>
         </li>
-        <li class="nav-item active">
-            <a class="nav-link" href="#" id="saveResultClose">Save and Close<span class="sr-only"></span></a>
-        </li>
-        <li class="nav-item active">
-            <a class="nav-link" href="#">Report a Bug<span class="sr-only"></span></a>
-        </li>
+{#        <li class="nav-item active">#}
+{#            <a class="nav-link" href="#" id="saveResultClose">Save and Close<span class="sr-only"></span></a>#}
+{#        </li>#}
+{#        <li class="nav-item active">#}
+{#            <a class="nav-link" href="#">Report a Bug<span class="sr-only"></span></a>#}
+{#        </li>#}
     </ul>
     <div class="navbar-collapse collapse  order-3 dual-collapse2">
         <ul class="navbar-nav ml-auto">
@@ -160,11 +160,11 @@ $('td.step').on('dblclick', function() {
         testCaseOutcomeDirty = $('#testStatus').val();
         if (testCaseOutcomeDirty.indexOf("Passed") >= 0) {
             testCaseOutcome = 'Passed';
-        } else if (testCaseOutcomeDirty.indexOf("Failed")) {
+        } else if (testCaseOutcomeDirty.indexOf("Failed") >= 0) {
             testCaseOutcome = 'Failed';
-        } else if (testCaseOutcomeDirty.indexOf("Blocked")) {
+        } else if (testCaseOutcomeDirty.indexOf("Blocked") >= 0) {
             testCaseOutcome = 'Blocked';
-        } else if (testCaseOutcomeDirty.indexOf("Pause")) {
+        } else if (testCaseOutcomeDirty.indexOf("Pause") >= 0) {
             testCaseOutcome = 'Pause';
         }
 
@@ -197,6 +197,54 @@ $('td.step').on('dblclick', function() {
             success: function () {
                 $("#saveSuccess").css('display', 'flex')
                 $("#saveSuccess").fadeOut(3000)
+            }
+        })
+
+    })
+</script>
+<script>
+        $("#saveResultClose").click(function () {
+        testResults = {};
+        testCaseOutcomeDirty = $('#testStatus').val();
+        if (testCaseOutcomeDirty.indexOf("Passed") >= 0) {
+            testCaseOutcome = 'Passed';
+        } else if (testCaseOutcomeDirty.indexOf("Failed") >= 0) {
+            testCaseOutcome = 'Failed';
+        } else if (testCaseOutcomeDirty.indexOf("Blocked") >= 0) {
+            testCaseOutcome = 'Blocked';
+        } else if (testCaseOutcomeDirty.indexOf("Pause") >= 0) {
+            testCaseOutcome = 'Pause';
+        }
+
+        testResults['testResult'] = {outcome: testCaseOutcome};
+        $('#tbl1 tr').each(function (index) {
+        var comment = ""
+            $(this).find('.comment').each(function () {
+                if ($(this).val().length !== 0) {
+                    comment = $(this).val();
+                }
+            })
+            $(this).find('#passed_label').each(function () {
+                if ($(this).hasClass('active')) {
+                    testResults[index] = {stepNum: index + 1, outcome: 'Passed', comment: comment}
+                }
+            })
+            $(this).find('#failed_label').each(function () {
+                if ($(this).hasClass('active')) {
+                    testResults[index] = {stepNum: index + 1, outcome: 'Failed', comment: comment}
+                }
+            })
+
+        })
+
+        let testCaseId = window.location.href.substr(window.location.href.lastIndexOf("/")).replace("/","")
+        $.ajax("/save_test_result/" + testCaseId, {
+            data: JSON.stringify(testResults),
+            contentType: 'application/json',
+            type: 'POST',
+            success: function () {
+                var popup = window.open("", "my-popup");
+popup.close()
             }
         })
 

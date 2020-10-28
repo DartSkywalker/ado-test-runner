@@ -887,5 +887,12 @@ input {
     justify-content: left;
     background: rgb(0,123,255);
     background: linear-gradient(146deg, rgba(0,123,255,1) 0%, rgba(0,123,255,1) 35%, rgba(0,123,255,0.3617822128851541) 100%);
+}
 
+.hiddenRow {
+    padding: 0 !important;
+}
+
+td.subtr {
+    border: 0;
 }
