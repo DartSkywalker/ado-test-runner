@@ -11,13 +11,13 @@ create_table()
 @main.route('/save_user/<suite_id>/<test_case_id>', methods=['POST'])
 @login_required
 def set_user_for_test_case(suite_id, test_case_id):
-    # try:
-    data = request.get_json()
-    logger.warning(data)
-    ado_api.set_test_case_for_user(suite_id, test_case_id, data)
-    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
-    # except:
-    #     return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
+    try:
+        data = request.get_json()
+        logger.warning(data)
+        ado_api.set_test_case_for_user(suite_id, test_case_id, data)
+        return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+    except:
+        return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
 
 @main.route('/suites', methods=['GET'])
 @login_required
