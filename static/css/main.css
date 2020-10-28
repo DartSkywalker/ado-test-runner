@@ -896,3 +896,18 @@ input {
 td.subtr {
     border: 0;
 }
+
+.nav-fixed {
+      position: fixed !important;
+        width: 100%;
+      top: 0;
+  left: 0;
+  right: 0;
+    margin: 0 auto;
+      z-index: 100;
+  text-align: center;
+}
+
+.div-fixed {
+    padding-top: 70px;
+}

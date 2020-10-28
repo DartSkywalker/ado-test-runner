@@ -57,7 +57,6 @@ def redirect_from_suite_to_run(suite_id, test_case_ado_id):
 
 
 @main.route('/about', methods=['GET', 'POST'])
-@login_required
 def about_page():
     if current_user.is_authenticated:
         return render_template("about.html", username=ado_api.get_current_user())
