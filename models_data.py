@@ -35,7 +35,7 @@ class Test_Cases(Base):
     TEST_CASE_NAME = Column(String)
     STATUS = Column(String)
     DURATION_SEC = Column(Integer)
-    EXECUTED_BY = Column(String, ForeignKey('User.username'))
+    EXECUTED_BY = Column(String, ForeignKey('user.username'))
     CHANGE_STATE_DATE = Column(DateTime(timezone=False), server_default=func.now())
     # test_step = relationship("TEST_STEPS")
 

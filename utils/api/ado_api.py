@@ -11,7 +11,7 @@ from ..constants import ADO_TOKEN, QUERY_LINK, WIQL_LINK, HEADERS, DB_NAME, WORK
 # from utils.api import ado_parser
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.sql import table, column, select, update, insert
-from sqlalchemy import Table, MetaData, create_engine, and_
+from sqlalchemy import Table, MetaData, create_engine, and_, desc
 
 my_sql = 'mysql+mysqlconnector://user:user@localhost:3306/ado'
 postgres = 'postgresql+psycopg2://user:user@localhost:5432/ado'
@@ -210,9 +210,8 @@ def get_test_cases_from_db_by_suite_name(test_suite_id):
                                                     test_cases_table.columns['TEST_CASE_NAME'],
                                                     test_cases_table.columns['STATUS'],
                                                     test_cases_table.columns['EXECUTED_BY']])
-        .where(
+        .order_by(desc(test_cases_table.c.TEST_CASE_ID)).where(
         test_cases_table.columns['TEST_SUITE_ID'] == test_suite_id)).fetchall()
-
     test_cases_id_list = [test_case[0] for test_case in test_cases_list_db]
     test_cases_name_list = [test_case[1] for test_case in test_cases_list_db]
     test_cases_status = [test_case[2] for test_case in test_cases_list_db]
@@ -222,6 +221,7 @@ def get_test_cases_from_db_by_suite_name(test_suite_id):
 
     test_case_dict = dict(zip(test_cases_id_list, zip(test_cases_name_list, test_cases_link_list,
                                                       test_cases_status, test_cases_executed)))
+    print(test_case_dict)
     return test_case_dict
 
 
@@ -301,6 +301,7 @@ def get_test_suites_info():
             .where(and_(test_cases_table.columns['TEST_SUITE_ID'] == suite_id,
                         test_cases_table.columns['STATUS'] == 'Failed'))).fetchall()
         num_of_failed=len(num_of_failed)
+
         suite_cases_failed.append(num_of_failed)
 
         suite_cases_not_executed.append(num_of_cases - (num_of_passed + num_of_failed))
