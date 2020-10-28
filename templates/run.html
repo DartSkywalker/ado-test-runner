@@ -172,13 +172,13 @@
     $("#saveResult").click(function () {
         testResults = {};
         testCaseOutcomeDirty = $('#testStatus').val();
-        if (testCaseOutcomeDirty.indexOf("Passed") >= 0) {
+        if (testCaseOutcomeDirty == 'passed') {
             testCaseOutcome = 'Passed';
-        } else if (testCaseOutcomeDirty.indexOf("Failed") >= 0) {
+        } else if (testCaseOutcomeDirty == 'failed') {
             testCaseOutcome = 'Failed';
-        } else if (testCaseOutcomeDirty.indexOf("Blocked") >= 0) {
+        } else if (testCaseOutcomeDirty == 'blocked') {
             testCaseOutcome = 'Blocked';
-        } else if (testCaseOutcomeDirty.indexOf("Pause") >= 0) {
+        } else if (testCaseOutcomeDirty == 'pause') {
             testCaseOutcome = 'Pause';
         }
 
@@ -220,13 +220,13 @@
     $("#saveResultClose").click(function () {
         testResults = {};
         testCaseOutcomeDirty = $('#testStatus').val();
-        if (testCaseOutcomeDirty.indexOf("Passed") >= 0) {
+        if (testCaseOutcomeDirty == 'passed') {
             testCaseOutcome = 'Passed';
-        } else if (testCaseOutcomeDirty.indexOf("Failed") >= 0) {
+        } else if (testCaseOutcomeDirty == 'failed') {
             testCaseOutcome = 'Failed';
-        } else if (testCaseOutcomeDirty.indexOf("Blocked") >= 0) {
+        } else if (testCaseOutcomeDirty == 'blocked') {
             testCaseOutcome = 'Blocked';
-        } else if (testCaseOutcomeDirty.indexOf("Pause") >= 0) {
+        } else if (testCaseOutcomeDirty == 'pause') {
             testCaseOutcome = 'Pause';
         }
 
