@@ -5,12 +5,14 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import MetaData, Table
 from sqlalchemy.sql import func
 
-engine = create_engine('sqlite:///db.sqlite', echo=True)
+postgres = 'postgresql+psycopg2://user:user@localhost:5432/ado'
+
+engine = create_engine(postgres, echo=False)
 connection = engine.connect()
 Base = declarative_base()
 
-class User(Base):
-    __tablename__ = 'User'
+class user(Base):
+    __tablename__ = 'user'
     id = Column(Integer, primary_key=True) # primary keys are required by SQLAlchemy
     username = Column(String(100), unique=True)
     password = Column(String(100))

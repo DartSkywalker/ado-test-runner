@@ -13,9 +13,11 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.sql import table, column, select, update, insert
 from sqlalchemy import Table, MetaData, create_engine, and_
 
+my_sql = 'mysql+mysqlconnector://user:user@localhost:3306/ado'
+postgres = 'postgresql+psycopg2://user:user@localhost:5432/ado'
 
 def sql_connection():
-    engine = create_engine('sqlite:///db.sqlite', echo=False)
+    engine = create_engine(postgres, echo=False)
     connection = engine.connect()
     meta = MetaData()
     meta.reflect(bind=engine)
@@ -130,7 +132,7 @@ def create_new_test_suite_in_db(query_id):
     #
     connection, meta = sql_connection()
     g.user = current_user.get_id()
-    table = Table('User', meta)
+    table = Table('user', meta)
     table_suites = Table('TEST_SUITES', meta)
     table_cases = Table('TEST_CASES', meta)
     test_steps = Table('TEST_STEPS', meta)
@@ -229,7 +231,7 @@ def get_test_cases_from_db_by_suite_name(test_suite_id):
 def get_current_user():
     connection, meta = sql_connection()
     g.user = current_user.get_id()
-    table = Table('User', meta)
+    table = Table('user', meta)
     query = select([table.columns['username']]).where(table.columns['id'] == g.user)
     user = connection.execute(query).fetchall()
     return str(user[0][0])
@@ -237,7 +239,7 @@ def get_current_user():
 
 def get_all_users():
     connection, meta = sql_connection()
-    table = Table('User', meta)
+    table = Table('user', meta)
     query = select([table.columns['username'], table.columns['id']])
     users = connection.execute(query).fetchall()
     user_ids_list = [ids[1] for ids in users]
@@ -284,18 +286,21 @@ def get_test_suites_info():
     suite_cases_not_executed = []
 
     for suite_id in suite_ids:
-        num_of_cases = connection.execute(select([test_cases_table.columns['TEST_CASE_ID']])\
-            .where(test_cases_table.columns['TEST_SUITE_ID'] == suite_id).count()).fetchone()[0]
+        num_of_cases = connection.execute(select([test_cases_table.c.TEST_CASE_ID])\
+            .where(test_cases_table.c.TEST_SUITE_ID == suite_id)).fetchall()
+        num_of_cases=len(num_of_cases)
         suite_cases_num.append(num_of_cases)
 
         num_of_passed = connection.execute(select([test_cases_table.columns['TEST_CASE_ID']])\
             .where(and_(test_cases_table.columns['TEST_SUITE_ID'] == suite_id,
-                        test_cases_table.columns['STATUS'] == 'Passed')).count()).fetchone()[0]
+                        test_cases_table.columns['STATUS'] == 'Passed'))).fetchall()
+        num_of_passed=len(num_of_passed)
         suite_cases_passed.append(num_of_passed)
 
         num_of_failed = connection.execute(select([test_cases_table.columns['TEST_CASE_ID']])\
             .where(and_(test_cases_table.columns['TEST_SUITE_ID'] == suite_id,
-                        test_cases_table.columns['STATUS'] == 'Failed')).count()).fetchone()[0]
+                        test_cases_table.columns['STATUS'] == 'Failed'))).fetchall()
+        num_of_failed=len(num_of_failed)
         suite_cases_failed.append(num_of_failed)
 
         suite_cases_not_executed.append(num_of_cases - (num_of_passed + num_of_failed))
@@ -316,7 +321,7 @@ def get_test_case_name_by_id(test_case_id):
 def set_test_case_state(test_case_id, json_with_step_states):
     connection, meta = sql_connection()
     g.user = current_user.get_id()
-    table = Table('User', meta)
+    table = Table('user', meta)
     table_cases = Table('TEST_CASES', meta)
     test_steps = Table('TEST_STEPS', meta)
     query = select([table.columns['username']]).where(table.columns['id'] == g.user)
