@@ -221,7 +221,7 @@ def get_test_cases_from_db_by_suite_name(test_suite_id):
 
     test_case_dict = dict(zip(test_cases_id_list, zip(test_cases_name_list, test_cases_link_list,
                                                       test_cases_status, test_cases_executed)))
-    print(test_case_dict)
+    # print(test_case_dict)
     return test_case_dict
 
 
@@ -268,6 +268,7 @@ def get_test_case_steps_by_id(suite_id, case_id):
     steps_list = [list(a) for a in zip(step_num, step_description, step_expected, step_status)]
     return steps_list
 
+
 def get_test_suites_info():
     connection, meta = sql_connection()
     test_suites_table = Table('TEST_SUITES', meta)
@@ -310,6 +311,7 @@ def get_test_suites_info():
                                               suite_cases_failed, suite_cases_not_executed,
                                               suite_created_by, suite_created_date)))
     return suite_info_dict
+
 
 def get_test_case_name_by_id(test_case_id):
     connection, meta = sql_connection()
@@ -363,10 +365,11 @@ def get_test_case_id_by_ado_id(suite_id, test_case_ado_id):
                                                       'TEST_CASE_ADO_ID'] == test_case_ado_id))).fetchone()[0]
     return test_case_id
 
+
 def set_test_case_for_user(suite_id, test_case_id, json_data):
     connection, meta = sql_connection()
     test_cases_table = Table('TEST_CASES', meta)
-    table_users = Table('User', meta)
+    table_users = Table('user', meta)
     username = connection.execute(select([table_users.columns['username']])\
             .where(table_users.columns['id'] == json_data['userid'])).fetchone()[0]
     logger.warning(username)
