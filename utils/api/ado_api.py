@@ -353,3 +353,16 @@ def get_test_case_id_by_ado_id(suite_id, test_case_ado_id):
                                                   test_cases_table.columns[
                                                       'TEST_CASE_ADO_ID'] == test_case_ado_id))).fetchone()[0]
     return test_case_id
+
+def set_test_case_for_user(suite_id, test_case_id, json_data):
+    connection, meta = sql_connection()
+    test_cases_table = Table('TEST_CASES', meta)
+    table_users = Table('User', meta)
+    username = connection.execute(select([table_users.columns['username']])\
+            .where(table_users.columns['id'] == json_data['userid'])).fetchone()[0]
+    logger.warning(username)
+    update_statement = test_cases_table.update().where(and_
+                                                 (test_cases_table.columns['TEST_SUITE_ID'] == suite_id,
+                                                  test_cases_table.columns['TEST_CASE_ADO_ID'] == test_case_id)) \
+        .values(EXECUTED_BY=username)
+    connection.execute(update_statement)
