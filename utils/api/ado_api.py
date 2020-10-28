@@ -44,6 +44,8 @@ def get_query_name_by_query_id(query_id):
     if r_query.status_code == 200:
         r_query.close()
         parsed_data = json.loads(str(r_query.text))
+        # print(query_id)
+        # print(parsed_data)
         return parsed_data['name']
 
 
@@ -138,10 +140,10 @@ def create_new_test_suite_in_db(query_id):
     connection.execute(meta.tables['TEST_SUITES'].insert().values(TEST_SUITE_NAME=test_suite_name,
                                                                   CREATED_BY=str(user[0][0])))
 
-    test_suite_id = connection.execute(select([table_suites.columns['TEST_SUITE_ID']])
+    test_suite_ids = connection.execute(select([table_suites.columns['TEST_SUITE_ID']])
         .where(
-        table_suites.columns['TEST_SUITE_NAME'] == str(test_suite_name))).fetchone()[0]
-
+        table_suites.columns['TEST_SUITE_NAME'] == str(test_suite_name))).fetchall()
+    test_suite_id = test_suite_ids[len(test_suite_ids)-1][0]
     for id, url in test_cases_dict.items():
         logger.debug(str(id), url, test_suite_name)
         test_case = get_all_test_case_data(str(id))
@@ -153,8 +155,9 @@ def create_new_test_suite_in_db(query_id):
                                                                      TEST_CASE_NAME=str(test_case_name),
                                                                      STATUS='Ready'))
         for test_steps in test_case[1]:
-            test_sql_case_id = connection.execute(select([table_cases.columns['TEST_CASE_ID']])
-                                                  .where(table_cases.columns['TEST_CASE_ADO_ID'] == id)).fetchone()[0]
+            test_sql_case_ids = connection.execute(select([table_cases.columns['TEST_CASE_ID']])
+                                                  .where(table_cases.columns['TEST_CASE_ADO_ID'] == id)).fetchall()
+            test_sql_case_id=test_sql_case_ids[len(test_sql_case_ids)-1][0]
             # print(test_sql_case_id)
             connection.execute(meta.tables['TEST_STEPS'].insert().values(TEST_CASE_ID=int(test_sql_case_id),
                                                                          STEP_NUMBER=str(step_number),
