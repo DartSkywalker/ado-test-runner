@@ -379,3 +379,21 @@ def set_test_case_for_user(suite_id, test_case_id, json_data):
                                                   test_cases_table.columns['TEST_CASE_ADO_ID'] == test_case_id)) \
         .values(EXECUTED_BY=username)
     connection.execute(update_statement)
+
+
+def get_test_case_states_for_suites(suites):
+    connection, meta = sql_connection()
+    test_cases_table = Table('TEST_CASES', meta)
+    result = {}
+    for test_suite in suites:
+        status = connection.execute(select([test_cases_table.c.STATUS])
+        .where(and_(test_cases_table.c.TEST_SUITE_ID == test_suite))).fetchall()
+
+        list = [case[0] for case in status]
+        result[test_suite] = {'Failed' : list.count("Failed"),
+                            'Passed' : list.count("Passed"),
+                            'Blocked' : list.count("Blocked"),
+                            'Ready' : list.count("Ready"),
+                            'Paused' : list.count("Paused")}
+    return result
+# get_test_case_states_for_suites([2,3])
