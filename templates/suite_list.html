@@ -32,7 +32,7 @@
 </head>
 <body>
 <nav class="navbar navbar-dark bg-primary navbar-expand-lg">
-    <a class="navbar-brand" href="">
+    <a class="navbar-brand" href="/suites">
         <img src="/static/css/running.svg" width="30" height="30" class="d-inline-block align-top" alt="">
         TRunner</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
@@ -76,13 +76,14 @@
             <th scope="col">Test Cases</th>
             <th scope="col">Passed</th>
             <th scope="col">Failed</th>
+            <th scope="col">Blocked</th>
             <th scope="col">Not executed</th>
             <th scope="col">Created By</th>
             <th scope="col">Created Date</th>
         </tr>
         </thead>
             {% for suite_id, suite_data_list in suite_info.items() %}
-        <tr class="clickable-row">
+        <tr class="clickable-row accordion-toggle" data-toggle="collapse" data-target="#r{{ suite_id }}">
             <td>
                 <a class="text-dark" href="/cases/{{ suite_id }}">{{ suite_data_list[0] }}</a>
             </td>
@@ -98,13 +99,27 @@
             <td>
                 <p class="text-dark"> {{ suite_data_list[4] }}</p>
             </td>
-            <td>
+                <td>
                 <p class="text-dark"> {{ suite_data_list[5] }}</p>
             </td>
             <td>
                 <p class="text-dark"> {{ suite_data_list[6] }}</p>
             </td>
+            <td>
+                <p class="text-dark"> {{ suite_data_list[7] }}</p>
+            </td>
 
+        </tr>
+
+        <tr>
+            <td class="subtr hiddenRow"><div class="accordian-body collapse"></div></td>
+            <td class="subtr hiddenRow"><div class="accordian-body collapse bg-primary font-weight-light" style="text-align: center; color: #fff" id="r{{ suite_id }}"> Passed </div> </td>
+            <td class="subtr hiddenRow"><div class="accordian-body collapse bg-primary font-weight-light" style="text-align: center; color: #fff" id="r{{ suite_id }}"> Failed </div> </td>
+        </tr>
+        <tr>
+            <td class="subtr hiddenRow"><div class="accordian-body collapse"></div></td>
+            <td class="subtr hiddenRow"><div class="accordian-body collapse" style="text-align: center;" id="r{{ suite_id }}"> In development </div> </td>
+            <td class="subtr hiddenRow"><div class="accordian-body collapse" style="text-align: center;" id="r{{ suite_id }}"> In development </div> </td>
         </tr>
         {% endfor %}
     </table>
