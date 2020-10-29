@@ -110,5 +110,9 @@ def test_statistics(suite_id, test_case_id):
 @main.route('/suitify')
 @login_required
 def suites_list():
+    suites_list = ado_api.get_list_of_suites()
     suite_info_dict = ado_api.get_test_suites_info()
-    return render_template("suite_list.html", username=ado_api.get_current_user(), suite_info=suite_info_dict)
+    _, suite_info_dict_detailed = ado_api.get_test_case_states_for_suites(suites_list)
+    logger.warning(suite_info_dict_detailed)
+    return render_template("suite_list.html", username=ado_api.get_current_user(), suite_info=suite_info_dict,
+                           suite_info_detailed=suite_info_dict_detailed)
