@@ -63,12 +63,12 @@
 </nav>
 
 <div class="container-fluid">
-    <div class="row mt-2 mb-2 div-fixed">
+    <div class="row mt-2 mb-2 div-fixed" style="background: #fff; z-index: 90;">
         <div class="col-md-10">{{ test_case_name }}</div>
         <div id='saveSuccess' class="inner success-save" style="display: none">Saved</div>
         <div class="col-md-2">
             <select id="testStatus" class="form-control float-right"
-                    style="width:65% ;border: none; border-radius: 0; -webkit-box-shadow: none; box-shadow: none;">
+                    style="width:65% ;border: none; border-radius: 0; -webkit-box-shadow: none; box-shadow: none; background: #fff; z-index: 100;">
                 <option >💬</option>
                 <option value="passed">✅ &nbsp;Passed</option>
                 <option value="failed">❌ &nbsp;Failed</option>
@@ -86,12 +86,8 @@
             <tr class="clickable-row">
                 <td>{{ step_data[0] }}</td>
                 <td class="step">
-                    <div>
-                        {{ step_data[1] | safe }}
-                    </div>
-                    <div class="expected">
-                        {{ step_data[2] | safe }}
-                    </div>
+                    <div class="action-result" style="white-space: pre-line">{{ step_data[1] | safe }}</div>
+                    <div class="expected action-result" style="white-space: pre-line">{{ step_data[2] | safe }}</div>
                     <div class style="display: none">
                         <br/><label for="exampleFormControlTextarea1">Comment:</label>
                         <textarea class="form-control comment" id="exampleFormControlTextarea1" rows="3"></textarea>
