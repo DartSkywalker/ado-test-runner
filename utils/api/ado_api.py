@@ -375,3 +375,34 @@ def set_test_case_for_user(suite_id, test_case_id, json_data):
                                                   test_cases_table.columns['TEST_CASE_ADO_ID'] == test_case_id)) \
         .values(EXECUTED_BY=username)
     connection.execute(update_statement)
+
+def get_list_of_suites():
+    connection, meta = sql_connection()
+    suites = Table('TEST_SUITES', meta)
+    test_suites_list_db = connection.execute(select([suites.columns['TEST_SUITE_ID']]).distinct()).fetchall()
+    test_suites_ids = [suite[0] for suite in test_suites_list_db]
+    return test_suites_ids
+
+def get_test_case_states_for_suites(suites):
+    connection, meta = sql_connection()
+    table_cases = Table('TEST_CASES', meta)
+    result = {}
+    result_detailed = {}
+    for test_suite in suites:
+        status = connection.execute(select([table_cases.c.STATUS, table_cases.c.TEST_CASE_ID,
+                                            table_cases.c.TEST_CASE_ADO_ID, table_cases.c.TEST_CASE_NAME])
+        .where(and_(table_cases.c.TEST_SUITE_ID == test_suite))).fetchall()
+
+
+        list = [case[0] for case in status]
+        result[test_suite] = {'Failed' : list.count("Failed"),
+                            'Passed' : list.count("Passed"),
+                            'Blocked' : list.count("Blocked"),
+                            'Ready' : list.count("Ready"),
+                            'Paused' : list.count("Paused")}
+        result_detailed[test_suite] = {'Failed' : [[case[1], case[2], case[3]] for case in status if case[0]== 'Failed' ],
+                            'Passed' : [[case[1], case[2], case[3]] for case in status if case[0]== 'Passed'],
+                            'Blocked' : [[case[1], case[2], case[3]] for case in status if case[0]== 'Blocked'],
+                            'Ready' : [[case[1], case[2], case[3]] for case in status if case[0]== 'Ready'],
+                            'Paused' : [[case[1], case[2], case[3]] for case in status if case[0]== 'Paused']}
+    return result, result_detailed
