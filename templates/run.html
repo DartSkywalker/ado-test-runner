@@ -132,6 +132,36 @@
         src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script>
+    $('input[type=radio]').on('click', function() {
+        let tableRowsNumber = $('tr').length;
+        let passed = 0;
+        let failed = 0;
+
+        $('#tbl1 tr').each(function (index) {
+            $(this).find('#passed_label').each(function () {
+                if ($(this).hasClass('active')) {
+                    passed += 1;
+                }
+            })
+            $(this).find('#failed_label').each(function () {
+                if ($(this).hasClass('active')) {
+                    failed += 1;
+                }
+            })
+
+        })
+
+        if ((failed === 0) && (passed === tableRowsNumber)) {
+            $('#testStatus').val("passed").change();
+        } else if ((failed === 0) && (passed != tableRowsNumber)) {
+            $('#testStatus').val("pause").change();
+        }
+
+
+    });
+</script>
+
+<script>
     $('.navbar-brand').click(function () {
     // escape here if the confirm is false;
     if (!confirm('Want to leave the test run?')) return false;
