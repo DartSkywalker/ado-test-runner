@@ -935,3 +935,15 @@ td.subtr {
     text-align-last:center;
     font-size: 14px;
 }
+
+.substat-passed {
+    color: #1faa00 !important;
+}
+
+.substat-failed {
+    color: #7f0000 !important;
+}
+
+.substat-blocked {
+    color: #1c313a !important;
+}
