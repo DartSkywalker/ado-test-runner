@@ -13,6 +13,12 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.sql import table, column, select, update, insert
 from sqlalchemy import Table, MetaData, create_engine, and_,desc
 
+import aiohttp
+from aiohttp import ClientSession
+import asyncio
+from timeit import default_timer as timer
+
+
 my_sql = 'mysql+mysqlconnector://user:user@localhost:3306/ado'
 postgres = 'postgresql+psycopg2://user:user@localhost:5432/ado'
 
@@ -103,49 +109,47 @@ def get_test_case_steps_by_url(test_case_url):
         # print(steps)
         steps_list = ado_parser.parse_html_steps(steps)
         return steps_list
-
-
 # print(get_test_case_steps_by_url("https://dev.azure.com/HAL-LMKRD/d54c5f94-240d-4817-b74e-82588f96c6ba/_apis/wit/workItems/128710"))
 
 
-def get_all_test_case_data(tc_id):
-    """
-    Get list of cleaned steps of the test case
-    :param test_case_url:
-    :return:
-    """
-    r_query = requests.get(WORKITEM_LINK + str(tc_id), headers=HEADERS, auth=('', ADO_TOKEN))
-    if r_query.status_code == 200:
-        r_query.close()
-        parsed_data = json.loads(str(r_query.text))
-        test_case_title = parsed_data['fields']['System.Title']
+async def request_test_case_data(session, url):
+    response = await session.request(method='GET', url=url, headers=HEADERS, auth=aiohttp.BasicAuth('', ADO_TOKEN))
+    response_json = await response.json()
+    return response_json
+
+
+async def get_test_cases_by_suite_id(query_id):
+    tc_urls = get_test_cases_urls_by_query_id(query_id)
+    tc_urls = [value for key, value in tc_urls.items()]
+    async with ClientSession() as session:
+        result = await asyncio.gather(*[request_test_case_data(session, url) for url in tc_urls])
+        return result
+
+
+def get_all_test_case_data_async(query_id):
+    r = asyncio.run(get_test_cases_by_suite_id(query_id))
+    test_cases_dict = {}
+    for test_case in r:
+        id = test_case['id']
+        test_case_title = test_case['fields']['System.Title']
         try:
-            steps = parsed_data['fields']['Microsoft.VSTS.TCM.Steps']
+            steps = test_case['fields']['Microsoft.VSTS.TCM.Steps']
         except KeyError:
             steps = "Test Case does not contain steps"
-        # print(steps)
         steps_list = ado_parser.parse_html_steps(steps)
-        test_case = [test_case_title, steps_list]
-        return test_case
-
-
-# print(get_all_test_case_data(128597))
+        test_case_data = [test_case_title, steps_list]
+        test_cases_dict[id] = test_case_data
+    return test_cases_dict
+# print(get_all_test_case_data_async('1f70f015-030a-48ca-9674-4bfd123c801c'))
 
 
 def create_new_test_suite_in_db(query_id):
     logger.debug(query_id)
     logger.debug(ADO_TOKEN)
-    test_cases_dict, test_suite_name = get_test_cases_urls_by_query_id(query_id), get_query_name_by_query_id(query_id)
-    #
-    connection, meta = sql_connection()
+    test_cases_dict, test_suite_name = get_all_test_case_data_async(query_id), get_query_name_by_query_id(query_id)
     g.user = current_user.get_id()
-    # table_user = Table('user', meta)
-    # table_suites = Table('TEST_SUITES', meta)
-    # table_cases = Table('TEST_CASES', meta)
-    # test_steps = Table('TEST_STEPS', meta)
     query = select([table_user.c.username]).where(table_user.c.id == g.user)
     user = connection.execute(query).fetchall()
-
     connection.execute(table_suites.insert().values(TEST_SUITE_NAME=test_suite_name,
                                                                   CREATED_BY=str(user[0][0])))
 
@@ -153,9 +157,10 @@ def create_new_test_suite_in_db(query_id):
         .where(
         table_suites.c.TEST_SUITE_NAME == str(test_suite_name))).fetchall()
     test_suite_id = test_suite_ids[len(test_suite_ids)-1][0]
-    for id, url in test_cases_dict.items():
-        logger.debug(str(id), url, test_suite_name)
-        test_case = get_all_test_case_data(str(id))
+    for id, test_case_details in test_cases_dict.items():
+        logger.debug("Test case: " + str(id))
+
+        test_case = test_case_details
         test_case_name = test_case[0]
         step_number = 1
 
@@ -175,6 +180,65 @@ def create_new_test_suite_in_db(query_id):
             step_number += 1
     logger.info(
         f"{test_suite_name} was successfully added to the database. Contains {len(test_cases_dict)} test cases.")
+# def get_all_test_case_data(tc_id):
+#     """
+#     Get list of cleaned steps of the test case
+#     :param test_case_url:
+#     :return:
+#     """
+#     r_query = requests.get(WORKITEM_LINK + str(tc_id), headers=HEADERS, auth=('', ADO_TOKEN))
+#     if r_query.status_code == 200:
+#         r_query.close()
+#         parsed_data = json.loads(str(r_query.text))
+#         test_case_title = parsed_data['fields']['System.Title']
+#         try:
+#             steps = parsed_data['fields']['Microsoft.VSTS.TCM.Steps']
+#         except KeyError:
+#             steps = "Test Case does not contain steps"
+#         # print(steps)
+#         steps_list = ado_parser.parse_html_steps(steps)
+#         test_case = [test_case_title, steps_list]
+#         return test_case
+# print(get_all_test_case_data(128597))
+
+
+# def create_new_test_suite_in_db(query_id):
+#     logger.debug(query_id)
+#     logger.debug(ADO_TOKEN)
+#     test_cases_dict, test_suite_name = get_test_cases_urls_by_query_id(query_id), get_query_name_by_query_id(query_id)
+#     g.user = current_user.get_id()
+#     query = select([table_user.c.username]).where(table_user.c.id == g.user)
+#     user = connection.execute(query).fetchall()
+#
+#     connection.execute(table_suites.insert().values(TEST_SUITE_NAME=test_suite_name,
+#                                                                   CREATED_BY=str(user[0][0])))
+#
+#     test_suite_ids = connection.execute(select([table_suites.c.TEST_SUITE_ID])
+#         .where(
+#         table_suites.c.TEST_SUITE_NAME == str(test_suite_name))).fetchall()
+#     test_suite_id = test_suite_ids[len(test_suite_ids)-1][0]
+#     for id, url in test_cases_dict.items():
+#         logger.debug(str(id), url, test_suite_name)
+#         test_case = get_all_test_case_data(str(id))
+#         test_case_name = test_case[0]
+#         step_number = 1
+#
+#         connection.execute(table_cases.insert().values(TEST_SUITE_ID=str(test_suite_id),
+#                                                                      TEST_CASE_ADO_ID=str(id),
+#                                                                      TEST_CASE_NAME=str(test_case_name),
+#                                                                      STATUS='Ready'))
+#         for test_steps in test_case[1]:
+#             test_sql_case_ids = connection.execute(select([table_cases.c.TEST_CASE_ID])
+#                                                   .where(table_cases.c.TEST_CASE_ADO_ID == id)).fetchall()
+#             test_sql_case_id=test_sql_case_ids[len(test_sql_case_ids)-1][0]
+#             # print(test_sql_case_id)
+#             connection.execute(table_steps.insert().values(TEST_CASE_ID=int(test_sql_case_id),
+#                                                                          STEP_NUMBER=str(step_number),
+#                                                                          DESCRIPTION=test_steps[0],
+#                                                                          EXPECTED_RESULT=test_steps[1]))
+#             step_number += 1
+#     logger.info(
+#         f"{test_suite_name} was successfully added to the database. Contains {len(test_cases_dict)} test cases.")
 
 
 # create_new_test_suite_in_db("1f70f015-030a-48ca-9674-4bfd123c801c")
@@ -193,7 +257,11 @@ def get_test_suites_from_database():
                                                      table_suites.c.TEST_SUITE_NAME]).distinct()).fetchall()
     test_suites_ids = [suite[0] for suite in test_suites_list_db]
     test_suite_names = [suite[1] for suite in test_suites_list_db]
-    return dict(zip(test_suites_ids, test_suite_names))
+    if len(test_suites_ids)==0 or len(test_suite_names)==0:
+        result = {"0":"empty"}
+    else:
+        result = dict(zip(test_suites_ids, test_suite_names))
+    return result
 
 
 def get_test_suite_name_by_id(suite_id):
