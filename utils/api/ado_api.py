@@ -11,7 +11,7 @@ from ..constants import ADO_TOKEN, QUERY_LINK, WIQL_LINK, HEADERS, DB_NAME, WORK
 # from utils.api import ado_parser
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.sql import table, column, select, update, insert
-from sqlalchemy import Table, MetaData, create_engine, and_, desc
+from sqlalchemy import Table, MetaData, create_engine, and_
 
 my_sql = 'mysql+mysqlconnector://user:user@localhost:3306/ado'
 postgres = 'postgresql+psycopg2://user:user@localhost:5432/ado'
@@ -218,7 +218,6 @@ def get_test_cases_from_db_by_suite_name(test_suite_id):
 
     test_case_dict = dict(zip(test_cases_id_list, zip(test_cases_name_list, test_cases_link_list,
                                                       test_cases_status, test_cases_executed)))
-    # print(test_case_dict)
     return test_case_dict
 
 
@@ -361,13 +360,21 @@ def set_test_case_for_user(suite_id, test_case_id, json_data):
         .values(EXECUTED_BY=username)
     connection.execute(update_statement)
 
+def get_list_of_suites():
+    connection, meta = sql_connection()
+    suites = Table('TEST_SUITES', meta)
+    test_suites_list_db = connection.execute(select([suites.columns['TEST_SUITE_ID']]).distinct()).fetchall()
+    test_suites_ids = [suite[0] for suite in test_suites_list_db]
+    return test_suites_ids
 
 def get_test_case_states_for_suites(suites):
     result = {}
     result_detailed = {}
     for test_suite in suites:
-        status = connection.execute(select([table_cases.c.STATUS, table_cases.c.TEST_CASE_ID])
+        status = connection.execute(select([table_cases.c.STATUS, table_cases.c.TEST_CASE_ID,
+                                            table_cases.c.TEST_CASE_ADO_ID, table_cases.c.TEST_CASE_NAME])
         .where(and_(table_cases.c.TEST_SUITE_ID == test_suite))).fetchall()
+
 
         list = [case[0] for case in status]
         result[test_suite] = {'Failed' : list.count("Failed"),
@@ -375,10 +382,10 @@ def get_test_case_states_for_suites(suites):
                             'Blocked' : list.count("Blocked"),
                             'Ready' : list.count("Ready"),
                             'Paused' : list.count("Paused")}
-        result_detailed[test_suite] = {'Failed' : [case[1] for case in status if case[0]== 'Failed' ],
-                            'Passed' : [case[1] for case in status if case[0]== 'Passed'],
-                            'Blocked' : [case[1] for case in status if case[0]== 'Blocked'],
-                            'Ready' : [case[1] for case in status if case[0]== 'Ready'],
-                            'Paused' : [case[1] for case in status if case[0]== 'Paused']}
+        result_detailed[test_suite] = {'Failed' : [[case[1], case[2], case[3]] for case in status if case[0]== 'Failed' ],
+                            'Passed' : [[case[1], case[2], case[3]] for case in status if case[0]== 'Passed'],
+                            'Blocked' : [[case[1], case[2], case[3]] for case in status if case[0]== 'Blocked'],
+                            'Ready' : [[case[1], case[2], case[3]] for case in status if case[0]== 'Ready'],
+                            'Paused' : [[case[1], case[2], case[3]] for case in status if case[0]== 'Paused']}
     return result, result_detailed
 # get_test_case_states_for_suites([2])
