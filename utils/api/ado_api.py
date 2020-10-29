@@ -281,6 +281,7 @@ def get_test_suites_info():
     suite_cases_num = []
     suite_cases_passed = []
     suite_cases_failed = []
+    suite_cases_blocked = []
     suite_cases_not_executed = []
 
     for suite_id in suite_ids:
@@ -298,10 +299,15 @@ def get_test_suites_info():
                         test_cases_table.columns['STATUS'] == 'Failed')).count()).fetchone()[0]
         suite_cases_failed.append(num_of_failed)
 
-        suite_cases_not_executed.append(num_of_cases - (num_of_passed + num_of_failed))
+        num_of_blocked = connection.execute(select([test_cases_table.columns['TEST_CASE_ID']])\
+            .where(and_(test_cases_table.columns['TEST_SUITE_ID'] == suite_id,
+                        test_cases_table.columns['STATUS'] == 'Blocked')).count()).fetchone()[0]
+        suite_cases_blocked.append(num_of_blocked)
+
+        suite_cases_not_executed.append(num_of_cases - (num_of_passed + num_of_failed + num_of_blocked))
 
     suite_info_dict = dict(zip(suite_ids, zip(suite_names, suite_cases_num, suite_cases_passed,
-                                              suite_cases_failed, suite_cases_not_executed,
+                                              suite_cases_failed, suite_cases_blocked, suite_cases_not_executed,
                                               suite_created_by, suite_created_date)))
     return suite_info_dict
 
