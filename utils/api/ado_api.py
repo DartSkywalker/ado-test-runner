@@ -11,7 +11,7 @@ from ..constants import ADO_TOKEN, QUERY_LINK, WIQL_LINK, HEADERS, DB_NAME, WORK
 # from utils.api import ado_parser
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.sql import table, column, select, update, insert
-from sqlalchemy import Table, MetaData, create_engine, and_
+from sqlalchemy import Table, MetaData, create_engine, and_,desc
 
 my_sql = 'mysql+mysqlconnector://user:user@localhost:3306/ado'
 postgres = 'postgresql+psycopg2://user:user@localhost:5432/ado'
@@ -293,9 +293,10 @@ def get_test_suites_info():
 
         suite_cases_failed.append(num_of_failed)
 
-        num_of_blocked = connection.execute(select([test_cases_table.columns['TEST_CASE_ID']])\
-            .where(and_(test_cases_table.columns['TEST_SUITE_ID'] == suite_id,
-                        test_cases_table.columns['STATUS'] == 'Blocked')).count()).fetchone()[0]
+        num_of_blocked = connection.execute(select([table_cases.columns['TEST_CASE_ID']])\
+            .where(and_(table_cases.columns['TEST_SUITE_ID'] == suite_id,
+                        table_cases.columns['STATUS'] == 'Blocked'))).fetchall()
+        num_of_blocked = len(num_of_blocked)
         suite_cases_blocked.append(num_of_blocked)
 
         suite_cases_not_executed.append(num_of_cases - (num_of_passed + num_of_failed + num_of_blocked))
