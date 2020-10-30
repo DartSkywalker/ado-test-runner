@@ -88,10 +88,17 @@
                 <td class="step">
                     <div class="action-result" style="white-space: pre-line">{{ step_data[1] | safe }}</div>
                     <div class="expected action-result" style="white-space: pre-line">{{ step_data[2] | safe }}</div>
+                    {% if step_data[4] == None or step_data[4] == ""%}
                     <div class style="display: none">
                         <br/><label for="exampleFormControlTextarea1">Comment:</label>
                         <textarea class="form-control comment" id="exampleFormControlTextarea1" rows="3"></textarea>
                     </div>
+                    {% else %}
+                    <div class style="display: block">
+                        <br/><label for="exampleFormControlTextarea1">Comment:</label>
+                        <textarea class="form-control comment" id="exampleFormControlTextarea1" rows="3">{{ step_data[4] }}</textarea>
+                    </div>
+                    {% endif %}
                 </td>
                 <td class="selector">
                     <div class="btn-group btn-group-toggle {{ step_data[3] }}" data-toggle="buttons">

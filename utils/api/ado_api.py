@@ -313,7 +313,8 @@ def get_test_case_steps_by_id(suite_id, case_id):
     steps_expected = connection.execute(select([table_steps.c.STEP_NUMBER,
                                                 table_steps.c.DESCRIPTION,
                                                 table_steps.c.EXPECTED_RESULT,
-                                                table_steps.c.STEP_STATUS])
+                                                table_steps.c.STEP_STATUS,
+                                                table_steps.c.COMMENT])
                                         .order_by('STEP_NUMBER').distinct()
                                         .where(and_(table_cases.c.TEST_SUITE_ID == suite_id,
                                                table_steps.c.TEST_CASE_ID == case_id))).fetchall()
@@ -321,7 +322,8 @@ def get_test_case_steps_by_id(suite_id, case_id):
     step_description = [data[1] for data in steps_expected]
     step_expected = [data[2] for data in steps_expected]
     step_status = [data[3] for data in steps_expected]
-    steps_list = [list(a) for a in zip(step_num, step_description, step_expected, step_status)]
+    step_comment = [data[4] for data in steps_expected]
+    steps_list = [list(a) for a in zip(step_num, step_description, step_expected, step_status, step_comment)]
     return steps_list
 
 
