@@ -26,8 +26,12 @@
     <link href="/static/vendor/select2/select2.min.css" rel="stylesheet" media="all">
     <link href="/static/vendor/datepicker/daterangepicker.css" rel="stylesheet" media="all">
 
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.22/datatables.min.css"/>
+
     <!-- Main CSS-->
     <link href="/static/css/main.css" rel="stylesheet" media="all">
+
+
 
 </head>
 <body>
@@ -118,19 +122,31 @@
             </td>
             <td>
             <div class="centered">
-                {% if test_case_data_list[3] != None %}
-                    <p class="text-dark">{{ test_case_data_list[3] }}</p>
-                {% else %}
+                {% if (test_case_data_list[3] != None and test_case_data_list[2] == "Ready") %}
+{#                    <p class="text-dark">{{ test_case_data_list[3] }}</p>#}
+                <select class="form-control set-user form-users">
+                    {% for user_id, user_name in users_dict.items() %}
+                        {% if user_name == test_case_data_list[3] %}
+                            <option value="{{ user_id }}" selected>{{user_name}}</option>
+                        {% else %}
+                            <option value="{{ user_id }}">{{user_name}}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                {% elif (test_case_data_list[3] == None) %}
                 <select class="form-control set-user form-users">
                     {% for user_id, user_name in users_dict.items() %}
                     <option value="{{ user_id }}">{{user_name}}</option>
                     {% endfor %}
                 </select>
+                {% else %}
+                        <p class="text-dark">{{ test_case_data_list[3] }}</p>
                 {% endif %}
             </div>
             </td>
         </tr>
         {% endfor %}
+
     </table>
     </div>
     <div id="contextMenu" class="dropdown clearfix" style="position: absolute;display: none;">
@@ -150,67 +166,103 @@
 <script crossorigin="anonymous" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
         src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-<script>
+<script
+  src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+  integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+  crossorigin="anonymous"></script>
 
-</script>
+
+
 <script>
 $(document).ready(function(){
     $(".set-user").on('change', function () {
-        toSave = {};
-        var userId = $(this).val();
-        toSave['userid'] = userId;
+        let userId;
+        if ($("#mt tr.active").length > 1) {
+            $("#mt tr.active:first").each( function () {
+                userId = $(this).find("select.set-user:first-child").val();
+                console.log(userId)
+            });
+            $("#mt tr.active").each( function () {
+                $(this).find("select.set-user:first-child").val(userId);
+                toSave = {};
+                toSave['userid'] = userId;
+                var testCaseId = $(this).closest('tr').find('td.tcid').text().trim();
+                let suiteId = window.location.href.substr(window.location.href.lastIndexOf("/")).replace("/","");
+                $.ajax({
+                    url: "/save_user/" + suiteId + "/" + testCaseId,
+                    data: JSON.stringify(toSave),
+                    type: 'POST',
+                    contentType: 'application/json'
+                }).done(function(responseData) {
+                    console.log('Done: ', responseData);
+                }).fail(function() {
+                    console.log('Failed');
+                });
+                });
+        } else {
 
-        var testCaseId = $(this).closest('tr').find('td.tcid').text().trim();
+            toSave = {};
+            userId = $(this).val();
+            toSave['userid'] = userId;
 
-        let suiteId = window.location.href.substr(window.location.href.lastIndexOf("/")).replace("/","");
-        $.ajax({
-            url: "/save_user/" + suiteId + "/" + testCaseId,
-            data: JSON.stringify(toSave),
-            type: 'POST',
-            contentType: 'application/json'
-        }).done(function(responseData) {
-            console.log('Done: ', responseData);
-        }).fail(function() {
-            console.log('Failed');
-        });
+            var testCaseId = $(this).closest('tr').find('td.tcid').text().trim();
+
+            let suiteId = window.location.href.substr(window.location.href.lastIndexOf("/")).replace("/","");
+            $.ajax({
+                url: "/save_user/" + suiteId + "/" + testCaseId,
+                data: JSON.stringify(toSave),
+                type: 'POST',
+                contentType: 'application/json'
+            }).done(function(responseData) {
+                console.log('Done: ', responseData);
+            }).fail(function() {
+                console.log('Failed');
+            });
+        }
     });
 });
 </script>
 
+{#<script>#}
+{#    //Table MB3#}
+{#    $(function () {#}
+{##}
+{#        var $contextMenu = $("#contextMenu");#}
+{##}
+{#        $("body").on("contextmenu", "table tr", function (e) {#}
+{#            $contextMenu.css({#}
+{#                display: "block",#}
+{#                left: e.pageX,#}
+{#                top: e.pageY#}
+{#            });#}
+{#            return false;#}
+{#        });#}
+{##}
+{#        $contextMenu.on("click", "a", function () {#}
+{#            $contextMenu.hide();#}
+{#        });#}
+{##}
+{#    });#}
+{#</script>#}
+
 <script>
-    //Table MB3
-    $(function () {
+$('#mt tr.clickable-row td:nth-child(2)').on('click', function(event) {
+    if (event.altKey) {
 
-        var $contextMenu = $("#contextMenu");
-
-        $("body").on("contextmenu", "table tr", function (e) {
-            $contextMenu.css({
-                display: "block",
-                left: e.pageX,
-                top: e.pageY
-            });
-            return false;
-        });
-
-        $contextMenu.on("click", "a", function () {
-            $contextMenu.hide();
-        });
-
-    });
-</script>
-<script>
-$('#mt').on('click', '.clickable-row', function(event) {
-  if($(this).hasClass('active')){
-    $(this).removeClass('active');
-    $('.runTest').hide();
-    $('.statistics').hide();
+        $(this).closest('tr.clickable-row').addClass('active');
+        $('.runTest').hide();
+        $('.statistics').hide();
+    } else if ($(this).closest('tr.clickable-row').hasClass('active')) {
+        $(this).find('tr.clickable-row').removeClass('active');
+        $('.runTest').hide();
+        $('.statistics').hide();
 
   } else {
-    $(this).addClass('active').siblings().removeClass('active');
-    $('#runCase').attr("href", window.location.href + "/" + $(this).children('td:first-child').text().trim())
-    $('#statCase').attr("href", window.location.href + "/" + $(this).children('td:first-child').text().trim() + "/stat")
-    $('.runTest').show();
-    $('.statistics').show();
+       $(this).closest('tr.clickable-row').addClass('active').siblings().removeClass('active');
+       $('#runCase').attr("href", window.location.href + "/" + $(this).closest('tr.clickable-row').children('td:first-child').text().trim())
+       $('#statCase').attr("href", window.location.href + "/" + $(this).closest('tr.clickable-row').children('td:first-child').text().trim() + "/stat")
+       $('.runTest').show();
+       $('.statistics').show();
 
   }
 });

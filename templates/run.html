@@ -269,7 +269,7 @@
 
         testResults['testResult'] = {outcome: testCaseOutcome};
         $('#tbl1 tr').each(function (index) {
-            var comment = ""
+            let comment = "";
             $(this).find('.comment').each(function () {
                 if ($(this).val().length !== 0) {
                     comment = $(this).val();
