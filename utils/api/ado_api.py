@@ -258,7 +258,7 @@ def get_test_suites_from_database():
     test_suites_ids = [suite[0] for suite in test_suites_list_db]
     test_suite_names = [suite[1] for suite in test_suites_list_db]
     if len(test_suites_ids)==0 or len(test_suite_names)==0:
-        result = {"0":"empty"}
+        result = {"0" : "empty"}
     else:
         result = dict(zip(test_suites_ids, test_suite_names))
     return result
