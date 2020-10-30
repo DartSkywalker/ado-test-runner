@@ -5,12 +5,14 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import MetaData, Table
 from sqlalchemy.sql import func
 
-engine = create_engine('sqlite:///db.sqlite', echo=True)
+postgres = 'postgresql+psycopg2://user:user@localhost:5432/ado'
+
+engine = create_engine(postgres, echo=False)
 connection = engine.connect()
 Base = declarative_base()
 
-class User(Base):
-    __tablename__ = 'User'
+class user(Base):
+    __tablename__ = 'user'
     id = Column(Integer, primary_key=True) # primary keys are required by SQLAlchemy
     username = Column(String(100), unique=True)
     password = Column(String(100))
@@ -33,7 +35,7 @@ class Test_Cases(Base):
     TEST_CASE_NAME = Column(String)
     STATUS = Column(String)
     DURATION_SEC = Column(Integer)
-    EXECUTED_BY = Column(String, ForeignKey('User.username'))
+    EXECUTED_BY = Column(String, ForeignKey('user.username'))
     CHANGE_STATE_DATE = Column(DateTime(timezone=False), server_default=func.now())
     # test_step = relationship("TEST_STEPS")
 
