@@ -6,8 +6,7 @@ from flask_login import current_user
 from sqlite3 import Error
 from loguru import logger
 from . import ado_parser
-from ..constants import ADO_TOKEN, QUERY_LINK, WIQL_LINK, HEADERS, DB_NAME, WORKITEM_LINK
-# from utils.constants import ADO_TOKEN, QUERY_LINK, WIQL_LINK, HEADERS, DB_NAME, WORKITEM_LINK
+from ..constants import get_ado_token_for_user, QUERY_LINK, WIQL_LINK, HEADERS, DB_NAME, WORKITEM_LINK
 # from utils.api import ado_parser
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.sql import table, column, select, update, insert
@@ -55,7 +54,7 @@ def get_query_name_by_query_id(query_id):
     :param query_id:
     :return:
     """
-    r_query = requests.get(QUERY_LINK + str(query_id), headers=HEADERS, auth=('', ADO_TOKEN))
+    r_query = requests.get(QUERY_LINK + str(query_id), headers=HEADERS, auth=('', get_ado_token_for_user(get_current_user)))
     if r_query.status_code == 200:
         r_query.close()
         parsed_data = json.loads(str(r_query.text))
@@ -70,7 +69,7 @@ def get_test_cases_urls_by_query_id(query_id):
     :param query_id:
     :return:
     """
-    r_query = requests.get(WIQL_LINK + str(query_id), headers=HEADERS, auth=('', ADO_TOKEN))
+    r_query = requests.get(WIQL_LINK + str(query_id), headers=HEADERS, auth=('', get_ado_token_for_user(get_current_user)))
     if r_query.status_code == 200:
         r_query.close()
         parsed_data = json.loads(str(r_query.text))
@@ -82,7 +81,7 @@ def get_test_cases_urls_by_query_id(query_id):
 
 
 def get_test_case_name(tc_id):
-    r_query = requests.get(WORKITEM_LINK + str(tc_id), headers=HEADERS, auth=('', ADO_TOKEN))
+    r_query = requests.get(WORKITEM_LINK + str(tc_id), headers=HEADERS, auth=('', get_ado_token_for_user(get_current_user)))
     if r_query.status_code == 200:
         r_query.close()
         parsed_data = json.loads(str(r_query.text))
@@ -98,7 +97,7 @@ def get_test_case_steps_by_url(test_case_url):
     :param test_case_url:
     :return:
     """
-    r_query = requests.get(test_case_url, headers=HEADERS, auth=('', ADO_TOKEN))
+    r_query = requests.get(test_case_url, headers=HEADERS, auth=('', get_ado_token_for_user(get_current_user)))
     if r_query.status_code == 200:
         r_query.close()
         parsed_data = json.loads(str(r_query.text))
@@ -113,7 +112,7 @@ def get_test_case_steps_by_url(test_case_url):
 
 
 async def request_test_case_data(session, url):
-    response = await session.request(method='GET', url=url, headers=HEADERS, auth=aiohttp.BasicAuth('', ADO_TOKEN))
+    response = await session.request(method='GET', url=url, headers=HEADERS, auth=aiohttp.BasicAuth('', get_ado_token_for_user(get_current_user)))
     response_json = await response.json()
     return response_json
 
@@ -145,7 +144,6 @@ def get_all_test_case_data_async(query_id):
 
 def create_new_test_suite_in_db(query_id):
     logger.debug(query_id)
-    logger.debug(ADO_TOKEN)
     test_cases_dict, test_suite_name = get_all_test_case_data_async(query_id), get_query_name_by_query_id(query_id)
     g.user = current_user.get_id()
     query = select([table_user.c.username]).where(table_user.c.id == g.user)
@@ -422,7 +420,6 @@ def get_test_case_id_by_ado_id(suite_id, test_case_ado_id):
 def set_test_case_for_user(suite_id, test_case_id, json_data):
     username = connection.execute(select([table_user.c.username])\
             .where(table_user.c.id == json_data['userid'])).fetchone()[0]
-    logger.warning(username)
     update_statement = table_cases.update().where(and_
                                                  (table_cases.c.TEST_SUITE_ID == suite_id,
                                                   table_cases.c.TEST_CASE_ADO_ID == test_case_id)) \
