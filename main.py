@@ -69,16 +69,17 @@ def about_page():
 def redirect_from_main():
     return redirect(url_for('main.test_suites'))
 
-@main.route('/settings')
+@main.route('/settings', methods=['GET', 'POST'])
 @login_required
 def user_settings():
+    if request.method == 'POST':
+        logger.warning()
     return render_template('settings.html', username=ado_api.get_current_user())
 
 @main.route('/save_test_result/<test_case_id>', methods=['POST'])
 @login_required
 def save_test_result(test_case_id):
     data = request.get_json()
-    logger.warning(data)
     try:
         ado_api.set_test_case_state(test_case_id, data)
         return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}

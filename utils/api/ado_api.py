@@ -391,12 +391,38 @@ def set_test_case_state(test_case_id, json_with_step_states):
             step_status = list(statistic.values())[1]
             try:
                 comment = list(statistic.values())[2]
+                new_action = list(statistic.values())[3]
+                new_expected = list(statistic.values())[4]
+                logger.warning(new_action)
+                logger.warning(new_expected)
             except IndexError:
                 comment = ""
-            update_statement = table_steps.update().where(and_
-                                                     (table_steps.c.TEST_CASE_ID == int(test_case_id),
-                                                      table_steps.c.STEP_NUMBER == int(step_number)))\
-                                                    .values(STEP_STATUS=str(step_status), COMMENT=str(comment))
+                new_action = ""
+                new_expected = ""
+            if new_action != "" and new_expected != "":
+                update_statement = table_steps.update().where(and_
+                                                         (table_steps.c.TEST_CASE_ID == int(test_case_id),
+                                                          table_steps.c.STEP_NUMBER == int(step_number)))\
+                                                        .values(STEP_STATUS=str(step_status), COMMENT=str(comment),
+                                                                DESCRIPTION=str(new_action),
+                                                                EXPECTED_RESULT=str(new_expected))
+            elif new_action != "" and new_expected == "":
+                update_statement = table_steps.update().where(and_
+                                                         (table_steps.c.TEST_CASE_ID == int(test_case_id),
+                                                          table_steps.c.STEP_NUMBER == int(step_number)))\
+                                                        .values(STEP_STATUS=str(step_status), COMMENT=str(comment),
+                                                                DESCRIPTION=str(new_action))
+            elif new_action == "" and new_expected != "":
+                update_statement = table_steps.update().where(and_
+                                                         (table_steps.c.TEST_CASE_ID == int(test_case_id),
+                                                          table_steps.c.STEP_NUMBER == int(step_number)))\
+                                                        .values(STEP_STATUS=str(step_status), COMMENT=str(comment),
+                                                                EXPECTED_RESULT=str(new_expected))
+            else:
+                update_statement = table_steps.update().where(and_
+                                                              (table_steps.c.TEST_CASE_ID == int(test_case_id),
+                                                               table_steps.c.STEP_NUMBER == int(step_number))) \
+                    .values(STEP_STATUS=str(step_status), COMMENT=str(comment))
             connection.execute(update_statement)
         else:
             test_case_result = list(statistic.values())[0]

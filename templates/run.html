@@ -87,7 +87,7 @@
                 <tr class="clickable-row">
                     <td>{{ step_data[0] }}</td>
                     <td class="step">
-                        <div class="action-result" style="white-space: pre-line">{{ step_data[1] | safe }}</div>
+                        <div class="action action-result" style="white-space: pre-line">{{ step_data[1] | safe }}</div>
                         <div class="expected action-result"
                              style="white-space: pre-line">{{ step_data[2] | safe }}</div>
                         {% if step_data[4] == None or step_data[4] == "" %}
@@ -137,6 +137,7 @@
         src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 <script crossorigin="anonymous" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
         src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 
 <script>
     (function ($) {
@@ -189,7 +190,7 @@
                 }
             };
     })(jQuery);
-
+    {#TODO: change triple click to another event#}
     $(".action-result").on("tripleclick", function (e) {
         $(this).attr("contenteditable", "true");
         $(this).addClass("edited");
@@ -302,14 +303,26 @@
                     comment = $(this).val();
                 }
             })
+
+            let edited_action = "";
+            let edited_expected = "";
+            $(this).find('.edited').each(function (i, element) {
+                if ($(this).hasClass("action")) {
+                    edited_action = $(this).html()
+                } else {
+                    edited_expected = $(this).html()
+                }
+            })
+
+
             $(this).find('#passed_label').each(function () {
                 if ($(this).hasClass('active')) {
-                    testResults[index] = {stepNum: index + 1, outcome: 'Passed', comment: comment}
+                    testResults[index] = {stepNum: index + 1, outcome: 'Passed', comment: comment, editedAction: edited_action, editedExpected: edited_expected}
                 }
             })
             $(this).find('#failed_label').each(function () {
                 if ($(this).hasClass('active')) {
-                    testResults[index] = {stepNum: index + 1, outcome: 'Failed', comment: comment}
+                    testResults[index] = {stepNum: index + 1, outcome: 'Failed', comment: comment, editedAction: edited_action, editedExpected: edited_expected}
                 }
             })
 
@@ -350,6 +363,8 @@
                     comment = $(this).val();
                 }
             })
+
+
             $(this).find('#passed_label').each(function () {
                 if ($(this).hasClass('active')) {
                     testResults[index] = {stepNum: index + 1, outcome: 'Passed', comment: comment}
