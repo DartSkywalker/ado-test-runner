@@ -11,6 +11,7 @@ from ..constants import get_ado_token_for_user, QUERY_LINK, WIQL_LINK, HEADERS, 
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.sql import table, column, select, update, insert
 from sqlalchemy import Table, MetaData, create_engine, and_,desc
+import datetime
 
 import aiohttp
 from aiohttp import ClientSession
@@ -335,7 +336,8 @@ def get_test_suites_info():
     suite_ids = [data[0] for data in suites_info_db]
     suite_names = [data[1] for data in suites_info_db]
     suite_created_by = [data[2] for data in suites_info_db]
-    suite_created_date = [data[3] for data in suites_info_db]
+    suite_created_date = [datetime.datetime.strptime(str(data[3]), '%Y-%m-%d %H:%M:%S.%f').strftime("%b %d %Y %H:%M:%S")
+                          for data in suites_info_db]
     suite_cases_num = []
     suite_cases_passed = []
     suite_cases_failed = []
