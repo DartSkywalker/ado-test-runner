@@ -393,8 +393,6 @@ def set_test_case_state(test_case_id, json_with_step_states):
                 comment = list(statistic.values())[2]
                 new_action = list(statistic.values())[3]
                 new_expected = list(statistic.values())[4]
-                logger.warning(new_action)
-                logger.warning(new_expected)
             except IndexError:
                 comment = ""
                 new_action = ""
@@ -468,7 +466,6 @@ def get_test_case_states_for_suites(suites):
         status = connection.execute(select([table_cases.c.STATUS, table_cases.c.TEST_CASE_ID,
                                             table_cases.c.TEST_CASE_ADO_ID, table_cases.c.TEST_CASE_NAME])
         .where(and_(table_cases.c.TEST_SUITE_ID == test_suite))).fetchall()
-
 
         list = [case[0] for case in status]
         result[test_suite] = {'Failed' : list.count("Failed"),
