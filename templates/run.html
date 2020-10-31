@@ -50,7 +50,8 @@
             <a class="nav-link" href="#" id="saveResultClose">Save and Close<span class="sr-only"></span></a>
         </li>
         <li class="nav-item active">
-            <a class="nav-link" href="https://dev.azure.com/HAL-LMKRD/RESDEV/_workitems/create/bug">Report a Bug<span class="sr-only"></span></a>
+            <a class="nav-link" href="https://dev.azure.com/HAL-LMKRD/RESDEV/_workitems/create/bug">Report a Bug<span
+                    class="sr-only"></span></a>
         </li>
     </ul>
     <div class="navbar-collapse collapse  order-3 dual-collapse2">
@@ -69,7 +70,7 @@
         <div class="col-md-2">
             <select id="testStatus" class="form-control float-right"
                     style="width:65% ;border: none; border-radius: 0; -webkit-box-shadow: none; box-shadow: none; background: #fff; z-index: 100;">
-                <option >💬</option>
+                <option>💬</option>
                 <option value="passed">✅ &nbsp;Passed</option>
                 <option value="failed">❌ &nbsp;Failed</option>
                 <option value="blocked">🚫 &nbsp;Blocked</option>
@@ -78,41 +79,44 @@
         </div>
     </div>
     <div class="shifted">
-    <table class="table table-hover" id="tbl1">
-        <col width="3%"/>
-        <col width="90%"/>
-        <col width="5%"/>
-        {% for step_data in steps_data_list %}
-            <tr class="clickable-row">
-                <td>{{ step_data[0] }}</td>
-                <td class="step">
-                    <div class="action-result" style="white-space: pre-line">{{ step_data[1] | safe }}</div>
-                    <div class="expected action-result" style="white-space: pre-line">{{ step_data[2] | safe }}</div>
-                    {% if step_data[4] == None or step_data[4] == ""%}
-                    <div class style="display: none">
-                        <br/><label for="exampleFormControlTextarea1">Comment:</label>
-                        <textarea class="form-control comment" id="exampleFormControlTextarea1" rows="3"></textarea>
-                    </div>
-                    {% else %}
-                    <div class style="display: block">
-                        <br/><label for="exampleFormControlTextarea1">Comment:</label>
-                        <textarea class="form-control comment" id="exampleFormControlTextarea1" rows="3">{{ step_data[4] }}</textarea>
-                    </div>
-                    {% endif %}
-                </td>
-                <td class="selector">
-                    <div class="btn-group btn-group-toggle {{ step_data[3] }}" data-toggle="buttons">
-                        <label class="btn btn-passed" id="passed_label">
-                            <input type="radio" name="options" id="passed" autocomplete="off" value=""> Passed
-                        </label>
-                        <label class="btn btn-failed" id="failed_label">
-                            <input type="radio" name="options" id="failed" autocomplete="off"> Failed
-                        </label>
-                    </div>
-                </td>
-            </tr>
-        {% endfor %}
-    </table>
+        <table class="table table-hover" id="tbl1">
+            <col width="3%"/>
+            <col width="90%"/>
+            <col width="5%"/>
+            {% for step_data in steps_data_list %}
+                <tr class="clickable-row">
+                    <td>{{ step_data[0] }}</td>
+                    <td class="step">
+                        <div class="action-result" style="white-space: pre-line">{{ step_data[1] | safe }}</div>
+                        <div class="expected action-result"
+                             style="white-space: pre-line">{{ step_data[2] | safe }}</div>
+                        {% if step_data[4] == None or step_data[4] == "" %}
+                            <div class style="display: none">
+                                <br/><label for="exampleFormControlTextarea1">Comment:</label>
+                                <textarea class="form-control comment" id="exampleFormControlTextarea1"
+                                          rows="3"></textarea>
+                            </div>
+                        {% else %}
+                            <div class style="display: block">
+                                <br/><label for="exampleFormControlTextarea1">Comment:</label>
+                                <textarea class="form-control comment" id="exampleFormControlTextarea1"
+                                          rows="3">{{ step_data[4] }}</textarea>
+                            </div>
+                        {% endif %}
+                    </td>
+                    <td class="selector">
+                        <div class="btn-group btn-group-toggle {{ step_data[3] }}" data-toggle="buttons">
+                            <label class="btn btn-passed" id="passed_label">
+                                <input type="radio" name="options" id="passed" autocomplete="off" value=""> Passed
+                            </label>
+                            <label class="btn btn-failed" id="failed_label">
+                                <input type="radio" name="options" id="failed" autocomplete="off"> Failed
+                            </label>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
     </div>
     <div id="contextMenu" class="dropdown clearfix" style="position: absolute;display: none;">
         <ul class="list-group dropdown-menu" role="menu" aria-labelledby="dropdownMenu"
@@ -135,7 +139,71 @@
         src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script>
-    $('input[type=radio]').on('click', function() {
+    (function ($) {
+        var defaults = {
+            threshold: 1000, // ms
+        }
+
+        function tripleHandler(event) {
+            var $elem = jQuery(this);
+
+            settings = jQuery.extend({}, defaults, event.data);
+
+            var clicks = $elem.data("triclick_clicks") || 0;
+            var start = $elem.data("triclick_start") || 0;
+
+            if (clicks === 0) {
+                start = event.timeStamp;
+            }
+
+            if (start != 0
+                && event.timeStamp > start + settings.threshold) {
+                clicks = 0;
+                start = event.timeStamp;
+            }
+
+            clicks += 1;
+            if (clicks === 3) {
+                clicks = 0;
+                start = 0;
+                event.type = "tripleclick";
+
+                if (jQuery.event.handle === undefined) {
+                    jQuery.event.dispatch.apply(this, arguments);
+                } else {
+                    jQuery.event.handle.apply(this, arguments);
+                }
+            }
+
+            $elem.data("triclick_clicks", clicks);
+            $elem.data("triclick_start", start);
+        }
+
+        var tripleclick = $.event.special.tripleclick =
+            {
+                setup: function (data, namespaces) {
+                    $(this).bind("touchstart click.triple", data, tripleHandler);
+                },
+                teardown: function (namespaces) {
+                    $(this).unbind("touchstart click.triple", tripleHandler);
+                }
+            };
+    })(jQuery);
+
+    $(".action-result").on("tripleclick", function (e) {
+        $(this).attr("contenteditable", "true");
+        $(this).addClass("edited");
+        let clickedDiv = $(this);
+    });
+    $(".action-result").on("dblclick", function (e) {
+        if (($(this).attr('contenteditable') === 'true') && $(this).hasClass("edited")) {
+            $(this).attr("contenteditable", "false");
+        }
+    });
+</script>
+
+<script>
+    $('input[type=radio]').on('click', function () {
         let tableRowsNumber = $('tr').length;
         let passed = 0;
         let failed = 0;
@@ -166,16 +234,16 @@
 
 <script>
     $('.navbar-brand').click(function () {
-    // escape here if the confirm is false;
-    if (!confirm('Want to leave the test run?')) return false;
-    var btn = this;
-    window.location.href='/suites';
-    return true;
-});
+        // escape here if the confirm is false;
+        if (!confirm('Want to leave the test run?')) return false;
+        var btn = this;
+        window.location.href = '/suites';
+        return true;
+    });
 </script>
 
 <script>
-    $('input[type=radio][id=failed]').change(function() {
+    $('input[type=radio][id=failed]').change(function () {
         $('#testStatus').val("failed").change();
     });
 </script>

@@ -947,3 +947,7 @@ td.subtr {
 .substat-blocked {
     color: #1c313a !important;
 }
+
+.edited:focus {
+    outline-color: #037AFB;
+}
