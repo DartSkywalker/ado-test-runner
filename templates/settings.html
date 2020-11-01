@@ -65,6 +65,8 @@
     </div>
 </nav>
 
+                <div id='saveSuccess' class="inner success-save-settings" style="display: none">Saved</div>
+                <div id='saveFailed' class="inner failed-save-settings" style="display: none">Check your input</div>
 
     <div class="page-wrapper bg-gra-03 p-t-130 p-b-100 font-poppins">
         <div class="wrapper wrapper--w680">
@@ -76,7 +78,7 @@
                             <div class="col-12">
                                 <div class="input-group">
                                     <label class="label">Azure DevOps token</label>
-                                    <input class="input--style-4" type="text" placeholder="Token" id="token" name="ado-token" value="">
+                                    <input class="input--style-4" maxlength="53" type="text" placeholder="Token" id="token" name="ado-token" value="">
 
                                 </div>
                             </div>
@@ -122,16 +124,22 @@
 $("#save").on("click", function(e) {
     e.preventDefault();
     let token = $("#token").val();
-    alert(token)
     $.ajax({type: "POST",
         url: "/settings",
-        data: { token: token },
+        data: JSON.stringify({ token: token }),
+        contentType: 'application/json',
         success:function(result) {
-          alert('ok');
+            $("#saveSuccess").css('display', 'flex')
+            $("#saveSuccess").fadeOut(3000)
         },
         error:function(result) {
-          alert('error');
-        }
+            $("#saveFailed").css('display', 'flex')
+            $('#token').addClass('errorHighlight');
+            setTimeout(function () {
+            $('#token').removeClass('errorHighlight');
+                }, 3000);
+            $("#saveFailed").fadeOut(3000)
+    }
     });
 });
 </script>

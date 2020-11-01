@@ -73,7 +73,13 @@ def redirect_from_main():
 @login_required
 def user_settings():
     if request.method == 'POST':
-        logger.warning()
+        data = request.get_json()
+
+        if (len(data['token']) < 50):
+            return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
+        else:
+            if ado_api.update_user_token(data['token']) != 'failed':
+                return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
     return render_template('settings.html', username=ado_api.get_current_user())
 
 @main.route('/save_test_result/<test_case_id>', methods=['POST'])

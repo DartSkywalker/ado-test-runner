@@ -482,3 +482,15 @@ def get_test_case_states_for_suites(suites):
                             'Paused' : [[case[1], case[2], case[3]] for case in status if case[0]== 'Paused']}
     return result, result_detailed
 # get_test_case_states_for_suites([2])
+
+def update_user_token(token):
+    username = get_current_user()
+    update_statement = table_user.update().where(table_user.c.username == username) \
+        .values(token=token)
+    try:
+        connection.execute(update_statement)
+        return 'success'
+    except:
+        return 'failed'
+
+
