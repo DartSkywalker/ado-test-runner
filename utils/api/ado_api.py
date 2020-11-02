@@ -437,6 +437,19 @@ def set_test_case_state(test_case_id, json_with_step_states):
 #         '6': { 'stepNum': 7,'outcome': 'Passed'},'testResult': {'outcome': 'Failed'}}
 # set_test_case_state(1,json)
 
+def update_test_steps_sql():
+    pass
+
+def check_access_to_test_case_ado(test_case_id):
+    test_case_ado_id = connection.execute(select([table_cases.c.TEST_CASE_ADO_ID])
+                                      .where(table_cases.c.TEST_CASE_ID == test_case_id)).fetchone()[0]
+    r = requests.get(WORKITEM_LINK + str(test_case_ado_id), headers=HEADERS,
+                           auth=('', get_ado_token_for_user(get_current_user)))
+    if r.status_code == 200:
+        return True
+    else:
+        return False
+
 
 def get_test_case_id_by_ado_id(suite_id, test_case_ado_id):
     test_case_id = connection.execute(select([table_cases.c.TEST_CASE_ID])

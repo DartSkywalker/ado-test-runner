@@ -122,3 +122,13 @@ def suites_list():
     _, suite_info_dict_detailed = ado_api.get_test_case_states_for_suites(suites_list)
     return render_template("suite_list.html", username=ado_api.get_current_user(), suite_info=suite_info_dict,
                            suite_info_detailed=suite_info_dict_detailed)
+
+
+@main.route('/checkaccess/<test_case_id>', methods=['POST'])
+@login_required
+def check_access_to_ado_item(test_case_id):
+    if ado_api.check_access_to_test_case_ado(test_case_id):
+        return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+    else:
+        return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
+

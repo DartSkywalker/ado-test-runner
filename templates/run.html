@@ -140,6 +140,28 @@
 
 
 <script>
+    //Check if user has the access to the test case in ADO
+    let userHasAdoAccess = '';
+    let testCaseId = /[^/]*$/.exec(window.location.href)[0];
+    $(document).ready(function(){
+      var data = { "tcid": testCaseId};
+        $.ajax({
+            url: "/checkaccess/" + testCaseId,
+            data: JSON.stringify(data),
+            type: 'POST',
+            contentType: 'application/json'
+        }).done(function(responseData) {
+            console.log('User have ADO access');
+            userHasAdoAccess = true;
+        }).fail(function() {
+            console.log('User does not have ADO access');
+            userHasAdoAccess = false;
+        });
+    });
+</script>
+
+
+<script>
     (function ($) {
         var defaults = {
             threshold: 1000, // ms
@@ -306,13 +328,17 @@
 
             let edited_action = "";
             let edited_expected = "";
-            $(this).find('.edited').each(function (i, element) {
-                if ($(this).hasClass("action")) {
-                    edited_action = $(this).html()
-                } else {
-                    edited_expected = $(this).html()
-                }
-            })
+            if (userHasAdoAccess) {
+                $(this).find('.edited').each(function (i, element) {
+                    if ($(this).hasClass("action")) {
+                        edited_action = $(this).html()
+                    } else {
+                        edited_expected = $(this).html()
+                    }
+                })
+            } else {
+                alert('You cannot update this test case in ADO.\n Please, check your permissions or ADO token.')
+            }
 
 
             $(this).find('#passed_label').each(function () {
@@ -364,6 +390,19 @@
                 }
             })
 
+            let edited_action = "";
+            let edited_expected = "";
+            if (userHasAdoAccess) {
+                $(this).find('.edited').each(function (i, element) {
+                    if ($(this).hasClass("action")) {
+                        edited_action = $(this).html()
+                    } else {
+                        edited_expected = $(this).html()
+                    }
+                })
+            } else {
+                alert('You cannot update this test case in ADO.\n Please, check your permissions or ADO token.')
+            }
 
             $(this).find('#passed_label').each(function () {
                 if ($(this).hasClass('active')) {
