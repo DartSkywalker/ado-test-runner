@@ -406,12 +406,12 @@
 
             $(this).find('#passed_label').each(function () {
                 if ($(this).hasClass('active')) {
-                    testResults[index] = {stepNum: index + 1, outcome: 'Passed', comment: comment}
+                    testResults[index] = {stepNum: index + 1, outcome: 'Passed', comment: comment, editedAction: edited_action, editedExpected: edited_expected}
                 }
             })
             $(this).find('#failed_label').each(function () {
                 if ($(this).hasClass('active')) {
-                    testResults[index] = {stepNum: index + 1, outcome: 'Failed', comment: comment}
+                    testResults[index] = {stepNum: index + 1, outcome: 'Failed', comment: comment, editedAction: edited_action, editedExpected: edited_expected}
                 }
             })
 
