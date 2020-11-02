@@ -307,7 +307,7 @@ def get_all_users():
     return users_dict
 
 
-def get_test_case_steps_by_id(suite_id, case_id):
+def get_test_case_steps_by_id(test_case_id):
     """
     Return steps/expected results based on suite_id and case_id
     """
@@ -317,8 +317,7 @@ def get_test_case_steps_by_id(suite_id, case_id):
                                                 table_steps.c.STEP_STATUS,
                                                 table_steps.c.COMMENT])
                                         .order_by('STEP_NUMBER').distinct()
-                                        .where(and_(table_cases.c.TEST_SUITE_ID == suite_id,
-                                               table_steps.c.TEST_CASE_ID == case_id))).fetchall()
+                                        .where(table_steps.c.TEST_CASE_ID == test_case_id)).fetchall()
     step_num = [data[0] for data in steps_expected]
     step_description = [data[1] for data in steps_expected]
     step_expected = [data[2] for data in steps_expected]
