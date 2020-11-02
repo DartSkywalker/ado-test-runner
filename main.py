@@ -88,6 +88,7 @@ def save_test_result(test_case_id):
     data = request.get_json()
     try:
         ado_api.set_test_case_state(test_case_id, data)
+        print(data)
         return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
     except Exception as e:
         logger.error(e)
@@ -96,7 +97,7 @@ def save_test_result(test_case_id):
 @main.route('/run/<test_suite_id>/<test_case_id>')
 @login_required
 def test_run(test_suite_id, test_case_id):
-    steps_data_list = ado_api.get_test_case_steps_by_id(test_suite_id, test_case_id)
+    steps_data_list = ado_api.get_test_case_steps_by_id(test_case_id)
     test_case_name = ado_api.get_test_case_name_by_id(test_case_id)
     return render_template("run.html", test_case_name=test_case_name, steps_data_list=steps_data_list)
 
