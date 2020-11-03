@@ -88,7 +88,6 @@ def save_test_result(test_case_id):
     data = request.get_json()
     try:
         ado_api.set_test_case_state(test_case_id, data)
-        print(data)
         return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
     except Exception as e:
         logger.error(e)

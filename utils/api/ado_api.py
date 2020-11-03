@@ -387,7 +387,7 @@ def set_test_case_state(test_case_id, json_with_step_states):
     query = select([table_user.columns['username']]).where(table_user.columns['id'] == g.user)
     user = connection.execute(query).fetchone()[0]
     for id, statistic in json_with_step_states.items():
-        if id != 'testResult':
+        if id != 'testResult' and id != 'duration':
             step_number = list(statistic.values())[0]
             step_status = list(statistic.values())[1]
             try:
@@ -425,8 +425,9 @@ def set_test_case_state(test_case_id, json_with_step_states):
             connection.execute(update_statement)
         else:
             test_case_result = list(statistic.values())[0]
+            test_run_duration = list(statistic.values())[1]
             update_statement = table_cases.update().where(table_cases.c.TEST_CASE_ID == int(test_case_id))\
-                .values(STATUS=str(test_case_result), EXECUTED_BY=str(user), DURATION_SEC='666')
+                .values(STATUS=str(test_case_result), EXECUTED_BY=str(user), DURATION_SEC=str(test_run_duration))
             connection.execute(update_statement)
 
 

@@ -140,6 +140,9 @@
 
 
 <script>
+    let startTime;
+    let stopTime;
+    let testRunDuration;
     //Check if user has the access to the test case in ADO
     let userHasAdoAccess = '';
     let testCaseId = /[^/]*$/.exec(window.location.href)[0];
@@ -157,6 +160,8 @@
             console.log('User does not have ADO access');
             userHasAdoAccess = false;
         });
+
+        startTime = Date.now()
     });
 </script>
 
@@ -305,6 +310,10 @@
 </script>
 <script>
     $("#saveResult").click(function () {
+
+        stopTime = Date.now()
+        testRunDuration = Math.round((stopTime - startTime)/1000).toString();
+
         testResults = {};
         testCaseOutcomeDirty = $('#testStatus').val();
         if (testCaseOutcomeDirty == 'passed') {
@@ -317,7 +326,8 @@
             testCaseOutcome = 'Pause';
         }
 
-        testResults['testResult'] = {outcome: testCaseOutcome};
+        testResults['testResult'] = {outcome: testCaseOutcome, duration: testRunDuration};
+
         $('#tbl1 tr').each(function (index) {
             var comment = ""
             $(this).find('.comment').each(function () {
@@ -369,6 +379,10 @@
 </script>
 <script>
     $("#saveResultClose").click(function () {
+
+        stopTime = Date.now()
+        testRunDuration = Math.round((stopTime - startTime)/1000).toString();
+
         testResults = {};
         testCaseOutcomeDirty = $('#testStatus').val();
         if (testCaseOutcomeDirty == 'passed') {
@@ -381,7 +395,7 @@
             testCaseOutcome = 'Pause';
         }
 
-        testResults['testResult'] = {outcome: testCaseOutcome};
+        testResults['testResult'] = {outcome: testCaseOutcome, duration: testRunDuration};
         $('#tbl1 tr').each(function (index) {
             let comment = "";
             $(this).find('.comment').each(function () {
