@@ -19,6 +19,7 @@ import asyncio
 from timeit import default_timer as timer
 
 
+
 my_sql = 'mysql+mysqlconnector://user:user@localhost:3306/ado'
 postgres = 'postgresql+psycopg2://user:user@localhost:5432/ado'
 
@@ -507,3 +508,49 @@ def update_user_token(token):
         return 'failed'
 
 
+def update_test_steps_in_ado(test_case_sql_id, data):
+    # Getting the list of test case steps before the changes
+    test_case_steps = get_test_case_steps_by_id(test_case_sql_id)
+
+    # Getting the ADO id of the test case
+    test_case_ADO_id = connection.execute(
+        select([table_cases.c.TEST_CASE_ADO_ID]).where(table_cases.c.TEST_CASE_ID == test_case_sql_id)).fetchall()
+    test_case_ADO_id = test_case_ADO_id[len(test_case_ADO_id) - 1][0]
+
+    # Converting dict of dicts to list
+    test_case_steps_changes = [list(test_case.values()) for test_case in list(data.values())]
+
+    # Create updated list of steps
+    updated_test_case = []
+    for step, updated_step in zip(test_case_steps, test_case_steps_changes):
+        if updated_step[3] == "" and updated_step[4] == "":
+            updated_test_case.append(step)
+        elif updated_step[3] != "" and updated_step[4] == "":
+            step[1] = updated_step[3]
+            updated_test_case.append(step)
+        elif updated_step[3] == "" and updated_step[4] != "":
+            step[2] = updated_step[4]
+            updated_test_case.append(step)
+        elif updated_step[3] != "" and updated_step[4] != "":
+            step[1] = updated_step[3]
+            step[2] = updated_step[4]
+            updated_test_case.append(step)
+
+    # Converting the Action and Expected result to xml format supported by ADO
+    result_steps_xml = ado_parser.convert_to_xml(updated_test_case)
+
+    # Changing HEADERS to json-patch from json in constants and sending change request
+    HEADERS = {'Content-type': 'application/json-patch+json'}
+    json_patch = [{"op": "replace", "path": "/fields/Microsoft.VSTS.TCM.Steps", "value": result_steps_xml}]
+    r_ado = requests.patch(
+        "https://dev.azure.com/HAL-LMKRD/RESDEV/_apis/wit/workitems/" + str(test_case_ADO_id) + "?api-version=6.0",
+        json=json_patch, headers=HEADERS, auth=('', get_ado_token_for_user(get_current_user)))
+
+    # Check ADO server accepted changes and return error message if not
+    try:
+        if str(json.loads(r_ado.text)['id']) == str(test_case_ADO_id):
+            result = "200"
+    except:
+        result = json.loads(r_ado.text)['message']
+    return result
+# print(update_test_steps_in_ado(2, data_example))
