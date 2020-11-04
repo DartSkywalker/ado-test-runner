@@ -313,6 +313,7 @@
 
         stopTime = Date.now()
         testRunDuration = Math.round((stopTime - startTime)/1000).toString();
+        let is_changed = 'False';
 
         testResults = {};
         testCaseOutcomeDirty = $('#testStatus').val();
@@ -326,7 +327,6 @@
             testCaseOutcome = 'Pause';
         }
 
-        testResults['testResult'] = {outcome: testCaseOutcome, duration: testRunDuration};
 
         $('#tbl1 tr').each(function (index) {
             var comment = ""
@@ -342,13 +342,17 @@
                 $(this).find('.edited').each(function (i, element) {
                     if ($(this).hasClass("action")) {
                         edited_action = $(this).html()
+                        is_changed = 'True'
                     } else {
+                        is_changed = 'True'
                         edited_expected = $(this).html()
                     }
                 })
             } else {
                 alert('You cannot update this test case in ADO.\n Please, check your permissions or ADO token.')
             }
+
+            testResults['testResult'] = {outcome: testCaseOutcome, duration: testRunDuration, is_changed: is_changed};
 
 
             $(this).find('#passed_label').each(function () {
@@ -379,9 +383,9 @@
 </script>
 <script>
     $("#saveResultClose").click(function () {
-
         stopTime = Date.now()
         testRunDuration = Math.round((stopTime - startTime)/1000).toString();
+        let is_changed = 'False';
 
         testResults = {};
         testCaseOutcomeDirty = $('#testStatus').val();
@@ -395,7 +399,6 @@
             testCaseOutcome = 'Pause';
         }
 
-        testResults['testResult'] = {outcome: testCaseOutcome, duration: testRunDuration};
         $('#tbl1 tr').each(function (index) {
             let comment = "";
             $(this).find('.comment').each(function () {
@@ -409,14 +412,19 @@
             if (userHasAdoAccess) {
                 $(this).find('.edited').each(function (i, element) {
                     if ($(this).hasClass("action")) {
+                        is_changed = 'True';
                         edited_action = $(this).html()
                     } else {
+                        is_changed = 'True';
                         edited_expected = $(this).html()
                     }
                 })
             } else {
                 alert('You cannot update this test case in ADO.\n Please, check your permissions or ADO token.')
             }
+
+            testResults['testResult'] = {outcome: testCaseOutcome, duration: testRunDuration, is_changed: is_changed};
+
 
             $(this).find('#passed_label').each(function () {
                 if ($(this).hasClass('active')) {
