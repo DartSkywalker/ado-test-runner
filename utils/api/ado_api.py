@@ -17,6 +17,8 @@ import aiohttp
 from aiohttp import ClientSession
 import asyncio
 from timeit import default_timer as timer
+from sqlalchemy.sql import func
+
 
 
 
@@ -404,7 +406,8 @@ def set_test_case_state(test_case_id, json_with_step_states):
             test_case_result = list(statistic.values())[0]
             test_run_duration = list(statistic.values())[1]
             update_statement = table_cases.update().where(table_cases.c.TEST_CASE_ID == int(test_case_id))\
-                .values(STATUS=str(test_case_result), EXECUTED_BY=str(user), DURATION_SEC=str(test_run_duration))
+                .values(STATUS=str(test_case_result), EXECUTED_BY=str(user),
+                        DURATION_SEC=str(test_run_duration), CHANGE_STATE_DATE=func.now())
             connection.execute(update_statement)
 # json = {'0': {'stepNum': 1,'outcome': 'Passed', 'comment':"test"},'1': {'stepNum': 2,'outcome':'Failed'},
 #         '2': {'stepNum': 3,'outcome': 'Passed'},'3': {'stepNum': 4,'outcome':'Failed'},
@@ -506,7 +509,8 @@ def update_test_steps_sql(test_case_id, json_with_step_states):
             test_case_result = list(statistic.values())[0]
             test_run_duration = list(statistic.values())[1]
             update_statement = table_cases.update().where(table_cases.c.TEST_CASE_ID == int(test_case_id))\
-                .values(STATUS=str(test_case_result), EXECUTED_BY=str(user), DURATION_SEC=str(test_run_duration))
+                .values(STATUS=str(test_case_result), EXECUTED_BY=str(user),
+                        DURATION_SEC=str(test_run_duration), CHANGE_STATE_DATE=func.now())
             connection.execute(update_statement)
 
 
