@@ -88,12 +88,8 @@
             <th scope="col">Date</th>
         </tr>
         </thead>
-        <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
+    <tbody>
+    </tbody>
     </table>
 </div>
 
@@ -192,8 +188,41 @@
 <script>
     $('#statCase').on('click', function (e) {
         //Load data for statistics
+        let runDate;
+        let duration;
+        let tester;
+        let testResult;
+        let adoId;
+        let testSuiteId = window.location.href.substr(window.location.href.lastIndexOf("/")).replace("/", "");
 
-        $('.statPopUp').css("display", "block")
+        $("#mt tr.active").each(function () {
+            if ($(this).find('td:nth-child(3)').text().toLowerCase().includes('ready') == false) {
+                tester = $(this).find('td:nth-child(4)').text().trim();
+                testResult = $(this).find('td:nth-child(3)').text().trim();
+                adoId = $(this).find('td:nth-child(1)').text().trim();
+
+                $.ajax({
+                    url: "/getstatistics/" + testSuiteId + "/" + adoId,
+                    type: 'GET'
+                }).done(function (responseData) {
+                    console.log('Done: ', responseData);
+                    let resp = JSON.parse(responseData)
+                    runDate = resp["date"];
+                    duration = resp["duration"];
+                    $("#statTable > tbody").empty();
+
+                    $('#statTable > tbody:last-child').append('<tr><td>' + tester + '</td><td>' + testResult + '</td>' +
+                    '<td>' + duration + '</td><td>' + runDate + '</td></tr>');
+                }).fail(function () {
+                    console.log('Failed');
+                    alert("Cannot load statistics. Internal Server Error");
+                });
+
+
+
+                $('.statPopUp').css("display", "block")
+            }
+        });
     });
 
     // If the target of the click isn't the container

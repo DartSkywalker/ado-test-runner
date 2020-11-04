@@ -10,7 +10,7 @@ from ..constants import get_ado_token_for_user, QUERY_LINK, WIQL_LINK, HEADERS, 
 # from utils.api import ado_parser
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.sql import table, column, select, update, insert
-from sqlalchemy import Table, MetaData, create_engine, and_,desc
+from sqlalchemy import Table, MetaData, create_engine, and_, desc
 import datetime
 
 import aiohttp
@@ -18,9 +18,9 @@ from aiohttp import ClientSession
 import asyncio
 from timeit import default_timer as timer
 
-
 my_sql = 'mysql+mysqlconnector://user:user@localhost:3306/ado'
 postgres = 'postgresql+psycopg2://user:user@localhost:5432/ado'
+
 
 def sql_connection():
     engine = create_engine(postgres, echo=False)
@@ -41,6 +41,7 @@ def create_db_connection(db_file):
     except Error as e:
         logger.critical(f"Cannot connect to {db_file} database")
 
+
 connection, meta = sql_connection()
 # g.user = current_user.get_id()
 table_user = Table('user', meta)
@@ -55,7 +56,8 @@ def get_query_name_by_query_id(query_id):
     :param query_id:
     :return:
     """
-    r_query = requests.get(QUERY_LINK + str(query_id), headers=HEADERS, auth=('', get_ado_token_for_user(get_current_user)))
+    r_query = requests.get(QUERY_LINK + str(query_id), headers=HEADERS,
+                           auth=('', get_ado_token_for_user(get_current_user)))
     if r_query.status_code == 200:
         r_query.close()
         parsed_data = json.loads(str(r_query.text))
@@ -70,7 +72,8 @@ def get_test_cases_urls_by_query_id(query_id):
     :param query_id:
     :return:
     """
-    r_query = requests.get(WIQL_LINK + str(query_id), headers=HEADERS, auth=('', get_ado_token_for_user(get_current_user)))
+    r_query = requests.get(WIQL_LINK + str(query_id), headers=HEADERS,
+                           auth=('', get_ado_token_for_user(get_current_user)))
     if r_query.status_code == 200:
         r_query.close()
         parsed_data = json.loads(str(r_query.text))
@@ -82,7 +85,8 @@ def get_test_cases_urls_by_query_id(query_id):
 
 
 def get_test_case_name(tc_id):
-    r_query = requests.get(WORKITEM_LINK + str(tc_id), headers=HEADERS, auth=('', get_ado_token_for_user(get_current_user)))
+    r_query = requests.get(WORKITEM_LINK + str(tc_id), headers=HEADERS,
+                           auth=('', get_ado_token_for_user(get_current_user)))
     if r_query.status_code == 200:
         r_query.close()
         parsed_data = json.loads(str(r_query.text))
@@ -109,11 +113,14 @@ def get_test_case_steps_by_url(test_case_url):
         # print(steps)
         steps_list = ado_parser.parse_html_steps(steps)
         return steps_list
+
+
 # print(get_test_case_steps_by_url("https://dev.azure.com/HAL-LMKRD/d54c5f94-240d-4817-b74e-82588f96c6ba/_apis/wit/workItems/128710"))
 
 
 async def request_test_case_data(session, url):
-    response = await session.request(method='GET', url=url, headers=HEADERS, auth=aiohttp.BasicAuth('', get_ado_token_for_user(get_current_user)))
+    response = await session.request(method='GET', url=url, headers=HEADERS,
+                                     auth=aiohttp.BasicAuth('', get_ado_token_for_user(get_current_user)))
     response_json = await response.json()
     return response_json
 
@@ -140,6 +147,8 @@ def get_all_test_case_data_async(query_id):
         test_case_data = [test_case_title, steps_list]
         test_cases_dict[id] = test_case_data
     return test_cases_dict
+
+
 # print(get_all_test_case_data_async('1f70f015-030a-48ca-9674-4bfd123c801c'))
 
 
@@ -150,12 +159,12 @@ def create_new_test_suite_in_db(query_id):
     query = select([table_user.c.username]).where(table_user.c.id == g.user)
     user = connection.execute(query).fetchall()
     connection.execute(table_suites.insert().values(TEST_SUITE_NAME=test_suite_name,
-                                                                  CREATED_BY=str(user[0][0])))
+                                                    CREATED_BY=str(user[0][0])))
 
     test_suite_ids = connection.execute(select([table_suites.c.TEST_SUITE_ID])
         .where(
         table_suites.c.TEST_SUITE_NAME == str(test_suite_name))).fetchall()
-    test_suite_id = test_suite_ids[len(test_suite_ids)-1][0]
+    test_suite_id = test_suite_ids[len(test_suite_ids) - 1][0]
     for id, test_case_details in test_cases_dict.items():
         logger.debug("Test case: " + str(id))
 
@@ -164,21 +173,23 @@ def create_new_test_suite_in_db(query_id):
         step_number = 1
 
         connection.execute(table_cases.insert().values(TEST_SUITE_ID=str(test_suite_id),
-                                                                     TEST_CASE_ADO_ID=str(id),
-                                                                     TEST_CASE_NAME=str(test_case_name),
-                                                                     STATUS='Ready'))
+                                                       TEST_CASE_ADO_ID=str(id),
+                                                       TEST_CASE_NAME=str(test_case_name),
+                                                       STATUS='Ready'))
         for test_steps in test_case[1]:
             test_sql_case_ids = connection.execute(select([table_cases.c.TEST_CASE_ID])
-                                                  .where(table_cases.c.TEST_CASE_ADO_ID == id)).fetchall()
-            test_sql_case_id=test_sql_case_ids[len(test_sql_case_ids)-1][0]
+                                                   .where(table_cases.c.TEST_CASE_ADO_ID == id)).fetchall()
+            test_sql_case_id = test_sql_case_ids[len(test_sql_case_ids) - 1][0]
             # print(test_sql_case_id)
             connection.execute(table_steps.insert().values(TEST_CASE_ID=int(test_sql_case_id),
-                                                                         STEP_NUMBER=str(step_number),
-                                                                         DESCRIPTION=test_steps[0],
-                                                                         EXPECTED_RESULT=test_steps[1]))
+                                                           STEP_NUMBER=str(step_number),
+                                                           DESCRIPTION=test_steps[0],
+                                                           EXPECTED_RESULT=test_steps[1]))
             step_number += 1
     logger.info(
         f"{test_suite_name} was successfully added to the database. Contains {len(test_cases_dict)} test cases.")
+
+
 # def get_all_test_case_data(tc_id):
 #     """
 #     Get list of cleaned steps of the test case
@@ -256,8 +267,8 @@ def get_test_suites_from_database():
                                                      table_suites.c.TEST_SUITE_NAME]).distinct()).fetchall()
     test_suites_ids = [suite[0] for suite in test_suites_list_db]
     test_suite_names = [suite[1] for suite in test_suites_list_db]
-    if len(test_suites_ids)==0 or len(test_suite_names)==0:
-        result = {"0" : "empty"}
+    if len(test_suites_ids) == 0 or len(test_suite_names) == 0:
+        result = {"0": "empty"}
     else:
         result = dict(zip(test_suites_ids, test_suite_names))
     return result
@@ -344,27 +355,27 @@ def get_test_suites_info():
     suite_cases_not_executed = []
 
     for suite_id in suite_ids:
-        num_of_cases = connection.execute(select([table_cases.c.TEST_CASE_ID])\
-            .where(table_cases.c.TEST_SUITE_ID == suite_id)).fetchall()
-        num_of_cases=len(num_of_cases)
+        num_of_cases = connection.execute(select([table_cases.c.TEST_CASE_ID]) \
+                                          .where(table_cases.c.TEST_SUITE_ID == suite_id)).fetchall()
+        num_of_cases = len(num_of_cases)
         suite_cases_num.append(num_of_cases)
 
-        num_of_passed = connection.execute(select([table_cases.c.TEST_CASE_ID])\
-            .where(and_(table_cases.c.TEST_SUITE_ID == suite_id,
-                        table_cases.c.STATUS == 'Passed'))).fetchall()
-        num_of_passed=len(num_of_passed)
+        num_of_passed = connection.execute(select([table_cases.c.TEST_CASE_ID]) \
+                                           .where(and_(table_cases.c.TEST_SUITE_ID == suite_id,
+                                                       table_cases.c.STATUS == 'Passed'))).fetchall()
+        num_of_passed = len(num_of_passed)
         suite_cases_passed.append(num_of_passed)
 
-        num_of_failed = connection.execute(select([table_cases.c.TEST_CASE_ID])\
-            .where(and_(table_cases.c.TEST_SUITE_ID == suite_id,
-                        table_cases.c.STATUS == 'Failed'))).fetchall()
-        num_of_failed=len(num_of_failed)
+        num_of_failed = connection.execute(select([table_cases.c.TEST_CASE_ID]) \
+                                           .where(and_(table_cases.c.TEST_SUITE_ID == suite_id,
+                                                       table_cases.c.STATUS == 'Failed'))).fetchall()
+        num_of_failed = len(num_of_failed)
 
         suite_cases_failed.append(num_of_failed)
 
-        num_of_blocked = connection.execute(select([table_cases.columns['TEST_CASE_ID']])\
-            .where(and_(table_cases.columns['TEST_SUITE_ID'] == suite_id,
-                        table_cases.columns['STATUS'] == 'Blocked'))).fetchall()
+        num_of_blocked = connection.execute(select([table_cases.columns['TEST_CASE_ID']]) \
+                                            .where(and_(table_cases.columns['TEST_SUITE_ID'] == suite_id,
+                                                        table_cases.columns['STATUS'] == 'Blocked'))).fetchall()
         num_of_blocked = len(num_of_blocked)
         suite_cases_blocked.append(num_of_blocked)
 
@@ -378,7 +389,7 @@ def get_test_suites_info():
 
 def get_test_case_name_by_id(test_case_id):
     test_case_name = connection.execute(select([table_cases.c.TEST_CASE_NAME]).
-                                    where(table_cases.c.TEST_CASE_ID == test_case_id)).fetchone()[0]
+                                        where(table_cases.c.TEST_CASE_ID == test_case_id)).fetchone()[0]
     return test_case_name
 
 
@@ -400,23 +411,23 @@ def set_test_case_state(test_case_id, json_with_step_states):
                 new_expected = ""
             if new_action != "" and new_expected != "":
                 update_statement = table_steps.update().where(and_
-                                                         (table_steps.c.TEST_CASE_ID == int(test_case_id),
-                                                          table_steps.c.STEP_NUMBER == int(step_number)))\
-                                                        .values(STEP_STATUS=str(step_status), COMMENT=str(comment),
-                                                                DESCRIPTION=str(new_action),
-                                                                EXPECTED_RESULT=str(new_expected))
+                                                              (table_steps.c.TEST_CASE_ID == int(test_case_id),
+                                                               table_steps.c.STEP_NUMBER == int(step_number))) \
+                    .values(STEP_STATUS=str(step_status), COMMENT=str(comment),
+                            DESCRIPTION=str(new_action),
+                            EXPECTED_RESULT=str(new_expected))
             elif new_action != "" and new_expected == "":
                 update_statement = table_steps.update().where(and_
-                                                         (table_steps.c.TEST_CASE_ID == int(test_case_id),
-                                                          table_steps.c.STEP_NUMBER == int(step_number)))\
-                                                        .values(STEP_STATUS=str(step_status), COMMENT=str(comment),
-                                                                DESCRIPTION=str(new_action))
+                                                              (table_steps.c.TEST_CASE_ID == int(test_case_id),
+                                                               table_steps.c.STEP_NUMBER == int(step_number))) \
+                    .values(STEP_STATUS=str(step_status), COMMENT=str(comment),
+                            DESCRIPTION=str(new_action))
             elif new_action == "" and new_expected != "":
                 update_statement = table_steps.update().where(and_
-                                                         (table_steps.c.TEST_CASE_ID == int(test_case_id),
-                                                          table_steps.c.STEP_NUMBER == int(step_number)))\
-                                                        .values(STEP_STATUS=str(step_status), COMMENT=str(comment),
-                                                                EXPECTED_RESULT=str(new_expected))
+                                                              (table_steps.c.TEST_CASE_ID == int(test_case_id),
+                                                               table_steps.c.STEP_NUMBER == int(step_number))) \
+                    .values(STEP_STATUS=str(step_status), COMMENT=str(comment),
+                            EXPECTED_RESULT=str(new_expected))
             else:
                 update_statement = table_steps.update().where(and_
                                                               (table_steps.c.TEST_CASE_ID == int(test_case_id),
@@ -426,7 +437,7 @@ def set_test_case_state(test_case_id, json_with_step_states):
         else:
             test_case_result = list(statistic.values())[0]
             test_run_duration = list(statistic.values())[1]
-            update_statement = table_cases.update().where(table_cases.c.TEST_CASE_ID == int(test_case_id))\
+            update_statement = table_cases.update().where(table_cases.c.TEST_CASE_ID == int(test_case_id)) \
                 .values(STATUS=str(test_case_result), EXECUTED_BY=str(user), DURATION_SEC=str(test_run_duration))
             connection.execute(update_statement)
 
@@ -440,11 +451,12 @@ def set_test_case_state(test_case_id, json_with_step_states):
 def update_test_steps_sql():
     pass
 
+
 def check_access_to_test_case_ado(test_case_id):
     test_case_ado_id = connection.execute(select([table_cases.c.TEST_CASE_ADO_ID])
-                                      .where(table_cases.c.TEST_CASE_ID == test_case_id)).fetchone()[0]
+                                          .where(table_cases.c.TEST_CASE_ID == test_case_id)).fetchone()[0]
     r = requests.get(WORKITEM_LINK + str(test_case_ado_id), headers=HEADERS,
-                           auth=('', get_ado_token_for_user(get_current_user)))
+                     auth=('', get_ado_token_for_user(get_current_user)))
     if r.status_code == 200:
         return True
     else:
@@ -459,13 +471,14 @@ def get_test_case_id_by_ado_id(suite_id, test_case_ado_id):
 
 
 def set_test_case_for_user(suite_id, test_case_id, json_data):
-    username = connection.execute(select([table_user.c.username])\
-            .where(table_user.c.id == json_data['userid'])).fetchone()[0]
+    username = connection.execute(select([table_user.c.username]) \
+                                  .where(table_user.c.id == json_data['userid'])).fetchone()[0]
     update_statement = table_cases.update().where(and_
-                                                 (table_cases.c.TEST_SUITE_ID == suite_id,
-                                                  table_cases.c.TEST_CASE_ADO_ID == test_case_id)) \
+                                                  (table_cases.c.TEST_SUITE_ID == suite_id,
+                                                   table_cases.c.TEST_CASE_ADO_ID == test_case_id)) \
         .values(EXECUTED_BY=username)
     connection.execute(update_statement)
+
 
 def get_list_of_suites():
     connection, meta = sql_connection()
@@ -474,26 +487,30 @@ def get_list_of_suites():
     test_suites_ids = [suite[0] for suite in test_suites_list_db]
     return test_suites_ids
 
+
 def get_test_case_states_for_suites(suites):
     result = {}
     result_detailed = {}
     for test_suite in suites:
         status = connection.execute(select([table_cases.c.STATUS, table_cases.c.TEST_CASE_ID,
                                             table_cases.c.TEST_CASE_ADO_ID, table_cases.c.TEST_CASE_NAME])
-        .where(and_(table_cases.c.TEST_SUITE_ID == test_suite))).fetchall()
+                                    .where(and_(table_cases.c.TEST_SUITE_ID == test_suite))).fetchall()
 
         list = [case[0] for case in status]
-        result[test_suite] = {'Failed' : list.count("Failed"),
-                            'Passed' : list.count("Passed"),
-                            'Blocked' : list.count("Blocked"),
-                            'Ready' : list.count("Ready"),
-                            'Paused' : list.count("Paused")}
-        result_detailed[test_suite] = {'Failed' : [[case[1], case[2], case[3]] for case in status if case[0]== 'Failed' ],
-                            'Passed' : [[case[1], case[2], case[3]] for case in status if case[0]== 'Passed'],
-                            'Blocked' : [[case[1], case[2], case[3]] for case in status if case[0]== 'Blocked'],
-                            'Ready' : [[case[1], case[2], case[3]] for case in status if case[0]== 'Ready'],
-                            'Paused' : [[case[1], case[2], case[3]] for case in status if case[0]== 'Paused']}
+        result[test_suite] = {'Failed': list.count("Failed"),
+                              'Passed': list.count("Passed"),
+                              'Blocked': list.count("Blocked"),
+                              'Ready': list.count("Ready"),
+                              'Paused': list.count("Paused")}
+        result_detailed[test_suite] = {
+            'Failed': [[case[1], case[2], case[3]] for case in status if case[0] == 'Failed'],
+            'Passed': [[case[1], case[2], case[3]] for case in status if case[0] == 'Passed'],
+            'Blocked': [[case[1], case[2], case[3]] for case in status if case[0] == 'Blocked'],
+            'Ready': [[case[1], case[2], case[3]] for case in status if case[0] == 'Ready'],
+            'Paused': [[case[1], case[2], case[3]] for case in status if case[0] == 'Paused']}
     return result, result_detailed
+
+
 # get_test_case_states_for_suites([2])
 
 def update_user_token(token):
@@ -507,3 +524,16 @@ def update_user_token(token):
         return 'failed'
 
 
+def get_test_run_date(test_suite_id, case_ado_id):
+    test_case_run = connection.execute(select([table_cases.c.CHANGE_STATE_DATE]).
+                                       where(and_(table_cases.c.TEST_CASE_ADO_ID == case_ado_id,
+                                                  table_cases.c.TEST_SUITE_ID == test_suite_id))).fetchone()[0]
+
+    return datetime.datetime.strptime(str(test_case_run), '%Y-%m-%d %H:%M:%S.%f').strftime("%b %d %Y %H:%M:%S")
+
+def get_test_run_duration(test_suite_id, case_ado_id):
+    test_case_duration = connection.execute(select([table_cases.c.DURATION_SEC]).
+                                       where(and_(table_cases.c.TEST_CASE_ADO_ID == case_ado_id,
+                                                  table_cases.c.TEST_SUITE_ID == test_suite_id))).fetchone()[0]
+
+    return test_case_duration
