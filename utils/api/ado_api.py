@@ -507,3 +507,16 @@ def update_user_token(token):
         return 'failed'
 
 
+def get_test_run_date(test_suite_id, case_ado_id):
+    test_case_run = connection.execute(select([table_cases.c.CHANGE_STATE_DATE]).
+                                       where(and_(table_cases.c.TEST_CASE_ADO_ID == case_ado_id,
+                                                  table_cases.c.TEST_SUITE_ID == test_suite_id))).fetchone()[0]
+
+    return datetime.datetime.strptime(str(test_case_run), '%Y-%m-%d %H:%M:%S.%f').strftime("%b %d %Y %H:%M:%S")
+
+def get_test_run_duration(test_suite_id, case_ado_id):
+    test_case_duration = connection.execute(select([table_cases.c.DURATION_SEC]).
+                                       where(and_(table_cases.c.TEST_CASE_ADO_ID == case_ado_id,
+                                                  table_cases.c.TEST_SUITE_ID == test_suite_id))).fetchone()[0]
+
+    return test_case_duration
