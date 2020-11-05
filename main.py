@@ -145,9 +145,8 @@ def check_access_to_ado_item(test_case_id):
 @login_required
 def get_test_case_statistics(test_suite_id, case_ado_id):
     try:
-        date = ado_api.get_test_run_date(test_suite_id, case_ado_id)
-        duration = ado_api.get_test_run_duration(test_suite_id, case_ado_id)
-        return json.dumps({'success': True, 'duration': duration, 'date': date}),\
+        date, duration, test_suite = ado_api.get_test_run_date_duration(test_suite_id, case_ado_id)
+        return json.dumps({'success': True, 'duration': duration, 'date': date, 'suite_name': test_suite}),\
                200, {'ContentType': 'application/json'}
     except:
         return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}

@@ -82,6 +82,7 @@
     <table class="table sttable" style="text-align: center;" id="statTable">
         <thead class="bg-primary font-weight-light thstat" style="color: #fff;">
         <tr>
+            <th scope="col">Suite</th>
             <th scope="col">Run by</th>
             <th scope="col">Result</th>
             <th scope="col">Duration</th>
@@ -193,6 +194,7 @@
         let tester;
         let testResult;
         let adoId;
+        let suiteName;
         let testSuiteId = window.location.href.substr(window.location.href.lastIndexOf("/")).replace("/", "");
 
         $("#mt tr.active").each(function () {
@@ -207,12 +209,16 @@
                 }).done(function (responseData) {
                     console.log('Done: ', responseData);
                     let resp = JSON.parse(responseData)
-                    runDate = resp["date"];
-                    duration = resp["duration"];
                     $("#statTable > tbody").empty();
-
-                    $('#statTable > tbody:last-child').append('<tr><td>' + tester + '</td><td>' + testResult + '</td>' +
-                    '<td>' + duration + '</td><td>' + runDate + '</td></tr>');
+                    for (let i = 0; i < resp["duration"].length; i++){
+                        if (resp["duration"][i] !== "None") {
+                           runDate = resp["date"][i];
+                           duration = resp["duration"][i];
+                           suiteName = resp["suite_name"][i];
+                           $('#statTable > tbody:last-child').append('<tr><td>' + suiteName + '</td><td>' + tester + '</td><td>' + testResult + '</td>' +
+                            '<td>' + duration + '</td><td>' + runDate + '</td></tr>');
+                        }
+                    }
                 }).fail(function () {
                     console.log('Failed');
                     alert("Cannot load statistics. Internal Server Error");

@@ -10,7 +10,7 @@ from ..constants import get_ado_token_for_user, QUERY_LINK, WIQL_LINK, HEADERS, 
 # from utils.api import ado_parser
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.sql import table, column, select, update, insert
-from sqlalchemy import Table, MetaData, create_engine, and_,desc
+from sqlalchemy import Table, MetaData, create_engine, and_, desc, join
 import datetime
 
 import aiohttp
@@ -507,16 +507,17 @@ def update_user_token(token):
         return 'failed'
 
 
-def get_test_run_date(test_suite_id, case_ado_id):
-    test_case_run = connection.execute(select([table_cases.c.CHANGE_STATE_DATE]).
-                                       where(and_(table_cases.c.TEST_CASE_ADO_ID == case_ado_id,
-                                                  table_cases.c.TEST_SUITE_ID == test_suite_id))).fetchone()[0]
+def get_test_run_date_duration(test_suite_id, case_ado_id):
+    data_list = connection.execute(select([table_cases.c.CHANGE_STATE_DATE, table_cases.c.DURATION_SEC, table_suites.c.TEST_SUITE_NAME]).select_from(join(table_suites, table_cases, table_suites.c.TEST_SUITE_ID==table_cases.c.TEST_SUITE_ID))
+                                   .where(table_cases.c.TEST_CASE_ADO_ID == case_ado_id)).fetchall()
+    execution_date = [datetime.datetime.strptime(str(data[0]), '%Y-%m-%d %H:%M:%S.%f').strftime("%b %d %Y %H:%M:%S") for data in data_list]
+    duration = [str(data[1]) for data in data_list]
+    test_suite = [str(data[2]) for data in data_list]
+    return execution_date, duration, test_suite
 
-    return datetime.datetime.strptime(str(test_case_run), '%Y-%m-%d %H:%M:%S.%f').strftime("%b %d %Y %H:%M:%S")
-
-def get_test_run_duration(test_suite_id, case_ado_id):
-    test_case_duration = connection.execute(select([table_cases.c.DURATION_SEC]).
-                                       where(and_(table_cases.c.TEST_CASE_ADO_ID == case_ado_id,
-                                                  table_cases.c.TEST_SUITE_ID == test_suite_id))).fetchone()[0]
-
-    return test_case_duration
+# def get_test_run_duration(test_suite_id, case_ado_id):
+#     test_case_duration = connection.execute(select([table_cases.c.DURATION_SEC]).
+#                                        where(and_(table_cases.c.TEST_CASE_ADO_ID == case_ado_id,
+#                                                   table_cases.c.TEST_SUITE_ID == test_suite_id))).fetchone()[0]
+#
+#     return test_case_duration
