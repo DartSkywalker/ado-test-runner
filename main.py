@@ -87,8 +87,8 @@ def user_settings():
 def save_test_result(test_case_id):
     data = request.get_json()
     try:
-        # if data['testResult']['is_changed'] == 'False':
-        if True:
+        if data['testResult']['is_changed'] == 'False':
+        # if True:
             ado_api.set_test_case_state(test_case_id, data)
             return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
         else:
@@ -151,4 +151,7 @@ def get_test_case_statistics(test_suite_id, case_ado_id):
     except:
         return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
 
-
+@main.route('/creator')
+@login_required
+def test_case_creator():
+    return render_template('test_creator.html')

@@ -387,7 +387,85 @@ def set_test_case_state(test_case_id, json_with_step_states):
     query = select([table_user.columns['username']]).where(table_user.columns['id'] == g.user)
     user = connection.execute(query).fetchone()[0]
     for id, statistic in json_with_step_states.items():
-        if id != 'testResult' and id != 'duration':
+        if id != 'testResult':
+            step_number = list(statistic.values())[0]
+            step_status = list(statistic.values())[1]
+            try:
+                comment = list(statistic.values())[2]
+            except IndexError:
+                comment = ""
+            update_statement = table_steps.update().where(and_
+                                                          (table_steps.c.TEST_CASE_ID == int(test_case_id),
+                                                           table_steps.c.STEP_NUMBER == int(step_number))) \
+                .values(STEP_STATUS=str(step_status), COMMENT=str(comment))
+            connection.execute(update_statement)
+        else:
+            test_case_result = list(statistic.values())[0]
+            test_run_duration = list(statistic.values())[1]
+            update_statement = table_cases.update().where(table_cases.c.TEST_CASE_ID == int(test_case_id))\
+                .values(STATUS=str(test_case_result), EXECUTED_BY=str(user), DURATION_SEC=str(test_run_duration))
+            connection.execute(update_statement)
+# json = {'0': {'stepNum': 1,'outcome': 'Passed', 'comment':"test"},'1': {'stepNum': 2,'outcome':'Failed'},
+#         '2': {'stepNum': 3,'outcome': 'Passed'},'3': {'stepNum': 4,'outcome':'Failed'},
+#         '4': {'stepNum': 5,'outcome': 'Passed'},'5': {'stepNum': 6,'outcome':'Passed'},
+#         '6': { 'stepNum': 7,'outcome': 'Passed'},'testResult': {'outcome': 'Failed'}}
+# set_test_case_state(1,json)
+
+
+def update_test_steps_in_ado(test_case_sql_id, data):
+    # Getting the list of test case steps before the changes
+    test_case_steps = get_test_case_steps_by_id(test_case_sql_id)
+
+    # Getting the ADO id of the test case
+    test_case_ADO_id = connection.execute(
+        select([table_cases.c.TEST_CASE_ADO_ID]).where(table_cases.c.TEST_CASE_ID == test_case_sql_id)).fetchall()
+    test_case_ADO_id = test_case_ADO_id[len(test_case_ADO_id) - 1][0]
+
+    # Converting dict of dicts to list
+    test_case_steps_changes = [list(test_case.values()) for test_case in list(data.values())]
+
+    # Create updated list of steps
+    updated_test_case = []
+    for step, updated_step in zip(test_case_steps, test_case_steps_changes):
+        if updated_step[3] == "" and updated_step[4] == "":
+            updated_test_case.append(step)
+        elif updated_step[3] != "" and updated_step[4] == "":
+            step[1] = updated_step[3]
+            updated_test_case.append(step)
+        elif updated_step[3] == "" and updated_step[4] != "":
+            step[2] = updated_step[4]
+            updated_test_case.append(step)
+        elif updated_step[3] != "" and updated_step[4] != "":
+            step[1] = updated_step[3]
+            step[2] = updated_step[4]
+            updated_test_case.append(step)
+
+    # Converting the Action and Expected result to xml format supported by ADO
+    result_steps_xml = ado_parser.convert_to_xml(updated_test_case)
+
+    # Changing HEADERS to json-patch from json in constants and sending change request
+    HEADERS = {'Content-type': 'application/json-patch+json'}
+    json_patch = [{"op": "replace", "path": "/fields/Microsoft.VSTS.TCM.Steps", "value": result_steps_xml}]
+    r_ado = requests.patch(
+        "https://dev.azure.com/HAL-LMKRD/RESDEV/_apis/wit/workitems/" + str(test_case_ADO_id) + "?api-version=6.0",
+        json=json_patch, headers=HEADERS, auth=('', get_ado_token_for_user(get_current_user)))
+
+    # Check ADO server accepted changes and return error message if not
+    try:
+        if str(json.loads(r_ado.text)['id']) == str(test_case_ADO_id):
+            result = "200"
+    except:
+        result = json.loads(r_ado.text)['message']
+    return result
+# print(update_test_steps_in_ado(2, data_example))
+
+
+def update_test_steps_sql(test_case_id, json_with_step_states):
+    g.user = current_user.get_id()
+    query = select([table_user.columns['username']]).where(table_user.columns['id'] == g.user)
+    user = connection.execute(query).fetchone()[0]
+    for id, statistic in json_with_step_states.items():
+        if id != 'testResult':
             step_number = list(statistic.values())[0]
             step_status = list(statistic.values())[1]
             try:
@@ -429,16 +507,6 @@ def set_test_case_state(test_case_id, json_with_step_states):
             update_statement = table_cases.update().where(table_cases.c.TEST_CASE_ID == int(test_case_id))\
                 .values(STATUS=str(test_case_result), EXECUTED_BY=str(user), DURATION_SEC=str(test_run_duration))
             connection.execute(update_statement)
-
-
-# json = {'0': {'stepNum': 1,'outcome': 'Passed', 'comment':"test"},'1': {'stepNum': 2,'outcome':'Failed'},
-#         '2': {'stepNum': 3,'outcome': 'Passed'},'3': {'stepNum': 4,'outcome':'Failed'},
-#         '4': {'stepNum': 5,'outcome': 'Passed'},'5': {'stepNum': 6,'outcome':'Passed'},
-#         '6': { 'stepNum': 7,'outcome': 'Passed'},'testResult': {'outcome': 'Failed'}}
-# set_test_case_state(1,json)
-
-def update_test_steps_sql():
-    pass
 
 def check_access_to_test_case_ado(test_case_id):
     test_case_ado_id = connection.execute(select([table_cases.c.TEST_CASE_ADO_ID])
