@@ -426,18 +426,24 @@ def update_test_steps_in_ado(test_case_sql_id, data):
 
     # Create updated list of steps
     updated_test_case = []
-    for step, updated_step in zip(test_case_steps, test_case_steps_changes):
-        if updated_step[3] == "" and updated_step[4] == "":
-            updated_test_case.append(step)
-        elif updated_step[3] != "" and updated_step[4] == "":
-            step[1] = updated_step[3]
-            updated_test_case.append(step)
-        elif updated_step[3] == "" and updated_step[4] != "":
-            step[2] = updated_step[4]
-            updated_test_case.append(step)
-        elif updated_step[3] != "" and updated_step[4] != "":
-            step[1] = updated_step[3]
-            step[2] = updated_step[4]
+    for step in test_case_steps:
+        is_changed = False
+        for updated_step in test_case_steps_changes[:-1]:
+            if step[0] == updated_step[0]:
+                is_changed = True
+                if updated_step[3] == "" and updated_step[4] == "":
+                    updated_test_case.append(step)
+                elif updated_step[3] != "" and updated_step[4] == "":
+                    step[1] = updated_step[3]
+                    updated_test_case.append(step)
+                elif updated_step[3] == "" and updated_step[4] != "":
+                    step[2] = updated_step[4]
+                    updated_test_case.append(step)
+                elif updated_step[3] != "" and updated_step[4] != "":
+                    step[1] = updated_step[3]
+                    step[2] = updated_step[4]
+                    updated_test_case.append(step)
+        if not is_changed:
             updated_test_case.append(step)
 
     # Converting the Action and Expected result to xml format supported by ADO
