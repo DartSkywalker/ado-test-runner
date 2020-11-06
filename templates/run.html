@@ -218,10 +218,15 @@
             };
     })(jQuery);
     {#TODO: change triple click to another event#}
+
     $(".action-result").on("tripleclick", function (e) {
-        $(this).attr("contenteditable", "true");
-        $(this).addClass("edited");
-        let clickedDiv = $(this);
+        if (userHasAdoAccess == true) {
+            $(this).attr("contenteditable", "true");
+            $(this).addClass("edited");
+            let clickedDiv = $(this);
+        } else {
+            alert("You cannot update this test case in ADO.\nPlease, check you permissions and try again");
+        }
     });
     $(".action-result").on("dblclick", function (e) {
         if (($(this).attr('contenteditable') === 'true') && $(this).hasClass("edited")) {
@@ -348,20 +353,21 @@
                         edited_expected = $(this).html()
                     }
                 })
-            } else {
-                alert('You cannot update this test case in ADO.\n Please, check your permissions or ADO token.')
             }
 
             testResults['testResult'] = {outcome: testCaseOutcome, duration: testRunDuration, is_changed: is_changed};
 
-
+            {#let isPassed = false;#}
+            {#let isFailed = false;#}
             $(this).find('#passed_label').each(function () {
                 if ($(this).hasClass('active')) {
+                    {#isPassed = true;#}
                     testResults[index] = {stepNum: index + 1, outcome: 'Passed', comment: comment, editedAction: edited_action, editedExpected: edited_expected}
                 }
             })
             $(this).find('#failed_label').each(function () {
                 if ($(this).hasClass('active')) {
+                    {#isFailed = true;#}
                     testResults[index] = {stepNum: index + 1, outcome: 'Failed', comment: comment, editedAction: edited_action, editedExpected: edited_expected}
                 }
             })
@@ -419,8 +425,6 @@
                         edited_expected = $(this).html()
                     }
                 })
-            } else {
-                alert('You cannot update this test case in ADO.\n Please, check your permissions or ADO token.')
             }
 
             testResults['testResult'] = {outcome: testCaseOutcome, duration: testRunDuration, is_changed: is_changed};

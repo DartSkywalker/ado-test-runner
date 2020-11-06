@@ -8,6 +8,10 @@ import json
 main = Blueprint('main', __name__, static_folder="static", static_url_path="")
 create_table()
 
+@main.errorhandler(404)
+def invalid_route(e):
+    return render_template("err404.html")
+
 @main.route('/save_user/<suite_id>/<test_case_id>', methods=['POST'])
 @login_required
 def set_user_for_test_case(suite_id, test_case_id):
@@ -86,21 +90,22 @@ def user_settings():
 @login_required
 def save_test_result(test_case_id):
     data = request.get_json()
-    try:
-        if data['testResult']['is_changed'] == 'False':
-        # if True:
-            ado_api.set_test_case_state(test_case_id, data)
+    # logger.warning(data)
+    # try:
+    if data['testResult']['is_changed'] == 'False':
+    # if True:
+        ado_api.set_test_case_state(test_case_id, data)
+        return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+    else:
+        ado_response = ado_api.update_test_steps_in_ado(test_case_id, data)
+        if ado_response == '200':
+            ado_api.update_test_steps_sql(test_case_id, data)
             return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
         else:
-            ado_response = ado_api.update_test_steps_in_ado(test_case_id, data)
-            if ado_response == '200':
-                ado_api.update_test_steps_sql(test_case_id, data)
-                return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
-            else:
-                return json.dumps({'success': False}), 200, {ado_response}
-    except Exception as e:
-        logger.error(e)
-        return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
+            return json.dumps({'success': False}), 200, {ado_response}
+    # except Exception as e:
+    #     logger.error(e)
+    #     return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
 
 @main.route('/run/<test_suite_id>/<test_case_id>')
 @login_required
@@ -155,3 +160,4 @@ def get_test_case_statistics(test_suite_id, case_ado_id):
 @login_required
 def test_case_creator():
     return render_template('test_creator.html')
+
