@@ -49,6 +49,13 @@ class Test_Steps(Base):
     STEP_STATUS = Column(String)
     COMMENT = Column(String)
 
+class Invite_Info(Base):
+    __tablename__ = 'INVITE_INFO'
+    ID = Column(Integer, primary_key=True, autoincrement=True)
+    CODE = Column(String)
+    ACTIVATED = Column(String)
+    ACTIVATED_BY = Column(Integer)
+
 def create_table():
     metadata = MetaData()
     Base.metadata.create_all(engine)

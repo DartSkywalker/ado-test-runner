@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from .models import user
 from flask_login import login_user, logout_user, login_required, current_user
 from loguru import logger
-
+from .utils import utils
 
 auth = Blueprint('auth', __name__)
 
@@ -42,7 +42,11 @@ def signup_post():
     username = request.form.get('username')
     password = request.form.get('password')
     token = request.form.get('token')
-
+    invite = request.form.get('invite')
+    logger.warning(invite)
+    if not utils.validate_invite(invite):
+        flash('Invalid invite code. Check you input and try again.')
+        return redirect(url_for('auth.signup'))  # if the user doesn't exist or password is wrong, reload the page
     new_user = user(username=username, password=generate_password_hash(password, method='sha256'), token=token)
 
     # add the new user to the database

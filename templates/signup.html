@@ -80,9 +80,16 @@
                         <div class="row row-space align-items-center">
                             <div class="col-12">
                                 <div class="input-group">
-
                                     <input class="input--style-4 input is-large" type="text" name="token" placeholder="ADO Token"
                                            autofocus="" aria-describedby="help-addon">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row row-space">
+                            <div class="col-12">
+                                <div class="input-group">
+                                    <input class="input--style-4 input is-large" type="text" name="invite" placeholder="Invite Code"
+                                           autofocus="">
                                 </div>
                             </div>
                         </div>
@@ -97,6 +104,13 @@
                         <div class="row row-space flex">
                             <div class="col-12">
                         <input class="btn btn-default btn--radius-2 btn--blue" type="submit" value="Sign Up">
+                                    {% with messages = get_flashed_messages() %}
+                                    {% if messages %}
+                                    <div class="notification is-danger">
+                                        {{ messages[0] }}
+                                    </div>
+                                    {% endif %}
+                                    {% endwith %}
                             </div>
                         </div>
                     </form>
@@ -116,7 +130,6 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js" integrity="sha384-LtrjvnR4Twt/qOuYxE721u19sVFLVSA4hf/rRt6PrZTmiPltdZcI7q7PXQBYTKyf" crossorigin="anonymous"></script>
 
 <script>
-
         $('.help-icon-reg').popover();
 </script>
 </body>
