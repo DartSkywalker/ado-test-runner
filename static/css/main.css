@@ -1014,3 +1014,11 @@ td.subtr {
 .area-creator {
     height: 100px !important;
 }
+
+.help-icon {
+    background: url('info-128.png');
+    height: 24px;
+    width: 24px;
+    display: block;
+    white-space: pre-wrap;
+}
