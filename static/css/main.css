@@ -268,7 +268,7 @@ h6 {
 }
 
 .wrapper--w450 {
-    max-width: 450px;
+    max-width: 490px;
 }
 
 .wrapper--w680 {
@@ -1021,4 +1021,19 @@ td.subtr {
     width: 24px;
     display: block;
     white-space: pre-wrap;
+}
+
+.help-icon-reg {
+    background: url('icon-info-signup.png');
+    height: 24px;
+    width: 24px;
+    display: block;
+    white-space: pre-wrap;
+    top: 25px;
+    right: 25px;
+    position: absolute;
+}
+
+.help-icon-reg-link {
+
 }
