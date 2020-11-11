@@ -1034,6 +1034,40 @@ td.subtr {
     position: absolute;
 }
 
-.help-icon-reg-link {
+#invites_div {
+    height: 200px;
+    width: 700px;
+    padding-top: 50px;
+    padding-left: 50px;
 
+}
+
+#invites_table {
+    width: 100%;
+    text-align: center;
+}
+
+#members_div {
+    width: 45%;
+    margin-top: 15px;
+    margin-left: 15px;
+}
+
+#users_table {
+    text-align: center;
+}
+
+.invite-generate-group {
+    width: 45%;
+}
+
+.generate-button {
+    height: 38px;
+    vertical-align: center;
+    padding: 0;
+    font-size: 14px;
+    margin: 0 auto;
+    line-height: 38px;
+    padding-left: 3px;
+    padding-right: 3px;
 }
