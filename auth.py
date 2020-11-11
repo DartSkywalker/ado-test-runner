@@ -47,7 +47,8 @@ def signup_post():
     if not utils.validate_invite(invite):
         flash('Invalid invite code. Check you input and try again.')
         return redirect(url_for('auth.signup'))  # if the user doesn't exist or password is wrong, reload the page
-    new_user = user(username=username, password=generate_password_hash(password, method='sha256'), token=token)
+    new_user = user(username=username, password=generate_password_hash(password, method='sha256'), token=token,
+                    role='engineer')
 
     # add the new user to the database
     db.session.add(new_user)

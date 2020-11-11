@@ -8,7 +8,7 @@
 
 
     <!-- Title Page-->
-    <title>Test Suites</title>
+    <title>Admin Panel</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
@@ -69,7 +69,7 @@
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
             <a class="nav-item nav-link active" id="invites" data-toggle="tab" href="#nav-home" role="tab"
                aria-controls="nav-home" aria-selected="true">Invites info</a>
-            <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab"
+            <a class="nav-item nav-link" id="members-tab" data-toggle="tab" href="#nav-members" role="tab"
                aria-controls="nav-profile" aria-selected="false">Members</a>
             <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab"
                aria-controls="nav-contact" aria-selected="false">Settings</a>
@@ -103,7 +103,35 @@
             </div>
 
         </div>
-        <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">...</div>
+        <div class="tab-pane fade" id="nav-members" role="tabpanel" aria-labelledby="members-tab">
+            <div id="members_div">
+
+                <table id="users_table" class="table">
+                    <thead class="bg-primary font-weight-light" style="color: #fff;">
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Role</th>
+                    </thead>
+                    {% for user_id, user_data in usersdict.items() %}
+                        <tr>
+                            <td>{{ user_id }}</td>
+                            <td>{{ user_data[0] }}</td>
+                            <td>
+                                <select class="form-control set-user-role form-users">
+                                    {% for default_role in user_roles_list %}
+                                        {% if user_data[1] == default_role %}
+                                            <option value="{{ default_role }}" selected>{{ user_data[1] }}</option>
+                                        {% else %}
+                                            <option value="{{ default_role }}">{{ default_role }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
         <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">...</div>
     </div>
 
@@ -136,11 +164,35 @@
             url: "/generate_invites/" + num_of_codes,
             type: 'GET'
         }).done(function (responseData) {
-          setTimeout(function(){
-           location.reload();
+            setTimeout(function () {
+                location.reload();
             }, 1000);
         }).fail(function () {
             alert("Cannot generate invites. Internal Server Error");
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $(".set-user-role").on('change', function () {
+            let newUserRole = $(this).val()
+            let userIdToChange = $(this).closest("tr").find("td:first-child").text()
+            let usernameToChange = $(this).closest("tr").find("td:nth-child(2)").text()
+
+            let r = confirm("Do you want assign a new role for " + usernameToChange + " (user_id: " + userIdToChange + ")? New Role: " + newUserRole);
+            if (r === true) {
+                $.ajax({
+                    url: "/change_user_role/" + userIdToChange + "/" + newUserRole,
+                    type: 'GET'
+                }).done(function (responseData) {
+                    setTimeout(function () {
+                        location.reload();
+                    }, 300);
+                }).fail(function () {
+                    alert("Cannot change user role. Internal Server Error");
+                });
+            }
         });
     });
 </script>

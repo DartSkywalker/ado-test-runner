@@ -4,7 +4,8 @@ from flask_login import login_required, current_user
 from loguru import logger
 from .models_data import create_table
 import json
-from .utils.utils import get_invites_table, generate_invite_codes, get_user_role
+from .utils.utils import get_invites_table, generate_invite_codes, get_user_role, get_users_dict, set_new_user_role
+from .utils.constants import USER_ROLES
 
 main = Blueprint('main', __name__, static_folder="static", static_url_path="")
 create_table()
@@ -167,9 +168,13 @@ def test_case_creator():
 def admin_panel():
     if get_user_role() == 'admin':
         ids, code, activated = get_invites_table()
-        return render_template('admin_panel.html', ids=ids, code=code, activated=activated, username=ado_api.get_current_user())
+        users_dict = get_users_dict()
+        return render_template('admin_panel.html', ids=ids, code=code, activated=activated,
+                               username=ado_api.get_current_user(), usersdict=users_dict,
+                               user_roles_list=USER_ROLES)
     else:
         return redirect(url_for("main.test_suites"))
+
 
 @main.route('/generate_invites/<num>', methods=['GET'])
 @login_required
@@ -178,3 +183,14 @@ def generate_invites(num):
         return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
     else:
         return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
+
+
+@main.route('/change_user_role/<user_id>/<new_role>', methods=['GET'])
+@login_required
+def change_user_role(user_id, new_role):
+    if get_user_role() == 'admin':
+        if set_new_user_role(user_id, new_role):
+            return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+        else:
+            return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
+

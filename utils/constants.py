@@ -20,3 +20,4 @@ WIQL_LINK = "https://dev.azure.com/HAL-LMKRD/RESDEV/_apis/wit/wiql/"
 WORKITEM_LINK = "https://dev.azure.com/HAL-LMKRD/RESDEV/_apis/wit/workitems/"
 HEADERS = {'Content-type': 'application/json'}
 DB_NAME = "ado.db"
+USER_ROLES = ["admin", "manager", "engineer"]

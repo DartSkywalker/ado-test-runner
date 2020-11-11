@@ -80,8 +80,31 @@ def get_user_role():
     try:
         user_role = connection.execute(select([table_users.c.role]) \
                                        .where(table_users.c.id == user_id)).fetchone()[0]
-        logger.warning(user_role)
         return user_role
     except Exception as e:
         logger.critical(e)
         return ""
+
+
+def get_users_dict():
+    connection, meta = sql_connection()
+    table_users = Table('user', meta)
+    user_role = connection.execute(select([table_users.c.id, table_users.c.username, table_users.c.role])).fetchall()
+    user_id = [data[0] for data in user_role]
+    username = [data[1] for data in user_role]
+    user_role = [data[2] for data in user_role]
+    logger.warning(dict(zip(user_id, zip(username, user_role))))
+    return dict(zip(user_id, zip(username, user_role)))
+
+
+def set_new_user_role(user_id, new_role):
+    connection, meta = sql_connection()
+    table_users = Table('user', meta)
+    try:
+        update_statement = table_users.update().where(table_users.c.id == int(user_id)) \
+            .values(role=str(new_role))
+        connection.execute(update_statement)
+        return True
+    except Exception as e:
+        logger.critical(e)
+        return False
