@@ -297,6 +297,12 @@ def get_current_user():
     user = connection.execute(query).fetchall()
     return str(user[0][0])
 
+def get_current_user_id():
+    g.user = current_user.get_id()
+    query = select([table_user.columns['id']]).where(table_user.c.id == g.user)
+    user = connection.execute(query).fetchall()
+    return str(user[0][0])
+
 
 def get_all_users():
     query = select([table_user.c.username, table_user.c.id])

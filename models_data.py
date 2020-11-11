@@ -17,6 +17,7 @@ class user(Base):
     username = Column(String(100), unique=True)
     password = Column(String(100))
     token = Column(String(100))
+    role = Column(String(100))
     # test_case=relationship("TEST_CASES")
 
 class Test_Suites(Base):

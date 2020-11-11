@@ -4,6 +4,7 @@ from flask_login import login_required, current_user
 from loguru import logger
 from .models_data import create_table
 import json
+from .utils.utils import get_invites_table, generate_invite_codes, get_user_role
 
 main = Blueprint('main', __name__, static_folder="static", static_url_path="")
 create_table()
@@ -161,3 +162,19 @@ def get_test_case_statistics(test_suite_id, case_ado_id):
 def test_case_creator():
     return render_template('test_creator.html')
 
+@main.route('/admin')
+@login_required
+def admin_panel():
+    if get_user_role() == 'admin':
+        ids, code, activated = get_invites_table()
+        return render_template('admin_panel.html', ids=ids, code=code, activated=activated, username=ado_api.get_current_user())
+    else:
+        return redirect(url_for("main.test_suites"))
+
+@main.route('/generate_invites/<num>', methods=['GET'])
+@login_required
+def generate_invites(num):
+    if generate_invite_codes(num):
+        return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+    else:
+        return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
