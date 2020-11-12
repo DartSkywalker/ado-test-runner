@@ -77,11 +77,11 @@
                             </div>
                         </div>
                         <div class="col-5 auto-margin">
-                            <!--                            <div style="display: flex; justify-content: center; align-items: center; height: 77%">-->
+
                             <button class="align-self-end btn-index btn--radius-2 btn--blue" type="submit" name="btn"
                                     id="addSuite" value="addSuite">Add Suite
                             </button>
-                            <!--                            </div>-->
+
                         </div>
                     </div>
                 </form>
@@ -92,9 +92,9 @@
                                 <label class="label">Test Suites</label>
                                 <select name="test_suites">
                                     {% for suite_id, suite_name in test_suite_dict.items() %}
-                                    <option value="{{suite_id}}">
-                                        {{suite_name}}
-                                    </option>
+                                        <option value="{{ suite_id }}">
+                                            {{ suite_name }}
+                                        </option>
                                     {% endfor %}
                                 </select>
                                 <div class="select-dropdown"></div>
@@ -110,7 +110,13 @@
                             </button>
                         </div>
                     </div>
-
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            <div class="notification is-danger">
+                                {{ messages[0] }}
+                            </div>
+                        {% endif %}
+                    {% endwith %}
                 </form>
             </div>
         </div>

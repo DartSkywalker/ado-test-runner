@@ -1,4 +1,4 @@
-from flask import Blueprint, Flask, request, render_template, redirect, url_for
+from flask import Blueprint, Flask, request, render_template, redirect, url_for, flash
 from .utils.api import ado_api
 from flask_login import login_required, current_user
 from loguru import logger
@@ -39,9 +39,15 @@ def add_test_suite():
         if request.method == 'POST':
             return redirect('/cases/' + request.form.get('test_suites'))
             # return redirect(url_for('main.test_cases_list', test_suite_name=request.form.get('test_suites')))
+
     query_id = request.form['query_id']
-    ado_api.create_new_test_suite_in_db(str(query_id))
-    return redirect(url_for('main.test_suites'))
+    if ado_api.check_access_to_ado_query(query_id):
+        ado_api.create_new_test_suite_in_db(str(query_id))
+        return redirect(url_for('main.test_suites'))
+    else:
+        flash('Access denied. Please check your ADO Token')
+        return redirect(url_for('main.test_suites'))
+
 
 
 @main.route('/cases/<suite_id>', methods=['GET', 'POST'])
