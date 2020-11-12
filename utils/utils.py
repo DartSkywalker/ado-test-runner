@@ -5,6 +5,7 @@ import sys
 from sqlalchemy.sql import table, column, select, update, insert
 from sqlalchemy import Table, MetaData, create_engine, and_, desc, join
 from .api.ado_api import sql_connection, get_current_user, get_current_user_id
+from werkzeug.security import generate_password_hash
 from loguru import logger
 import random
 import string
@@ -103,6 +104,21 @@ def set_new_user_role(user_id, new_role):
     try:
         update_statement = table_users.update().where(table_users.c.id == int(user_id)) \
             .values(role=str(new_role))
+        connection.execute(update_statement)
+        return True
+    except Exception as e:
+        logger.critical(e)
+        return False
+
+
+def change_password_for_user(new_pass):
+    connection, meta = sql_connection()
+    table_users = Table('user', meta)
+    user_id = get_current_user_id()
+    new_pass_encrypted = generate_password_hash(new_pass, method='sha256')
+    try:
+        update_statement = table_users.update().where(table_users.c.id == int(user_id)) \
+            .values(password=str(new_pass_encrypted))
         connection.execute(update_statement)
         return True
     except Exception as e:

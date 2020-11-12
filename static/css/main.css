@@ -1071,3 +1071,11 @@ td.subtr {
     padding-left: 3px;
     padding-right: 3px;
 }
+
+.change-pass-form {
+    margin-top: 20px;
+}
+
+.width-100 {
+    width: 100% !important;
+}

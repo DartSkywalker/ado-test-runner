@@ -66,21 +66,49 @@
 </nav>
 
 
-                <div id='saveSuccess' class="inner success-save-settings" style="display: none">Saved</div>
-                <div id='saveFailed' class="inner failed-save-settings" style="display: none">Check your input</div>
+<div id='saveSuccess' class="inner success-save-settings" style="display: none">Saved</div>
+<div id='saveFailed' class="inner failed-save-settings" style="display: none">Check your input</div>
 
-    <div class="page-wrapper bg-gra-03 p-t-130 p-b-100 font-poppins">
-        <div class="wrapper wrapper--w680">
-            <div class="card card-4">
-                <div class="card-body">
-                    <h2 class="title">{{ username }} settings</h2>
-                    <form method="POST">
+<div class="page-wrapper bg-gra-03 p-t-130 p-b-100 font-poppins">
+    <div class="wrapper wrapper--w680">
+        <div class="card card-4">
+            <div class="card-body">
+                <h2 class="title">{{ username }} settings</h2>
+                <form method="POST" name="saveTokenName">
+                    <div class="row row-space">
+                        <div class="col-12">
+                            <div class="input-group">
+                                <label class="label">Azure DevOps token</label>
+                                <input class="input--style-4" maxlength="53" type="text" placeholder="Token" id="token"
+                                       name="ado-token" value="">
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row row-space">
+                        <div class="col-12">
+                            <div>
+                                <button class="btn btn-default btn--radius-2 btn--blue width-100" name="saveTokenName" id="save"
+                                        value="SaveToken">Update Token</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+
+                <div class="change-pass-form">
+{#                    <form>#}
+                        <h4 style="margin-bottom: 5px">Change password</h4>
                         <div class="row row-space">
                             <div class="col-12">
                                 <div class="input-group">
-                                    <label class="label">Azure DevOps token</label>
-                                    <input class="input--style-4" maxlength="53" type="text" placeholder="Token" id="token" name="ado-token" value="">
+                                    <input class="input--style-4" maxlength="53" type="password"
+                                           placeholder="New Password" id="newPass" name="newPass" value="">
 
+                                    <input class="input--style-4" maxlength="53" type="password"
+                                           placeholder="Confirm password" id="newPassConfirm" name="newPassConfirm" value=""
+                                           style="margin-top: 10px;">
                                 </div>
                             </div>
                         </div>
@@ -88,17 +116,17 @@
                         <div class="row row-space">
                             <div class="col-12">
                                 <div>
-                                    <input class="btn btn-default btn--radius-2 btn--blue" type="submit" id="save" value="Save">
-
+                                    <button class="btn btn-default btn--radius-2 btn--blue width-100" type="submit"
+                                            id="savePassword" value="Update password">Update Password</button>
                                 </div>
                             </div>
                         </div>
-
-                    </form>
+{#                    </form>#}
                 </div>
             </div>
         </div>
     </div>
+</div>
 </div>
 
 
@@ -113,39 +141,70 @@
 <script src="../static/js/global.js"></script>
 
 <script
-  src="https://code.jquery.com/jquery-3.5.1.min.js"
-  integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
-  crossorigin="anonymous"></script>
+        src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+        crossorigin="anonymous"></script>
 <script crossorigin="anonymous" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
         src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 <script crossorigin="anonymous" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
         src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script>
-$("#save").on("click", function(e) {
-    e.preventDefault();
-    let token = $("#token").val();
-    $.ajax({type: "POST",
-        url: "/settings",
-        data: JSON.stringify({ token: token }),
-        contentType: 'application/json',
-        success:function(result) {
-            $("#saveSuccess").css('display', 'flex')
-            $("#saveSuccess").fadeOut(3000)
-        },
-        error:function(result) {
-            $("#saveFailed").css('display', 'flex')
-            $('#token').addClass('errorHighlight');
-            setTimeout(function () {
-            $('#token').removeClass('errorHighlight');
+    $("#save").on("click", function (e) {
+        e.preventDefault();
+        let token = $("#token").val();
+        $.ajax({
+            type: "POST",
+            url: "/settings",
+            data: JSON.stringify({token: token}),
+            contentType: 'application/json',
+            success: function (result) {
+                $("#saveSuccess").css('display', 'flex')
+                $("#saveSuccess").fadeOut(3000)
+            },
+            error: function (result) {
+                $("#saveFailed").css('display', 'flex')
+                $('#token').addClass('errorHighlight');
+                setTimeout(function () {
+                    $('#token').removeClass('errorHighlight');
                 }, 3000);
-            $("#saveFailed").fadeOut(3000)
-    }
+                $("#saveFailed").fadeOut(3000)
+            }
+        });
     });
-});
 </script>
 
-</body><!-- This templates was made by Colorlib (https://colorlib.com) -->
+<script>
+$(document).on('click','#savePassword',function(e) {
+    e.preventDefault();
+    let newPass = $("#newPass").val();
+    let newPassConfirm = $("#newPassConfirm").val();
+
+    if (newPass === newPassConfirm) {
+        $.ajax({
+            type: "POST",
+            url: "/changepass",
+            data: JSON.stringify({newpass: newPass}),
+            contentType: 'application/json',
+            success: function (result) {
+                $("#saveSuccess").css('display', 'flex')
+                $("#saveSuccess").fadeOut(3000)
+            },
+            error: function (result) {
+                $("#saveFailed").css('display', 'flex')
+                $('#newPass').addClass('errorHighlight');
+                $('#newPassConfirm').addClass('errorHighlight');
+                setTimeout(function () {
+                    $('#newPassConfirm').removeClass('errorHighlight');
+                    $('#newPass').removeClass('errorHighlight');
+                }, 3000);
+                $("#saveFailed").fadeOut(3000)
+            }
+        });
+    }
+})
+</script>
+
+</body>
 
 </html>
-<!-- end document-->

@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 from loguru import logger
 from .models_data import create_table
 import json
-from .utils.utils import get_invites_table, generate_invite_codes, get_user_role, get_users_dict, set_new_user_role
+from .utils.utils import get_invites_table, generate_invite_codes, get_user_role, get_users_dict, set_new_user_role, change_password_for_user
 from .utils.constants import USER_ROLES
 
 main = Blueprint('main', __name__, static_folder="static", static_url_path="")
@@ -80,7 +80,6 @@ def redirect_from_main():
 def user_settings():
     if request.method == 'POST':
         data = request.get_json()
-
         if (len(data['token']) < 50):
             return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
         else:
@@ -193,4 +192,14 @@ def change_user_role(user_id, new_role):
             return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
         else:
             return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
+
+
+@main.route('/changepass', methods=['POST'])
+@login_required
+def change_user_password():
+    data = request.get_json()
+    if change_password_for_user(data['newpass']):
+        return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+    else:
+        return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
 
