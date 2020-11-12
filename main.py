@@ -12,7 +12,7 @@ create_table()
 
 @main.errorhandler(404)
 def invalid_route(e):
-    return render_template("err404.html")
+    return render_template("error404.html")
 
 @main.route('/save_user/<suite_id>/<test_case_id>', methods=['POST'])
 @login_required
