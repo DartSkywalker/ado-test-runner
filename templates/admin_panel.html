@@ -132,7 +132,9 @@
                 </table>
             </div>
         </div>
-        <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">...</div>
+        <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+            Settings tab
+        </div>
     </div>
 
 </div>
@@ -186,9 +188,7 @@
                     url: "/change_user_role/" + userIdToChange + "/" + newUserRole,
                     type: 'GET'
                 }).done(function (responseData) {
-                    setTimeout(function () {
-                        location.reload();
-                    }, 300);
+                    alert("Role successfully changed");
                 }).fail(function () {
                     alert("Cannot change user role. Internal Server Error");
                 });
