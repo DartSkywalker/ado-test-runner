@@ -4,11 +4,13 @@ import os
 import sys
 from sqlalchemy.sql import table, column, select, update, insert
 from sqlalchemy import Table, MetaData, create_engine, and_, desc, join
-from .api.sql_api import sql_connection, get_current_user, get_current_user_id
+from .api.sql_api import sql_connection
 from werkzeug.security import generate_password_hash
 from loguru import logger
 import random
 import string
+from flask_login import current_user
+
 
 
 def validate(username, password):
@@ -77,7 +79,7 @@ def generate_invite_codes(num_of_codes):
 def get_user_role():
     connection, meta = sql_connection()
     table_users = Table('user', meta)
-    user_id = get_current_user_id()
+    user_id = current_user.get_id()
     try:
         user_role = connection.execute(select([table_users.c.role]) \
                                        .where(table_users.c.id == user_id)).fetchone()[0]
@@ -114,7 +116,7 @@ def set_new_user_role(user_id, new_role):
 def change_password_for_user(new_pass):
     connection, meta = sql_connection()
     table_users = Table('user', meta)
-    user_id = get_current_user_id()
+    user_id = current_user.get_id()
     new_pass_encrypted = generate_password_hash(new_pass, method='sha256')
     try:
         update_statement = table_users.update().where(table_users.c.id == int(user_id)) \
