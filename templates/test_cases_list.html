@@ -321,9 +321,9 @@
             $('.runTest').hide();
             $('.statistics').hide();
         } else if ($(this).closest('tr.clickable-row').hasClass('active')) {
-            $(this).find('tr.clickable-row').removeClass('active');
-            $('.runTest').hide();
-            $('.statistics').hide();
+            {#$(this).find('tr.clickable-row').removeClass('active');#}
+            {#$('.runTest').hide();#}
+            {#$('.statistics').hide();#}
 
         } else {
             $(this).closest('tr.clickable-row').addClass('active').siblings().removeClass('active');
