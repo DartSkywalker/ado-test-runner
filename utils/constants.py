@@ -1,6 +1,6 @@
 # from ..crelds import ADO_TOKEN
 import os
-from ..utils.api import ado_api
+from .api import ado_api
 from flask_login import current_user
 from flask import g
 from sqlalchemy.sql import table, column, select, update, insert
