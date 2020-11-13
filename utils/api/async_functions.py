@@ -10,7 +10,7 @@ from sqlalchemy import select
 from . import ado_parser
 from .ado_api import get_test_cases_urls_by_query_id, get_query_name_by_query_id, connection
 from .sql_api import table_user, table_suites, table_cases, table_steps, get_current_user
-from utils.constants import HEADERS, get_ado_token_for_user
+from ..constants import HEADERS, get_ado_token_for_user
 
 
 async def request_test_case_data(session, url):
