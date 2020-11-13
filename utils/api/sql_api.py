@@ -88,13 +88,6 @@ def get_current_user():
     return str(user[0][0])
 
 
-def get_current_user_id():
-    g.user = current_user.get_id()
-    query = select([table_user.columns['id']]).where(table_user.c.id == g.user)
-    user = connection.execute(query).fetchall()
-    return str(user[0][0])
-
-
 def get_all_users():
     query = select([table_user.c.username, table_user.c.id])
     users = connection.execute(query).fetchall()
@@ -241,9 +234,9 @@ def set_test_case_for_user(suite_id, test_case_id, json_data):
 
 
 def set_test_case_state(test_case_id, json_with_step_states):
-    g.user = current_user.get_id()
-    query = select([table_user.columns['username']]).where(table_user.columns['id'] == g.user)
-    user = connection.execute(query).fetchone()[0]
+    # g.user = current_user.get_id()
+    # query = select([table_user.columns['username']]).where(table_user.columns['id'] == g.user)
+    user = get_current_user()
     for id, statistic in json_with_step_states.items():
         if id != 'testResult':
             step_number = list(statistic.values())[0]
