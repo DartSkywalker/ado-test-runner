@@ -282,9 +282,7 @@ def update_user_token(token):
 
 
 def update_test_steps_sql(test_case_id, json_with_step_states):
-    g.user = current_user.get_id()
-    query = select([table_user.columns['username']]).where(table_user.columns['id'] == g.user)
-    user = connection.execute(query).fetchone()[0]
+    user = get_current_user()
     for id, statistic in json_with_step_states.items():
         if id != 'testResult':
             step_number = list(statistic.values())[0]

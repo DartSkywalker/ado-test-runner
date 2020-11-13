@@ -1,7 +1,7 @@
 from flask import Blueprint, Flask, request, render_template, redirect, url_for, flash
 
-import utils.api.async_functions
-import utils.api.sql_api
+from .utils.api import sql_api
+from .utils.api import async_functions
 from .utils.api import ado_api
 from flask_login import login_required, current_user
 from loguru import logger
@@ -23,7 +23,7 @@ def set_user_for_test_case(suite_id, test_case_id):
     try:
         data = request.get_json()
         logger.warning(data)
-        utils.api.sql_api.set_test_case_for_user(suite_id, test_case_id, data)
+        sql_api.set_test_case_for_user(suite_id, test_case_id, data)
         return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
     except:
         return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
@@ -31,8 +31,8 @@ def set_user_for_test_case(suite_id, test_case_id):
 @main.route('/suites', methods=['GET'])
 @login_required
 def test_suites():
-    return render_template('index.html', test_suite_dict=utils.api.sql_api.get_test_suites_from_database(),
-                           username=utils.api.sql_api.get_current_user())
+    return render_template('index.html', test_suite_dict=sql_api.get_test_suites_from_database(),
+                           username=sql_api.get_current_user())
 
 
 @main.route('/suites', methods=['POST'])
@@ -48,7 +48,7 @@ def add_test_suite():
         flash('Please, enter a valid Query ID')
         return redirect(url_for('main.test_suites'))
     if ado_api.check_access_to_ado_query(query_id):
-        utils.api.async_functions.create_new_test_suite_in_db(str(query_id))
+        async_functions.create_new_test_suite_in_db(str(query_id))
         return redirect(url_for('main.test_suites'))
     else:
         flash('Access denied. Please check your ADO Token')
@@ -59,25 +59,25 @@ def add_test_suite():
 @main.route('/cases/<suite_id>', methods=['GET', 'POST'])
 @login_required
 def test_cases_list(suite_id):
-    test_cases_dict = utils.api.sql_api.get_test_cases_from_db_by_suite_name(suite_id)
-    test_suite_name = utils.api.sql_api.get_test_suite_name_by_id(suite_id)
+    test_cases_dict = sql_api.get_test_cases_from_db_by_suite_name(suite_id)
+    test_suite_name = sql_api.get_test_suite_name_by_id(suite_id)
     return render_template('test_cases_list.html', test_suite_name=test_suite_name, test_cases_dict=test_cases_dict,
-                           username=utils.api.sql_api.get_current_user(),
-                           users_dict=utils.api.sql_api.get_all_users(),
+                           username=sql_api.get_current_user(),
+                           users_dict=sql_api.get_all_users(),
                            test_suite_id=suite_id)
 
 
 @main.route('/cases/<suite_id>/<test_case_ado_id>', methods=['GET', 'POST'])
 @login_required
 def redirect_from_suite_to_run(suite_id, test_case_ado_id):
-    test_case_id = utils.api.sql_api.get_test_case_id_by_ado_id(suite_id, test_case_ado_id)
+    test_case_id = sql_api.get_test_case_id_by_ado_id(suite_id, test_case_ado_id)
     return redirect(url_for('main.test_run', test_suite_id=suite_id, test_case_id=test_case_id))
 
 
 @main.route('/about', methods=['GET', 'POST'])
 def about_page():
     if current_user.is_authenticated:
-        return render_template("about.html", username=utils.api.sql_api.get_current_user())
+        return render_template("about.html", username=sql_api.get_current_user())
     else:
         return render_template("about_not_auth.html")
 
@@ -95,9 +95,9 @@ def user_settings():
         if (len(data['token']) < 50):
             return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
         else:
-            if utils.api.sql_api.update_user_token(data['token']) != 'failed':
+            if sql_api.update_user_token(data['token']) != 'failed':
                 return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
-    return render_template('settings.html', username=utils.api.sql_api.get_current_user())
+    return render_template('settings.html', username=sql_api.get_current_user())
 
 @main.route('/save_test_result/<test_case_id>', methods=['POST'])
 @login_required
@@ -107,12 +107,12 @@ def save_test_result(test_case_id):
     # try:
     if data['testResult']['is_changed'] == 'False':
     # if True:
-        utils.api.sql_api.set_test_case_state(test_case_id, data)
+        sql_api.set_test_case_state(test_case_id, data)
         return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
     else:
         ado_response = ado_api.update_test_steps_in_ado(test_case_id, data)
         if ado_response == '200':
-            utils.api.sql_api.update_test_steps_sql(test_case_id, data)
+            sql_api.update_test_steps_sql(test_case_id, data)
             return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
         else:
             return json.dumps({'success': False}), 200, {ado_response}
@@ -123,31 +123,31 @@ def save_test_result(test_case_id):
 @main.route('/run/<test_suite_id>/<test_case_id>')
 @login_required
 def test_run(test_suite_id, test_case_id):
-    steps_data_list = utils.api.sql_api.get_test_case_steps_by_id(test_case_id)
-    test_case_name = utils.api.sql_api.get_test_case_name_by_id(test_case_id)
+    steps_data_list = sql_api.get_test_case_steps_by_id(test_case_id)
+    test_case_name = sql_api.get_test_case_name_by_id(test_case_id)
     return render_template("run.html", test_case_name=test_case_name, steps_data_list=steps_data_list)
 
 
 @main.route('/cases/<suite_id>/<test_case_ado_id>/stat', methods=['GET', 'POST'])
 @login_required
 def redirect_from_suite_to_statistics(suite_id, test_case_ado_id):
-    test_case_id = utils.api.sql_api.get_test_case_id_by_ado_id(suite_id, test_case_ado_id)
+    test_case_id = sql_api.get_test_case_id_by_ado_id(suite_id, test_case_ado_id)
     return redirect(url_for('main.test_statistics', suite_id=suite_id, test_case_id=test_case_id))
 
 
 @main.route('/statistics/<suite_id>/<test_case_id>')
 @login_required
 def test_statistics(suite_id, test_case_id):
-    test_case_name = utils.api.sql_api.get_test_case_name_by_id(test_case_id)
+    test_case_name = sql_api.get_test_case_name_by_id(test_case_id)
     return render_template("statistics.html", test_case_name=test_case_name)
 
 @main.route('/suitify')
 @login_required
 def suites_list():
-    suites_list = utils.api.sql_api.get_list_of_suites()
-    suite_info_dict = utils.api.sql_api.get_test_suites_info()
-    _, suite_info_dict_detailed = utils.api.sql_api.get_test_case_states_for_suites(suites_list)
-    return render_template("suite_list.html", username=utils.api.sql_api.get_current_user(), suite_info=suite_info_dict,
+    suites_list = sql_api.get_list_of_suites()
+    suite_info_dict = sql_api.get_test_suites_info()
+    _, suite_info_dict_detailed = sql_api.get_test_case_states_for_suites(suites_list)
+    return render_template("suite_list.html", username=sql_api.get_current_user(), suite_info=suite_info_dict,
                            suite_info_detailed=suite_info_dict_detailed)
 
 
@@ -163,7 +163,7 @@ def check_access_to_ado_item(test_case_id):
 @login_required
 def get_test_case_statistics(test_suite_id, case_ado_id):
     try:
-        date, duration, test_suite = utils.api.sql_api.get_test_run_date_duration(test_suite_id, case_ado_id)
+        date, duration, test_suite = sql_api.get_test_run_date_duration(test_suite_id, case_ado_id)
         return json.dumps({'success': True, 'duration': duration, 'date': date, 'suite_name': test_suite}),\
                200, {'ContentType': 'application/json'}
     except:
@@ -181,7 +181,7 @@ def admin_panel():
         ids, code, activated = get_invites_table()
         users_dict = get_users_dict()
         return render_template('admin_panel.html', ids=ids, code=code, activated=activated,
-                               username=utils.api.sql_api.get_current_user(), usersdict=users_dict,
+                               username=sql_api.get_current_user(), usersdict=users_dict,
                                user_roles_list=USER_ROLES)
     else:
         return redirect(url_for("main.test_suites"))
