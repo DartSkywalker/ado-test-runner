@@ -4,8 +4,9 @@ from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy import MetaData, Table
 from sqlalchemy.sql import func
+import os
 
-postgres = 'postgresql+psycopg2://user:user@localhost:5432/ado'
+postgres = os.environ['DATABASE_URL']
 
 engine = create_engine(postgres, echo=False)
 connection = engine.connect()

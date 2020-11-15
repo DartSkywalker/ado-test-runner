@@ -7,10 +7,10 @@ from flask_login import current_user
 
 from loguru import logger
 from sqlalchemy import create_engine, MetaData, Table, select, desc, and_, join
-
+import os
 
 my_sql = 'mysql+mysqlconnector://user:user@localhost:3306/ado'
-postgres = 'postgresql+psycopg2://user:user@localhost:5432/ado'
+postgres = os.environ['DATABASE_URL']
 
 
 def sql_connection():
