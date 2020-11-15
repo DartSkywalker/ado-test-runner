@@ -11,7 +11,9 @@ import random
 import string
 from flask_login import current_user
 
-
+connection, meta = sql_connection()
+table_users = Table('user', meta)
+table_invites = Table('INVITE_INFO', meta)
 
 def validate(username, password):
     con = sqlite3.connect('ado.db')
@@ -38,8 +40,6 @@ def check_password(hashed_password, user_password):
 # print(validate('admin', 'admin'))
 
 def validate_invite(invite_code):
-    connection, meta = sql_connection()
-    table_invites = Table('INVITE_INFO', meta)
     db_invite_code = connection.execute(select([table_invites.c.CODE]) \
                                         .where(and_(table_invites.c.CODE == invite_code,
                                                     table_invites.c.ACTIVATED == None))).fetchall()
@@ -53,8 +53,6 @@ def validate_invite(invite_code):
 
 
 def get_invites_table():
-    connection, meta = sql_connection()
-    table_invites = Table('INVITE_INFO', meta)
     invites_table = connection.execute(
         select([table_invites.c.ID, table_invites.c.CODE, table_invites.c.ACTIVATED])).fetchall()
     ids = [data[0] for data in invites_table]
@@ -64,8 +62,6 @@ def get_invites_table():
 
 
 def generate_invite_codes(num_of_codes):
-    connection, meta = sql_connection()
-    table_invites = Table('INVITE_INFO', meta)
     try:
         for i in range(0, int(num_of_codes)):
             random_code = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(12))
@@ -77,8 +73,6 @@ def generate_invite_codes(num_of_codes):
 
 
 def get_user_role():
-    connection, meta = sql_connection()
-    table_users = Table('user', meta)
     user_id = current_user.get_id()
     try:
         user_role = connection.execute(select([table_users.c.role]) \
@@ -90,8 +84,6 @@ def get_user_role():
 
 
 def get_users_dict():
-    connection, meta = sql_connection()
-    table_users = Table('user', meta)
     user_role = connection.execute(select([table_users.c.id, table_users.c.username, table_users.c.role])).fetchall()
     user_id = [data[0] for data in user_role]
     username = [data[1] for data in user_role]
@@ -101,8 +93,6 @@ def get_users_dict():
 
 
 def set_new_user_role(user_id, new_role):
-    connection, meta = sql_connection()
-    table_users = Table('user', meta)
     try:
         update_statement = table_users.update().where(table_users.c.id == int(user_id)) \
             .values(role=str(new_role))
@@ -114,8 +104,6 @@ def set_new_user_role(user_id, new_role):
 
 
 def change_password_for_user(new_pass):
-    connection, meta = sql_connection()
-    table_users = Table('user', meta)
     user_id = current_user.get_id()
     new_pass_encrypted = generate_password_hash(new_pass, method='sha256')
     try:
