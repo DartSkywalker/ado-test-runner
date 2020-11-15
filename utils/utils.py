@@ -114,3 +114,4 @@ def change_password_for_user(new_pass):
     except Exception as e:
         logger.critical(e)
         return False
+
