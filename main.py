@@ -7,15 +7,18 @@ from flask_login import login_required, current_user
 from loguru import logger
 from .models_data import create_table
 import json
-from .utils.utils import get_invites_table, generate_invite_codes, get_user_role, get_users_dict, set_new_user_role, change_password_for_user
+from .utils.utils import get_invites_table, generate_invite_codes, get_user_role, get_users_dict, set_new_user_role, \
+    change_password_for_user
 from .utils.constants import USER_ROLES
 
 main = Blueprint('main', __name__, static_folder="static", static_url_path="")
 create_table()
 
+
 @main.errorhandler(404)
 def invalid_route(e):
     return render_template("error404.html")
+
 
 @main.route('/save_user/<suite_id>/<test_case_id>', methods=['POST'])
 @login_required
@@ -27,6 +30,7 @@ def set_user_for_test_case(suite_id, test_case_id):
         return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
     except:
         return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
+
 
 @main.route('/suites', methods=['GET'])
 @login_required
@@ -53,7 +57,6 @@ def add_test_suite():
     else:
         flash('Access denied. Please check your ADO Token')
         return redirect(url_for('main.test_suites'))
-
 
 
 @main.route('/cases/<suite_id>', methods=['GET', 'POST'])
@@ -87,6 +90,7 @@ def about_page():
 def redirect_from_main():
     return redirect(url_for('main.test_suites'))
 
+
 @main.route('/settings', methods=['GET', 'POST'])
 @login_required
 def user_settings():
@@ -99,6 +103,7 @@ def user_settings():
                 return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
     return render_template('settings.html', username=sql_api.get_current_user())
 
+
 @main.route('/save_test_result/<test_case_id>', methods=['POST'])
 @login_required
 def save_test_result(test_case_id):
@@ -106,7 +111,7 @@ def save_test_result(test_case_id):
     # logger.warning(data)
     # try:
     if data['testResult']['is_changed'] == 'False':
-    # if True:
+        # if True:
         sql_api.set_test_case_state(test_case_id, data)
         return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
     else:
@@ -119,6 +124,7 @@ def save_test_result(test_case_id):
     # except Exception as e:
     #     logger.error(e)
     #     return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
+
 
 @main.route('/run/<test_suite_id>/<test_case_id>')
 @login_required
@@ -141,6 +147,7 @@ def test_statistics(suite_id, test_case_id):
     test_case_name = sql_api.get_test_case_name_by_id(test_case_id)
     return render_template("statistics.html", test_case_name=test_case_name)
 
+
 @main.route('/suitify')
 @login_required
 def suites_list():
@@ -159,20 +166,23 @@ def check_access_to_ado_item(test_case_id):
     else:
         return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
 
+
 @main.route('/getstatistics/<test_suite_id>/<case_ado_id>', methods=['GET'])
 @login_required
 def get_test_case_statistics(test_suite_id, case_ado_id):
     try:
         date, duration, test_suite = sql_api.get_test_run_date_duration(test_suite_id, case_ado_id)
-        return json.dumps({'success': True, 'duration': duration, 'date': date, 'suite_name': test_suite}),\
+        return json.dumps({'success': True, 'duration': duration, 'date': date, 'suite_name': test_suite}), \
                200, {'ContentType': 'application/json'}
     except:
         return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
+
 
 @main.route('/creator')
 @login_required
 def test_case_creator():
     return render_template('test_creator.html')
+
 
 @main.route('/admin')
 @login_required
@@ -215,3 +225,8 @@ def change_user_password():
     else:
         return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
 
+
+@main.route("/checkinvite/<code>", methods=['POST'])
+def check_valid_invite(code):
+    logger.warning(code)
+    return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
