@@ -201,9 +201,7 @@
                 tester = $(this).find('td:nth-child(4)').text().trim();
                 testResult = $(this).find('td:nth-child(3)').text().trim();
                 adoId = $(this).find('td:nth-child(1)').text().trim();
-                alert(adoId);
-                alert(tester);
-                alert(testSuiteId);
+
                 $.ajax({
                     url: "/getstatistics/" + testSuiteId + "/" + adoId,
                     type: 'GET'
