@@ -7,6 +7,7 @@ from flask_login import current_user
 
 from loguru import logger
 from sqlalchemy import create_engine, MetaData, Table, select, desc, and_, join
+import os
 
 
 my_sql = 'mysql+mysqlconnector://user:user@localhost:3306/ado'
