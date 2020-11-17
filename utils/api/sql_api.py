@@ -14,7 +14,7 @@ postgres = 'postgresql+psycopg2://user:user@localhost:5432/ado'
 
 
 def sql_connection():
-    engine = create_engine(postgres, echo=False, pool_recycle=2)
+    engine = create_engine(postgres, echo=False, poolclass=SingletonThreadPool, pool_recycle=2)
     connection = engine.connect()
     meta = MetaData()
     meta.reflect(bind=engine)
