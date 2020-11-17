@@ -320,7 +320,8 @@
 <script>
     let currentLink = window.location.href;
     let newLink = currentLink.slice(0, currentLink.lastIndexOf('run')) + currentLink.slice(currentLink.lastIndexOf('run')).replace('run', 'cases')
-    $('#backToSuite').attr("href", newLink)
+    let newLinkSuite = newLink.substr(0, newLink.lastIndexOf("/"))
+    $('#backToSuite').attr("href", newLinkSuite)
 
 </script>
 <script>
@@ -461,7 +462,8 @@
             success: function () {
                 let currentLink = window.location.href;
                 let newLink = currentLink.slice(0, currentLink.lastIndexOf('run')) + currentLink.slice(currentLink.lastIndexOf('run')).replace('run', 'cases')
-                window.location.href = newLink;
+                let newLinkSuite = newLink.substr(0, newLink.lastIndexOf("/"))
+                window.location.href = newLinkSuite
             }
         })
 
