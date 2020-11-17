@@ -2,7 +2,7 @@ import requests
 import json
 from loguru import logger
 from . import ado_parser
-from .sql_api import sql_connection, table_cases, get_current_user, \
+from .sql_api import table_cases, get_current_user, \
     get_test_case_steps_by_id, connection, meta
 from ..constants import get_ado_token_for_user, QUERY_LINK, WIQL_LINK, HEADERS, WORKITEM_LINK
 # from utils.api import ado_parser

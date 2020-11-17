@@ -18,6 +18,7 @@ postgres = os.environ['DATABASE_URL']
 def sql_connection():
     engine = create_engine(postgres, echo=False, poolclass=SingletonThreadPool, pool_recycle=2)
     connection = engine.connect()
+    connection.execution_options(autocommit=True)
     meta = MetaData()
     meta.reflect(bind=engine)
     return connection, meta
@@ -85,7 +86,7 @@ def get_test_cases_from_db_by_suite_name(test_suite_id):
 
 def get_current_user():
     g.user = current_user.get_id()
-    query = select([table_user.columns['username']]).where(table_user.c.id == g.user)
+    query = select([table_user.c.username]).where(table_user.c.id == g.user)
     user = connection.execute(query).fetchall()
     return str(user[0][0])
 
@@ -182,7 +183,6 @@ def get_test_case_id_by_ado_id(suite_id, test_case_ado_id):
 
 
 def get_list_of_suites():
-    connection, meta = sql_connection()
     suites = Table('TEST_SUITES', meta)
     test_suites_list_db = connection.execute(select([suites.columns['TEST_SUITE_ID']]).distinct()).fetchall()
     test_suites_ids = [suite[0] for suite in test_suites_list_db]

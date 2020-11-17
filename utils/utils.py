@@ -4,32 +4,15 @@ import os
 import sys
 from sqlalchemy.sql import table, column, select, update, insert
 from sqlalchemy import Table, MetaData, create_engine, and_, desc, join
-from .api.sql_api import sql_connection
+from .api.sql_api import connection, meta
 from werkzeug.security import generate_password_hash
 from loguru import logger
 import random
 import string
 from flask_login import current_user
 
-connection, meta = sql_connection()
 table_users = Table('user', meta)
 table_invites = Table('INVITE_INFO', meta)
-
-def validate(username, password):
-    con = sqlite3.connect('ado.db')
-    completion = False
-    with con:
-        cur = con.cursor()
-        cur.execute("SELECT * FROM USERS")
-        rows = cur.fetchall()
-        for row in rows:
-            dbUser = row[0]
-            print(dbUser)
-            dbPass = row[1]
-            if str(dbUser) == str(username):
-                print('SOEM')
-                completion = check_password(dbPass, password)
-    return completion
 
 
 def check_password(hashed_password, user_password):

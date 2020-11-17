@@ -63,6 +63,5 @@ def create_table():
     Base.metadata.create_all(engine)
     connection.close()
     engine.dispose()
-
 # Uncomment to create a new DB tables
 # create_table()
