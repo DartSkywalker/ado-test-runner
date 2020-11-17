@@ -7,6 +7,7 @@ from flask_login import current_user
 
 from loguru import logger
 from sqlalchemy import create_engine, MetaData, Table, select, desc, and_, join
+from sqlalchemy.pool import SingletonThreadPool
 import os
 
 
