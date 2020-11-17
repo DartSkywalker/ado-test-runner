@@ -318,9 +318,10 @@
 
 </script>
 <script>
-    $('#backToSuite').attr("href", window.location.href.substr(0,
-        window.location.href.lastIndexOf("/"))
-        .replace("run", "cases"))
+    let currentLink = window.location.href;
+    let newLink = currentLink.slice(0, currentLink.lastIndexOf('run')) + currentLink.slice(currentLink.lastIndexOf('run')).replace('run', 'cases')
+    $('#backToSuite').attr("href", newLink)
+
 </script>
 <script>
     $("#saveResult").click(function () {
@@ -458,9 +459,9 @@
             contentType: 'application/json',
             type: 'POST',
             success: function () {
-                window.location.href = window.location.href.substr(0,
-                    window.location.href.lastIndexOf("/"))
-                    .replace("run", "cases")
+                let currentLink = window.location.href;
+                let newLink = currentLink.slice(0, currentLink.lastIndexOf('run')) + currentLink.slice(currentLink.lastIndexOf('run')).replace('run', 'cases')
+                window.location.href = newLink;
             }
         })
 
