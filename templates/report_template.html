@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ SUITE_NAME }} Report</title>
+    <style>
+        body {
+            font-family: "Poppins", "Arial", "Helvetica Neue", sans-serif;
+        }
+
+        /* Add a black background color to the top navigation */
+        .topnav {
+            background-color: #037AFB;
+            overflow: hidden;
+            margin: 0 auto;
+            padding: 0;
+            width: 100%;
+        }
+
+        /* Style the links inside the navigation bar */
+        .topnav a {
+            float: left;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 17px;
+        }
+
+        /* Change the color of links on hover */
+        .container {
+            width: 80%;
+            align-content: center;
+            left: 50%;
+            margin: 0 auto;
+        }
+
+        /* Add a color to the active/current link */
+        .topnav a.active {
+            font-weight: bold;
+        }
+
+        .statistics {
+            width: 100%;
+            margin-top: 40px;
+            font-size: 18px;
+        }
+
+        ul.stat {
+            list-style-type: none;
+            margin: 0 auto;
+            padding: 0;
+            overflow: hidden;
+            text-align: center;
+            color: #343A40;
+        }
+
+        li {
+            display: inline;
+            padding-right: 70px;
+        }
+
+        th {
+            font-weight: normal;
+            height: 35px;
+            padding: 0;
+            border: 0;
+        }
+
+        .result-table {
+            margin-top: 5px;
+            width: 100%;
+            color: #343A40;
+            border-spacing: 0;
+        }
+
+        .result-table a:link {
+            color: #343A40;;
+        }
+
+        .result-table a:visited {
+            color: black;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            padding: 0;
+            width: 80%;
+            background-color: #037AFB;
+            color: #fff;
+            text-align: left;
+            align-content: center;
+            margin: 0 auto;
+            height: 20px;
+            font-size: 12px;
+            line-height: 0px;
+        }
+
+        .footer-link {
+            color: #fff;
+            padding-left: 5px;
+            padding-right: 10px;
+        }
+
+        #passFailedChart {
+            margin-top: 40px;
+            padding: 0;
+            float: left;
+            display: inline-block;
+            margin-bottom: 0;
+        }
+
+        #executed-by {
+            margin-top: 40px;
+            padding: 0;
+            float: right;
+            display: inline-block;
+            margin-bottom: 0;
+        }
+
+        #durationChart {
+            margin-top: 0;
+            padding: 0;
+            display: inline-block;
+            height: 100%;
+            right: 0;
+            margin-left: auto;
+            margin-right: auto;
+            align-content: center;
+            text-align: center;
+        }
+
+        #executed-by {
+            margin-bottom: 0;
+            margin-top: 40px;
+        }
+
+        #totalCases #passedStat #failedStat #blockedStat #notexecStat {
+            padding: 0;
+            margin: 0 auto;
+            display: block;
+        }
+
+    </style>
+    <!-- ChartsJS -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script
+            src="https://code.jquery.com/jquery-3.5.1.slim.js"
+            integrity="sha256-DrT5NfxfbHvMHux31Lkhxg42LY6of8TaYyK50jnxRnM="
+            crossorigin="anonymous"></script>
+
+</head>
+<body>
+
+
+<div class="container">
+    <div class="topnav">
+        <a class="active" href="#">TRunner</a>
+        <a>Report for {{ SUITE_NAME }}</a>
+    </div>
+
+    <div class="statistics">
+        <ul class="stat">
+            <li class="stat" id="totalCases">🏃‍♂️ Total cases: </li>
+            <li class="stat" id="passedStat">✅ Passed: </li>
+            <li class="stat" id="failedStat">❌ Failed: </li>
+            <li class="stat" id="blockedStat">🚫 Blocked: </li>
+            <li class="stat" id="notexecStat">🤔 Not Executed: </li>
+        </ul>
+    </div>
+
+    <div id='passFailedChart' style="width: 562px; height: 400px; padding: 0 !important; z-index: 100;">
+        <canvas id="pie-chart" style="z-index: 100;"></canvas>
+    </div>
+
+    <div id='executed-by' style="width: 562px; height: 400px; padding: 0 !important;">
+        <canvas id="executed-pie-chart"></canvas>
+    </div>
+
+
+    <div id='durationChart' style="width: 100%; height: 200px;  margin-bottom: 195px; z-index: 0;">
+        <canvas id="duration-bar-chart"
+                style="display: inline-block; margin-top: 0; width: 80%; height: 300px; padding: 0 !important; z-index: 0;"></canvas>
+    </div>
+
+
+    <table class="result-table" style="text-align: center;" id="mt">
+        <thead class="" style="color: #ffffff; background-color: #037AFB">
+        <tr>
+            <th scope="col">ADO ID</th>
+            <th scope="col">Test Case</th>
+            <th scope="col">Test Result</th>
+            <th scope="col">Executed By</th>
+            <th scope="col">Duration</th>
+            <th scope="col">Date</th>
+        </tr>
+        </thead>
+        <tr class="clickable-row">
+            <td class="tcid">
+                <a class="text-dark" href="https://dev.azure.com/HAL-LMKRD/RESDEV/_workitems/edit/80518">10519</a>
+            </td>
+            <td>
+                <p class="text-dark">Discosntinuity on fly from DPE for 2d and 3d surveys</p>
+            </td>
+            <td width="160px" class="testCaseState">
+                <p class="text-dark">
+                    ✅ &nbsp;Passed
+                </p>
+            </td>
+            <td>
+                <div class="centered">
+                    <p class="text-dark">Alex</p>
+                </div>
+            </td>
+            <td>
+                <div class="centered">
+                    <p class="text-dark">41</p>
+                </div>
+            </td>
+            <td>
+                <div class="centered">
+                    <p class="text-dark">Nov 17, 2020</p>
+                </div>
+            </td>
+        </tr>
+        <tr class="clickable-row">
+            <td class="tcid">
+                <a class="text-dark" href="https://dev.azure.com/HAL-LMKRD/RESDEV/_workitems/edit/80518">20515</a>
+            </td>
+            <td>
+                <p class="text-dark">New Name Discontinuity on fly from DPE for 2d and 3d surveys</p>
+            </td>
+            <td width="160px" class="testCaseState">
+                <p class="text-dark">
+                    🚫 &nbsp;Blocked
+                </p>
+            </td>
+            <td>
+                <div class="centered">
+                    <p class="text-dark">Alex</p>
+                </div>
+            </td>
+            <td>
+                <div class="centered">
+                    <p class="text-dark">11</p>
+                </div>
+            </td>
+            <td>
+                <div class="centered">
+                    <p class="text-dark">Nov 17, 2020</p>
+                </div>
+            </td>
+        </tr>
+        <tr class="clickable-row">
+            <td class="tcid">
+                <a class="text-dark" href="https://dev.azure.com/HAL-LMKRD/RESDEV/_workitems/edit/80518">805155</a>
+            </td>
+            <td>
+                <p class="text-dark">Dssiscontinuity on fly from DPE for 2d and 3d surveys</p>
+            </td>
+            <td width="160px" class="testCaseState">
+                <p class="text-dark">
+                    🚫 &nbsp;Blocked
+                </p>
+            </td>
+            <td>
+                <div class="centered">
+                    <p class="text-dark">Alex</p>
+                </div>
+            </td>
+            <td>
+                <div class="centered">
+                    <p class="text-dark">11</p>
+                </div>
+            </td>
+            <td>
+                <div class="centered">
+                    <p class="text-dark">Nov 17, 2020</p>
+                </div>
+            </td>
+        </tr>
+        <tr class="clickable-row">
+            <td class="tcid">
+                <a class="text-dark" href="https://dev.azure.com/HAL-LMKRD/RESDEV/_workitems/edit/80518">47518</a>
+            </td>
+            <td>
+                <p class="text-dark">Disconstinuity on fly from DPE for 2d and 3d surveys</p>
+            </td>
+            <td width="160px" class="testCaseState">
+                <p class="text-dark">
+                    ❌ &nbsp;Failed
+                </p>
+            </td>
+            <td>
+                <div class="centered">
+                    <p class="text-dark">Yurij</p>
+                </div>
+            </td>
+            <td>
+                <div class="centered">
+                    <p class="text-dark">25</p>
+                </div>
+            </td>
+            <td>
+                <div class="centered">
+                    <p class="text-dark">Nov 17, 2020</p>
+                </div>
+            </td>
+        </tr>
+        <tr class="clickable-row">
+            <td class="tcid">
+                <a class="text-dark" href="https://dev.azure.com/HAL-LMKRD/RESDEV/_workitems/edit/80518">87518</a>
+            </td>
+            <td>
+                <p class="text-dark">Didscontinuity on fly from DPE for 2d and 3d surveys</p>
+            </td>
+            <td width="160px" class="testCaseState">
+                <p class="text-dark">
+                    🤔 &nbsp;Not Executed
+                </p>
+            </td>
+            <td>
+                <div class="centered">
+                    <p class="text-dark">Alex</p>
+                </div>
+            </td>
+            <td>
+                <div class="centered">
+                    <p class="text-dark"></p>
+                </div>
+            </td>
+        </tr>
+
+    </table>
+
+    <div class="footer">
+        <p><a href="https://trunner.herokuapp.com/" class="footer-link">TRunner</a>All rights reserved © 2021</p>
+    </div>
+</div>
+
+<script>
+    //Data collection
+        let testers = [];
+        let durations = [];
+        let tcName = [];
+        tcDurations = {};
+        testResults = {
+            passed: 0,
+            blocked: 0,
+            failed: 0,
+            not_executed: 0
+        };
+        $(".result-table tr.clickable-row").each(function () {
+            testers.push($(this).find('td:nth-child(4)').text().trim());
+            let duration = $(this).find('td:nth-child(5)').text().trim();
+            let tcName = $(this).find('td:nth-child(2)').text().trim();
+
+            tcDurations[tcName] = [duration];
+
+
+            if ($(this).find('td:nth-child(3)').text().trim() === "✅  Passed") {
+                testResults["passed"] += 1;
+            } else if ($(this).find('td:nth-child(3)').text().trim() === "🚫  Blocked") {
+                testResults["blocked"] += 1;
+            } else if ($(this).find('td:nth-child(3)').text().trim() === "❌  Failed") {
+                testResults["failed"] += 1;
+            } else if ($(this).find('td:nth-child(3)').text().trim() === "🤔  Not Executed") {
+                testResults["not_executed"] += 1;
+            }
+        });
+      document.getElementById("totalCases").innerHTML = "🏃‍♂️ Total cases: " + (testResults["passed"] + testResults["failed"] + testResults["blocked"] + testResults["not_executed"]);
+      document.getElementById("passedStat").innerHTML = "✅ Passed: " + testResults["passed"];
+      document.getElementById("failedStat").innerHTML = "❌ Failed: " + testResults["failed"];
+      document.getElementById("blockedStat").innerHTML = "🚫 Blocked: " + testResults["blocked"];
+      document.getElementById("notexecStat").innerHTML = "🤔 Not Executed: " + testResults["not_executed"];
+
+</script>
+    <script>
+        new Chart(document.getElementById("pie-chart"), {
+            type: 'pie',
+            data: {
+                labels: ["Passed", "Failed", "Blocked", "Not Executed"],
+                datasets: [{
+                    label: "Population (millions)",
+                    backgroundColor: ["#74DE1A", "#C6342A", "#88241d", "#546E7A",],
+                    data: [testResults["passed"], testResults["failed"], testResults["blocked"], testResults["not_executed"]]
+                }]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: 'Total Result'
+                }
+            }
+        });
+    </script>
+
+    <script>
+        let onlyTesters = testers.reduce((acc, val) => {
+              acc[val] = acc[val] === undefined ? 1 : acc[val] += 1;
+              return acc;
+            }, {});
+        let testerLabels = Object.keys(onlyTesters)
+        let testerValues = Object.values(onlyTesters)
+
+        new Chart(document.getElementById("executed-pie-chart"), {
+            type: 'pie',
+            data: {
+                labels: testerLabels,
+                datasets: [{
+                    backgroundColor: ["#037AFB", "#3c9bff"],
+                    data: testerValues
+                }]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: 'Executed By'
+                },
+                responsive: true
+
+            }
+        });
+    </script>
+
+<script>
+    Object.keys(tcDurations).forEach((key) => (tcDurations[key] == "") && delete tcDurations[key]);
+
+    console.log(Object.keys(tcDurations))
+    console.log(Object.values(tcDurations))
+    var data = {
+        labels: Object.keys(tcDurations),
+        datasets: [{
+            label: "Duration",
+            backgroundColor: "#58a9ff",
+            borderColor: '#037AFB',
+            borderWidth: 1,
+            data: Object.values(tcDurations),
+        }]
+    };
+    var ctx = document.getElementById("duration-bar-chart");
+    var myBarChart = new Chart(ctx, {
+        type: "bar",
+        data: data,
+    });
+
+</script>
+
+</body>
+</html>
