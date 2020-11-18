@@ -60,6 +60,8 @@ class Invite_Info(Base):
 def create_table():
     metadata = MetaData()
     Base.metadata.create_all(engine)
+    connection.close()
+    engine.dispose()
 
 # Uncomment to create a new DB tables
 # create_table()

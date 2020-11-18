@@ -7,14 +7,14 @@ from flask_login import current_user
 
 from loguru import logger
 from sqlalchemy import create_engine, MetaData, Table, select, desc, and_, join
-
+from sqlalchemy.pool import SingletonThreadPool
 
 my_sql = 'mysql+mysqlconnector://user:user@localhost:3306/ado'
 postgres = 'postgresql+psycopg2://user:user@localhost:5432/ado'
 
 
 def sql_connection():
-    engine = create_engine(postgres, echo=False)
+    engine = create_engine(postgres, echo=False, pool_recycle=2)
     connection = engine.connect()
     meta = MetaData()
     meta.reflect(bind=engine)
