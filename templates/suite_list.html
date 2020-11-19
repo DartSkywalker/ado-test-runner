@@ -46,7 +46,9 @@
         <li class="nav-item active">
             <a class="nav-link" href="/about">About<span class="sr-only">(current)</span></a>
         </li>
-
+        <li class="nav-item active generate-report" style="display: none">
+            <a class="nav-link border-left" id="genReport" href="">Suite Report <span class="sr-only">(current)</span></a>
+        </li>
     </ul>
     <div class="navbar-collapse collapse  order-3 dual-collapse2">
         <ul class="navbar-nav ml-auto">
@@ -55,6 +57,7 @@
                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Hello, {{ username }}
                 </a>
+
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
                     <a class="dropdown-item" href="/settings">Settings</a>
                     <a class="dropdown-item" href="/logout">Logout</a>
@@ -79,66 +82,106 @@
             <th scope="col">Created Date</th>
         </tr>
         </thead>
-            {% for suite_id, suite_data_list in suite_info.items() %}
-        <tr>
-            <td>
-                <a class="text-dark" href="/cases/{{ suite_id }}">{{ suite_data_list[0] }}</a>
-            </td>
-            <td>
-                <p class="text-dark"> {{ suite_data_list[1] }}</p>
-            </td>
-            <td class="clickable-row accordion-toggle" data-toggle="collapse" data-target="#passed_{{ suite_id }}">
-                <p class="text-dark"> {{ suite_data_list[2] }}</p>
-            </td>
-            <td class="clickable-row accordion-toggle" data-toggle="collapse" data-target="#failed_{{ suite_id }}">
-                <p class="text-dark"> {{ suite_data_list[3] }}</p>
-            </td>
-            <td class="clickable-row accordion-toggle" data-toggle="collapse" data-target="#blocked_{{ suite_id }}">
-                <p class="text-dark"> {{ suite_data_list[4] }}</p>
-            </td>
+        {% for suite_id, suite_data_list in suite_info.items() %}
+            <tr class="clickable-row">
                 <td>
-                <p class="text-dark"> {{ suite_data_list[5] }}</p>
-            </td>
-            <td>
-                <p class="text-dark"> {{ suite_data_list[6] }}</p>
-            </td>
-            <td>
-                <p class="text-dark"> {{ suite_data_list[7] }}</p>
-            </td>
+                    <a class="text-dark" href="/cases/{{ suite_id }}">{{ suite_data_list[0] }}</a>
+                </td>
+                <td>
+                    <p class="text-dark"> {{ suite_data_list[1] }}</p>
+                </td>
+                <td class="clickable-row accordion-toggle" data-toggle="collapse" data-target="#passed_{{ suite_id }}">
+                    <p class="text-dark"> {{ suite_data_list[2] }}</p>
+                </td>
+                <td class="clickable-row accordion-toggle" data-toggle="collapse" data-target="#failed_{{ suite_id }}">
+                    <p class="text-dark"> {{ suite_data_list[3] }}</p>
+                </td>
+                <td class="clickable-row accordion-toggle" data-toggle="collapse" data-target="#blocked_{{ suite_id }}">
+                    <p class="text-dark"> {{ suite_data_list[4] }}</p>
+                </td>
+                <td>
+                    <p class="text-dark"> {{ suite_data_list[5] }}</p>
+                </td>
+                <td>
+                    <p class="text-dark"> {{ suite_data_list[6] }}</p>
+                </td>
+                <td>
+                    <p class="text-dark"> {{ suite_data_list[7] }}</p>
+                </td>
 
-        </tr>
+            </tr>
 
-{#        <tr>#}
-{#            <td class="subtr hiddenRow"><div class="accordian-body collapse"></div></td>#}
-{#            <td class="subtr hiddenRow"><div class="accordian-body collapse"></div></td>#}
-{#            <td class="subtr hiddenRow"><div class="accordian-body collapse bg-primary font-weight-light" style="text-align: center; color: #fff" id="passed_{{ suite_id }}"> Passed </div> </td>#}
-{#            <td class="subtr hiddenRow"><div class="accordian-body collapse bg-primary font-weight-light" style="text-align: center; color: #fff" id="failed_{{ suite_id }}"> Failed </div> </td>#}
-{#            <td class="subtr hiddenRow"><div class="accordian-body collapse bg-primary font-weight-light" style="text-align: center; color: #fff" id="blocked_{{ suite_id }}"> Blocked </div> </td>#}
-{#        </tr>#}
+            {#        <tr>#}
+            {#            <td class="subtr hiddenRow"><div class="accordian-body collapse"></div></td>#}
+            {#            <td class="subtr hiddenRow"><div class="accordian-body collapse"></div></td>#}
+            {#            <td class="subtr hiddenRow"><div class="accordian-body collapse bg-primary font-weight-light" style="text-align: center; color: #fff" id="passed_{{ suite_id }}"> Passed </div> </td>#}
+            {#            <td class="subtr hiddenRow"><div class="accordian-body collapse bg-primary font-weight-light" style="text-align: center; color: #fff" id="failed_{{ suite_id }}"> Failed </div> </td>#}
+            {#            <td class="subtr hiddenRow"><div class="accordian-body collapse bg-primary font-weight-light" style="text-align: center; color: #fff" id="blocked_{{ suite_id }}"> Blocked </div> </td>#}
+            {#        </tr>#}
             {% for i in range(0, ([suite_data_list[2], suite_data_list[3], suite_data_list[4]]|max)) %}
-        <tr>
-            <td class="subtr hiddenRow"><div class="accordian-body collapse"></div></td>
-            <td class="subtr hiddenRow"><div class="accordian-body collapse"></div></td>
+                <tr>
+                    <td class="subtr hiddenRow">
+                        <div class="accordian-body collapse"></div>
+                    </td>
+                    <td class="subtr hiddenRow">
+                        <div class="accordian-body collapse"></div>
+                    </td>
 
-            {% if suite_info_detailed[suite_id]['Passed'][i] %}
-            <td class="subtr hiddenRow"><div class="accordian-body collapse" style="text-align: center;" id="passed_{{ suite_id }}" data-toggle="tooltip" title="{{ suite_info_detailed[suite_id]['Passed'][i][2] }}">{% if suite_info_detailed[suite_id]['Passed'][i] %} <a class="text-dark substat-passed" href="/run/{{ suite_id }}/{{ suite_info_detailed[suite_id]['Passed'][i][0] }}">{{ suite_info_detailed[suite_id]['Passed'][i][1] }} </a>{% endif %}</div></td>
-            {% else %}
-            <td class="subtr hiddenRow"><div class="accordian-body collapse" style="text-align: center;" id="passed_{{ suite_id }}" data-toggle="tooltip">{% if suite_info_detailed[suite_id]['Passed'][i] %} <a class="text-dark substat-passed" href="/run/{{ suite_id }}/{{ suite_info_detailed[suite_id]['Passed'][i][0] }}">{{ suite_info_detailed[suite_id]['Passed'][i][1] }} </a>{% endif %}</div></td>
-            {% endif %}
+                    {% if suite_info_detailed[suite_id]['Passed'][i] %}
+                        <td class="subtr hiddenRow">
+                            <div class="accordian-body collapse" style="text-align: center;" id="passed_{{ suite_id }}"
+                                 data-toggle="tooltip" title="{{ suite_info_detailed[suite_id]['Passed'][i][2] }}">
+                                {% if suite_info_detailed[suite_id]['Passed'][i] %}<a class="text-dark substat-passed"
+                                                                                      href="/run/{{ suite_id }}/{{ suite_info_detailed[suite_id]['Passed'][i][0] }}">{{ suite_info_detailed[suite_id]['Passed'][i][1] }} </a>{% endif %}
+                            </div>
+                        </td>
+                    {% else %}
+                        <td class="subtr hiddenRow">
+                            <div class="accordian-body collapse" style="text-align: center;" id="passed_{{ suite_id }}"
+                                 data-toggle="tooltip">{% if suite_info_detailed[suite_id]['Passed'][i] %}
+                                <a class="text-dark substat-passed"
+                                   href="/run/{{ suite_id }}/{{ suite_info_detailed[suite_id]['Passed'][i][0] }}">{{ suite_info_detailed[suite_id]['Passed'][i][1] }} </a>{% endif %}
+                            </div>
+                        </td>
+                    {% endif %}
 
-            {% if suite_info_detailed[suite_id]['Failed'][i] %}
-            <td class="subtr hiddenRow"><div class="accordian-body collapse" style="text-align: center;" id="failed_{{ suite_id }}" data-toggle="tooltip" title="{{ suite_info_detailed[suite_id]['Failed'][i][2] }}">{% if suite_info_detailed[suite_id]['Failed'][i] %} <a class="text-dark substat-failed" href="/run/{{ suite_id }}/{{ suite_info_detailed[suite_id]['Failed'][i][0] }}">{{ suite_info_detailed[suite_id]['Failed'][i][1] }} </a>{% endif %}</div></td>
-            {% else %}
-            <td class="subtr hiddenRow"><div class="accordian-body collapse" style="text-align: center;" id="failed_{{ suite_id }}" data-toggle="tooltip">{% if suite_info_detailed[suite_id]['Failed'][i] %} <a class="text-dark substat-failed" href="/run/{{ suite_id }}/{{ suite_info_detailed[suite_id]['Failed'][i][0] }}">{{ suite_info_detailed[suite_id]['Failed'][i][1] }} </a>{% endif %}</div></td>
-            {% endif %}
+                    {% if suite_info_detailed[suite_id]['Failed'][i] %}
+                        <td class="subtr hiddenRow">
+                            <div class="accordian-body collapse" style="text-align: center;" id="failed_{{ suite_id }}"
+                                 data-toggle="tooltip" title="{{ suite_info_detailed[suite_id]['Failed'][i][2] }}">
+                                {% if suite_info_detailed[suite_id]['Failed'][i] %}<a class="text-dark substat-failed"
+                                                                                      href="/run/{{ suite_id }}/{{ suite_info_detailed[suite_id]['Failed'][i][0] }}">{{ suite_info_detailed[suite_id]['Failed'][i][1] }} </a>{% endif %}
+                            </div>
+                        </td>
+                    {% else %}
+                        <td class="subtr hiddenRow">
+                            <div class="accordian-body collapse" style="text-align: center;" id="failed_{{ suite_id }}"
+                                 data-toggle="tooltip">{% if suite_info_detailed[suite_id]['Failed'][i] %}
+                                <a class="text-dark substat-failed"
+                                   href="/run/{{ suite_id }}/{{ suite_info_detailed[suite_id]['Failed'][i][0] }}">{{ suite_info_detailed[suite_id]['Failed'][i][1] }} </a>{% endif %}
+                            </div>
+                        </td>
+                    {% endif %}
 
-            {% if suite_info_detailed[suite_id]['Blocked'][i] %}
-            <td class="subtr hiddenRow"><div class="accordian-body collapse" style="text-align: center;" id="blocked_{{ suite_id }}" data-toggle="tooltip" title="{{ suite_info_detailed[suite_id]['Blocked'][i][2] }}">{% if suite_info_detailed[suite_id]['Blocked'][i] %} <a class="text-dark substat-blocked" href="/run/{{ suite_id }}/{{ suite_info_detailed[suite_id]['Blocked'][i][0] }}">{{ suite_info_detailed[suite_id]['Blocked'][i][1] }} </a>{% endif %}</div></td>
-            {% else %}
-            <td class="subtr hiddenRow"><div class="accordian-body collapse" style="text-align: center;" id="blocked_{{ suite_id }}" data-toggle="tooltip">{% if suite_info_detailed[suite_id]['Blocked'][i] %} <a class="text-dark substat-blocked" href="/run/{{ suite_id }}/{{ suite_info_detailed[suite_id]['Blocked'][i][0] }}">{{ suite_info_detailed[suite_id]['Blocked'][i][1] }} </a>{% endif %}</div></td>
-            {% endif %}
-        </tr>
-           {% endfor %}
+                    {% if suite_info_detailed[suite_id]['Blocked'][i] %}
+                        <td class="subtr hiddenRow">
+                            <div class="accordian-body collapse" style="text-align: center;" id="blocked_{{ suite_id }}"
+                                 data-toggle="tooltip" title="{{ suite_info_detailed[suite_id]['Blocked'][i][2] }}">
+                                {% if suite_info_detailed[suite_id]['Blocked'][i] %}<a class="text-dark substat-blocked"
+                                                                                       href="/run/{{ suite_id }}/{{ suite_info_detailed[suite_id]['Blocked'][i][0] }}">{{ suite_info_detailed[suite_id]['Blocked'][i][1] }} </a>{% endif %}
+                            </div>
+                        </td>
+                    {% else %}
+                        <td class="subtr hiddenRow">
+                            <div class="accordian-body collapse" style="text-align: center;" id="blocked_{{ suite_id }}"
+                                 data-toggle="tooltip">{% if suite_info_detailed[suite_id]['Blocked'][i] %}
+                                <a class="text-dark substat-blocked"
+                                   href="/run/{{ suite_id }}/{{ suite_info_detailed[suite_id]['Blocked'][i][0] }}">{{ suite_info_detailed[suite_id]['Blocked'][i][1] }} </a>{% endif %}
+                            </div>
+                        </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
         {% endfor %}
     </table>
 
@@ -149,6 +192,23 @@
         src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 <script crossorigin="anonymous" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
         src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    $('#mt tr.clickable-row ').on('click', function (event) {
+
+        let newLink = $(this).closest('tr.clickable-row').children('td:first-child').children('a').attr("href").replace("cases", "suitereport");
+
+        $(this).closest('tr.clickable-row').addClass('active');
+        $('#genReport').attr("href", newLink)
+        $('.generate-report').show();
+
+        if ($(this).closest('tr.clickable-row').hasClass('active')) {
+            $(this).closest('tr.clickable-row').addClass('active').siblings().removeClass('active');
+            $('#genReport').attr("href", newLink)
+
+        }
+    });
+</script>
 
 </body>
 </html>

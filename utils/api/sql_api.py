@@ -323,4 +323,29 @@ def update_test_steps_sql(test_case_id, json_with_step_states):
             connection.execute(update_statement)
 
 
+def get_suite_statistics_by_id(suite_id):
+    suite_name = connection.execute(select([table_suites.c.TEST_SUITE_NAME])
+                                    .where(table_suites.c.TEST_SUITE_ID == suite_id)).fetchone()[0]
+
+    test_cases_data = connection.execute(select([table_cases.c.TEST_CASE_ADO_ID, table_cases.c.TEST_CASE_NAME,
+                                                 table_cases.c.STATUS, table_cases.c.EXECUTED_BY,
+                                                 table_cases.c.DURATION_SEC, table_cases.c.CHANGE_STATE_DATE])
+                                         .order_by(table_cases.c.STATUS)
+                                         .where(table_cases.c.TEST_SUITE_ID == suite_id)).fetchall()
+
+
+    tc_ado_id = [str(data[0]) for data in test_cases_data]
+    tc_name = [str(data[1]) for data in test_cases_data]
+    tc_state = [str(data[2]) if str(data[2]) != "Ready" else "🤔  Not Executed" for data in test_cases_data]
+    tc_state = [state.replace("Passed", "✅  Passed")
+                    .replace("Failed", "❌  Failed")
+                    .replace("Blocked", "🚫  Blocked") for state in tc_state]
+    tc_executed_by = [str(data[3]) if str(data[3]) != "None" else "" for data in test_cases_data]
+    tc_duration = [str(data[4]) if str(data[4]) != "None" else "" for data in test_cases_data]
+    tc_changed_date =[datetime.datetime.strptime(str(data[5]), '%Y-%m-%d %H:%M:%S.%f').strftime("%b %d %Y %H:%M") for
+                      data in test_cases_data]
+
+    suite_data_dict = dict(zip(tc_ado_id, zip(tc_name, tc_state, tc_executed_by, tc_duration, tc_changed_date)))
+    return suite_name, suite_data_dict
+
 
