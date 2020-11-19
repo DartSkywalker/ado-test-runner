@@ -7,8 +7,8 @@ from flask_login import login_required, current_user
 from loguru import logger
 from .models_data import create_table
 import json
-from .utils.utils import get_invites_table, generate_invite_codes, get_user_role, get_users_dict, set_new_user_role, \
-    change_password_for_user
+from io import StringIO
+from .utils.utils import get_invites_table, generate_invite_codes, get_user_role, get_users_dict, set_new_user_role, change_password_for_user
 from .utils.constants import USER_ROLES
 
 main = Blueprint('main', __name__, static_folder="static", static_url_path="")
@@ -230,3 +230,10 @@ def change_user_password():
 def check_valid_invite(code):
     logger.warning(code)
     return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
+
+
+@main.route('/suitereport/<suite_id>')
+@login_required
+def suite_reporter(suite_id):
+    suite_name, suite_data_dict = sql_api.get_suite_statistics_by_id(suite_id)
+    return render_template('report_template.html', suite_name=suite_name, suite_data=suite_data_dict)
