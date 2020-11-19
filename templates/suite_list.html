@@ -49,6 +49,9 @@
         <li class="nav-item active generate-report" style="display: none">
             <a class="nav-link border-left" id="genReport" href="">Suite Report <span class="sr-only">(current)</span></a>
         </li>
+        <li class="nav-item active generate-report" style="display: none">
+            <a class="nav-link border-left" id="deleteSuite" href="" onclick="return confirm('Do you want to delete Test Suite? Undo will be not available')">Delete Test Suite <span class="sr-only">(current)</span></a>
+        </li>
     </ul>
     <div class="navbar-collapse collapse  order-3 dual-collapse2">
         <ul class="navbar-nav ml-auto">
@@ -197,14 +200,18 @@
     $('#mt tr.clickable-row ').on('click', function (event) {
 
         let newLink = $(this).closest('tr.clickable-row').children('td:first-child').children('a').attr("href").replace("cases", "suitereport");
+        let newLinkDelete = $(this).closest('tr.clickable-row').children('td:first-child').children('a').attr("href").replace("cases", "deletesuite");
 
         $(this).closest('tr.clickable-row').addClass('active');
         $('#genReport').attr("href", newLink)
+        $('#deleteSuite').attr("href", newLinkDelete)
         $('.generate-report').show();
 
         if ($(this).closest('tr.clickable-row').hasClass('active')) {
             $(this).closest('tr.clickable-row').addClass('active').siblings().removeClass('active');
             $('#genReport').attr("href", newLink)
+            $('#deleteSuite').attr("href", newLinkDelete)
+
 
         }
     });

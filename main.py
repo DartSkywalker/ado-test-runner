@@ -243,3 +243,13 @@ def suite_reporter(suite_id):
                     mimetype="text/plain",
                        headers={"Content-Disposition":
                                     "attachment;filename=TReport.html"})
+
+
+@main.route('/deletesuite/<suite_id>')
+@login_required
+def delete_test_suite(suite_id):
+    if sql_api.delete_test_suite(suite_id):
+        return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+    else:
+        return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
+

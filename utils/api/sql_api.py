@@ -346,4 +346,23 @@ def get_suite_statistics_by_id(suite_id):
     suite_data_dict = dict(zip(tc_ado_id, zip(tc_name, tc_state, tc_executed_by, tc_duration, tc_changed_date)))
     return suite_name, suite_data_dict
 
+def get_test_cases_with_steps_by_suite_id(suite_id):
+    test_cases_list_db = connection.execute(select([table_cases.c.TEST_CASE_ID])
+                                            .where(table_cases.c.TEST_SUITE_ID == suite_id)).fetchall()
+    test_case_ids = [test_case[0] for test_case in test_cases_list_db]
+    return test_case_ids
+
+def delete_test_suite(suite_id):
+    try:
+        test_cases_ids = get_test_cases_with_steps_by_suite_id(suite_id)
+
+        for tc_id in test_cases_ids:
+            connection.execute(table_steps.delete().where(table_steps.c.TEST_CASE_ID == tc_id))
+
+        connection.execute(table_cases.delete().where(table_cases.c.TEST_SUITE_ID == suite_id))
+        connection.execute(table_suites.delete().where(table_suites.c.TEST_SUITE_ID == suite_id))
+        return True
+    except Exception as e:
+        logger.critical(Exception)
+        return False
 
