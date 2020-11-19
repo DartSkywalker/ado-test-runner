@@ -1,4 +1,4 @@
-from flask import Blueprint, Flask, request, render_template, redirect, url_for, flash
+from flask import Blueprint, Flask, request, render_template, redirect, url_for, flash, send_file
 
 from .utils.api import sql_api
 from .utils.api import async_functions
@@ -6,10 +6,12 @@ from .utils.api import ado_api
 from flask_login import login_required, current_user
 from loguru import logger
 from .models_data import create_table
-import json
 from io import StringIO
+import json
 from .utils.utils import get_invites_table, generate_invite_codes, get_user_role, get_users_dict, set_new_user_role, change_password_for_user
 from .utils.constants import USER_ROLES
+from werkzeug.wrappers import Response
+
 
 main = Blueprint('main', __name__, static_folder="static", static_url_path="")
 create_table()
@@ -236,4 +238,8 @@ def check_valid_invite(code):
 @login_required
 def suite_reporter(suite_id):
     suite_name, suite_data_dict = sql_api.get_suite_statistics_by_id(suite_id)
-    return render_template('report_template.html', suite_name=suite_name, suite_data=suite_data_dict)
+    meta_string = (render_template('report_template.html', suite_name=suite_name, suite_data=suite_data_dict))
+    return Response(meta_string,
+                    mimetype="text/plain",
+                       headers={"Content-Disposition":
+                                    "attachment;filename=TReport.html"})
