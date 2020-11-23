@@ -1,0 +1,171 @@
+//--------------------------------------------------------------------------------------------
+//Suites statistics
+$('#mt-statistic tr.clickable-row ').on('click', function (event) {
+
+    let newLink = $(this).closest('tr.clickable-row').children('td:first-child').children('a').attr("href").replace("cases", "suitereport");
+    let newLinkDelete = $(this).closest('tr.clickable-row').children('td:first-child').children('a').attr("href").replace("cases", "deletesuite");
+
+    $(this).closest('tr.clickable-row').addClass('active');
+    $('#genReport').attr("href", newLink)
+    $('#deleteSuite').attr("href", newLinkDelete)
+    $('.generate-report').show();
+
+    if ($(this).closest('tr.clickable-row').hasClass('active')) {
+        $(this).closest('tr.clickable-row').addClass('active').siblings().removeClass('active');
+        $('#genReport').attr("href", newLink)
+        $('#deleteSuite').attr("href", newLinkDelete)
+
+
+    }
+});
+
+//--------------------------------------------------------------------------------------------
+// Test Cases List
+$('#statCase').on('click', function (e) {
+    //Load data for statistics
+    let runDate;
+    let duration;
+    let tester;
+    let testResult;
+    let adoId;
+    let suiteName;
+    let testSuiteId = window.location.href.substr(window.location.href.lastIndexOf("/")).replace("/", "");
+
+    $("#mt tr.active").each(function () {
+        if (true) {
+            tester = $(this).find('td:nth-child(4)').text().trim();
+            testResult = $(this).find('td:nth-child(3)').text().trim();
+            adoId = $(this).find('td:nth-child(1)').text().trim();
+
+            $.ajax({
+                url: "/getstatistics/" + testSuiteId + "/" + adoId,
+                type: 'GET'
+            }).done(function (responseData) {
+                console.log('Done: ', responseData);
+                let resp = JSON.parse(responseData)
+                $("#statTable > tbody").empty();
+                for (let i = 0; i < resp["duration"].length; i++){
+                    if (resp["duration"][i] !== "None") {
+                       runDate = resp["date"][i];
+                       duration = resp["duration"][i];
+                       suiteName = resp["suite_name"][i];
+                       $('#statTable > tbody:last-child').append('<tr><td>' + suiteName + '</td><td>' + tester + '</td><td>' + testResult + '</td>' +
+                        '<td>' + duration + '</td><td>' + runDate + '</td></tr>');
+                    }
+                }
+            }).fail(function () {
+                console.log('Failed');
+                alert("Cannot load statistics. Internal Server Error");
+            });
+
+
+
+            $('.statPopUp').css("display", "block")
+        }
+    });
+});
+
+// If the target of the click isn't the container
+$(document).mouseup(function (e) {
+    var container = $(".statPopUp");
+    if (!container.is(e.target) && container.has(e.target).length === 0) {
+        $('.statPopUp').css("display", "none")
+    }
+});
+
+$(document).ready(function () {
+        $(".set-user").on('change', function () {
+            let userId;
+            if ($("#mt tr.active").length > 1) {
+                $("#mt tr.active:first").each(function () {
+                    userId = $(this).find("select.set-user:first-child").val();
+                    console.log(userId)
+                });
+                $("#mt tr.active").each(function () {
+                    $(this).find("select.set-user:first-child").val(userId);
+                    toSave = {};
+                    toSave['userid'] = userId;
+                    var testCaseId = $(this).closest('tr').find('td.tcid').text().trim();
+                    let suiteId = window.location.href.substr(window.location.href.lastIndexOf("/")).replace("/", "");
+                    $.ajax({
+                        url: "/save_user/" + suiteId + "/" + testCaseId,
+                        data: JSON.stringify(toSave),
+                        type: 'POST',
+                        contentType: 'application/json'
+                    }).done(function (responseData) {
+                        console.log('Done: ', responseData);
+                    }).fail(function () {
+                        console.log('Failed');
+                    });
+                });
+            } else {
+
+                toSave = {};
+                userId = $(this).val();
+                toSave['userid'] = userId;
+
+                var testCaseId = $(this).closest('tr').find('td.tcid').text().trim();
+
+                let suiteId = window.location.href.substr(window.location.href.lastIndexOf("/")).replace("/", "");
+                $.ajax({
+                    url: "/save_user/" + suiteId + "/" + testCaseId,
+                    data: JSON.stringify(toSave),
+                    type: 'POST',
+                    contentType: 'application/json'
+                }).done(function (responseData) {
+                    console.log('Done: ', responseData);
+                }).fail(function () {
+                    console.log('Failed');
+                });
+            }
+        });
+});
+
+$('#mt tr.clickable-row td:nth-child(2)').on('click', function (event) {
+        if (event.altKey) {
+
+            $(this).closest('tr.clickable-row').addClass('active');
+            $('.runTest').hide();
+            $('.statistics').hide();
+        } else if ($(this).closest('tr.clickable-row').hasClass('active')) {
+
+        } else {
+            $(this).closest('tr.clickable-row').addClass('active').siblings().removeClass('active');
+            $('#runCase').attr("href", window.location.href + "/" + $(this).closest('tr.clickable-row').children('td:first-child').text().trim())
+            $('.runTest').show();
+            $('.statistics').show();
+
+        }
+});
+
+//--------------------------------------------------------------------------------------------
+//Signup
+$('.help-icon-reg').popover();
+
+$(document).on('click', '#signup', function (e) {
+    e.preventDefault();
+    let username = $("#username").val();
+    let token = $("#token").val();
+    let inviteCode = $("#invite").val();
+    let password = $("#password").val();
+
+        $.ajax({
+            type: "POST",
+            url: "/signup",
+            data: JSON.stringify({
+                username: username,
+                token: token,
+                invite: inviteCode,
+                password: password,
+            }),
+            contentType: 'application/json',
+            success: function (result) {
+                $(location).attr('href', '/login')
+            },
+            error: function (result) {
+                alert('Invalid Invite Code. Please, double check it and try again.')
+            }
+        });
+
+})
+//--------------------------------------------------------------------------------------------

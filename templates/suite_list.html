@@ -72,7 +72,7 @@
 
 <div class="container-fluid">
 
-    <table class="table mt-3 table-hover" style="text-align: center;" id="mt">
+    <table class="table mt-3 table-hover" style="text-align: center;" id="mt-statistic">
         <thead class="bg-primary font-weight-light" style="color: #ffffff;">
         <tr>
             <th scope="col">Suite</th>
@@ -196,26 +196,9 @@
 <script crossorigin="anonymous" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
         src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-<script>
-    $('#mt tr.clickable-row ').on('click', function (event) {
-
-        let newLink = $(this).closest('tr.clickable-row').children('td:first-child').children('a').attr("href").replace("cases", "suitereport");
-        let newLinkDelete = $(this).closest('tr.clickable-row').children('td:first-child').children('a').attr("href").replace("cases", "deletesuite");
-
-        $(this).closest('tr.clickable-row').addClass('active');
-        $('#genReport').attr("href", newLink)
-        $('#deleteSuite').attr("href", newLinkDelete)
-        $('.generate-report').show();
-
-        if ($(this).closest('tr.clickable-row').hasClass('active')) {
-            $(this).closest('tr.clickable-row').addClass('active').siblings().removeClass('active');
-            $('#genReport').attr("href", newLink)
-            $('#deleteSuite').attr("href", newLinkDelete)
+<script src="../static/js/main.js"></script>
 
 
-        }
-    });
-</script>
 
 </body>
 </html>

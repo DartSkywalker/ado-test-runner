@@ -135,37 +135,7 @@
         integrity="sha384-LtrjvnR4Twt/qOuYxE721u19sVFLVSA4hf/rRt6PrZTmiPltdZcI7q7PXQBYTKyf"
         crossorigin="anonymous"></script>
 
-<script>
-    $('.help-icon-reg').popover();
-</script>
+<script src="../static/js/main.js"></script>
 
-<script>
-$(document).on('click', '#signup', function (e) {
-    e.preventDefault();
-    let username = $("#username").val();
-    let token = $("#token").val();
-    let inviteCode = $("#invite").val();
-    let password = $("#password").val();
-
-        $.ajax({
-            type: "POST",
-            url: "/signup",
-            data: JSON.stringify({
-                username: username,
-                token: token,
-                invite: inviteCode,
-                password: password,
-            }),
-            contentType: 'application/json',
-            success: function (result) {
-                $(location).attr('href', '/login')
-            },
-            error: function (result) {
-                alert('Invalid Invite Code. Please, double check it and try again.')
-            }
-        });
-
-})
-</script>
 </body>
 </html>
