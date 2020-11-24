@@ -134,6 +134,10 @@ button {
     min-height: 100vh;
 }
 
+.page-wrapper-index {
+    min-height: 93.235vh;
+}
+
 
 
 .expected {
