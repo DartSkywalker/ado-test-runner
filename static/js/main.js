@@ -1,23 +1,60 @@
 //--------------------------------------------------------------------------------------------
 //Suites statistics
-$('#mt-statistic tr.clickable-row ').on('click', function (event) {
 
-    let newLink = $(this).closest('tr.clickable-row').children('td:first-child').children('a').attr("href").replace("cases", "suitereport");
-    let newLinkDelete = $(this).closest('tr.clickable-row').children('td:first-child').children('a').attr("href").replace("cases", "deletesuite");
+let xCoord;
+let yCoord;
+let suiteId;
+$(document).bind("contextmenu", function (event) {
 
-    $(this).closest('tr.clickable-row').addClass('active');
-    $('#genReport').attr("href", newLink)
-    $('#deleteSuite').attr("href", newLinkDelete)
-    $('.generate-report').show();
+    // Avoid the real one
+    event.preventDefault();
+    xCoord = event.pageX
+    yCoord = event.pageY
+    let thisRow = document.elementFromPoint(xCoord, yCoord);
 
-    if ($(this).closest('tr.clickable-row').hasClass('active')) {
-        $(this).closest('tr.clickable-row').addClass('active').siblings().removeClass('active');
-        $('#genReport').attr("href", newLink)
-        $('#deleteSuite').attr("href", newLinkDelete)
+    if (thisRow.parentElement.tagName !== "TR" ||  thisRow.parentElement.tagName !== "TD") {
+        suiteId = $(thisRow).closest('tr').find('td.suite-link a').attr('href').split('/').pop();
+        // Show contextmenu
+        $(".custom-menu").finish().toggle(50).
+
+            // In the right position (the mouse)
+            css({
+                top: event.pageY + "px",
+                left: event.pageX + "px"
+            });
+    }
+
+});
 
 
+// If the document is clicked somewhere
+$(document).bind("mousedown", function (e) {
+    if (!$(e.target).parents(".custom-menu").length > 0) {
+        $(".custom-menu").hide(50);
     }
 });
+
+
+// If the menu element is clicked
+$(".custom-menu li").click(function(){
+
+    switch($(this).attr("data-action")) {
+
+        // A case for each action. Your actions here
+        case "suite-report": window.open('/suitereport/' + suiteId); break;
+        case "delete-suite":
+            let opt = confirm("Do you really want to delete this Suite?");
+            if (opt) {
+                window.open('/deletesuite/' + suiteId);
+            }
+        break;
+        case "create-suite": alert("We are working hard on implementing this..."); break;
+        case "ado-export": alert("We are working hard on implementing this..."); break;
+    }
+
+    // Hide it AFTER the action was triggered
+    $(".custom-menu").hide(100);
+  });
 
 //--------------------------------------------------------------------------------------------
 // Test Cases List

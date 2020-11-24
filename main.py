@@ -249,7 +249,7 @@ def suite_reporter(suite_id):
 @login_required
 def delete_test_suite(suite_id):
     if sql_api.delete_test_suite(suite_id):
-        return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+        return redirect(url_for('main.suites_list'))
     else:
         return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
 

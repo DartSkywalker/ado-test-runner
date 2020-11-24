@@ -45,12 +45,6 @@
         <li class="nav-item active">
             <a class="nav-link" href="/about">About<span class="sr-only">(current)</span></a>
         </li>
-        <li class="nav-item active generate-report" style="display: none">
-            <a class="nav-link border-left" id="genReport" href="">Suite Report <span class="sr-only">(current)</span></a>
-        </li>
-        <li class="nav-item active generate-report" style="display: none">
-            <a class="nav-link border-left" id="deleteSuite" href="" onclick="return confirm('Do you want to delete Test Suite? Undo will be not available')">Delete Test Suite <span class="sr-only">(current)</span></a>
-        </li>
     </ul>
     <div class="navbar-collapse collapse  order-3 dual-collapse2">
         <ul class="navbar-nav ml-auto">
@@ -119,13 +113,6 @@
 
             </tr>
 
-            {#        <tr>#}
-            {#            <td class="subtr hiddenRow"><div class="accordian-body collapse"></div></td>#}
-            {#            <td class="subtr hiddenRow"><div class="accordian-body collapse"></div></td>#}
-            {#            <td class="subtr hiddenRow"><div class="accordian-body collapse bg-primary font-weight-light" style="text-align: center; color: #fff" id="passed_{{ suite_id }}"> Passed </div> </td>#}
-            {#            <td class="subtr hiddenRow"><div class="accordian-body collapse bg-primary font-weight-light" style="text-align: center; color: #fff" id="failed_{{ suite_id }}"> Failed </div> </td>#}
-            {#            <td class="subtr hiddenRow"><div class="accordian-body collapse bg-primary font-weight-light" style="text-align: center; color: #fff" id="blocked_{{ suite_id }}"> Blocked </div> </td>#}
-            {#        </tr>#}
             {% for i in range(0, ([suite_data_list[2], suite_data_list[3], suite_data_list[4]]|max)) %}
                 <tr>
                     <td class="subtr hiddenRow">
@@ -205,65 +192,6 @@
         src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script src="../static/js/main.js"></script>
-
-<script>
-let xCoord;
-let yCoord;
-let suiteId;
-$(document).bind("contextmenu", function (event) {
-
-    // Avoid the real one
-    event.preventDefault();
-    xCoord = event.pageX
-    yCoord = event.pageY
-    let thisRow = document.elementFromPoint(xCoord, yCoord);
-    suiteId = $(thisRow).closest('tr').find('td.suite-link a').attr('href').split('/').pop();
-    // Show contextmenu
-    $(".custom-menu").finish().toggle(50).
-
-    // In the right position (the mouse)
-    css({
-        top: event.pageY + "px",
-        left: event.pageX + "px"
-    });
-});
-
-
-// If the document is clicked somewhere
-$(document).bind("mousedown", function (e) {
-
-    // If the clicked element is not the menu
-    if (!$(e.target).parents(".custom-menu").length > 0) {
-
-        // Hide it
-        $(".custom-menu").hide(50);
-    }
-});
-
-
-// If the menu element is clicked
-$(".custom-menu li").click(function(){
-
-
-
-    // This is the triggered action name
-    switch($(this).attr("data-action")) {
-
-        // A case for each action. Your actions here
-        case "suite-report": window.open('/suitereport/' + suiteId); break;
-        case "delete-suite":
-            let opt = confirm("Do you really want to delete this Suite?");
-            if (opt) {
-                window.open('/deletesuite/' + suiteId);
-            }
-        break;
-        case "third": alert("third"); break;
-    }
-
-    // Hide it AFTER the action was triggered
-    $(".custom-menu").hide(100);
-  });
-</script>
 
 
 </body>
