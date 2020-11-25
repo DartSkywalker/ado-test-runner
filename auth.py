@@ -13,7 +13,7 @@ auth = Blueprint('auth', __name__)
 def login():
     if current_user.is_authenticated == True:
         return redirect(url_for('main.test_suites'))
-    return render_template('login.html')
+    return render_template('registration.html')
 
 @auth.route('/login', methods=['POST'])
 def login_post():
@@ -36,7 +36,7 @@ def login_post():
 def signup():
     if current_user.is_authenticated == True:
         return redirect(url_for('main.test_suites'))
-    return render_template('signup.html')
+    return render_template('registration.html', sign_up_mode="true")
 
 @auth.route('/signup', methods=['POST'])
 def signup_post():
