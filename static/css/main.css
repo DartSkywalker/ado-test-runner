@@ -217,11 +217,11 @@ h6 {
 /*    background: linear-gradient(to top right, #66b0ff 0%, #007bff 100%);*/
 /*}*/
 .bg-gra-03 {
-    background: -webkit-gradient(linear, left bottom, right top, from(#00b6ff), to(#037AFB));
-    background: -webkit-linear-gradient(bottom left, #38c6ff 0%, #037AFB 100%);
-    background: -moz-linear-gradient(bottom left, #38c6ff 0%, #037AFB 100%);
-    background: -o-linear-gradient(bottom left, #38c6ff 0%, #037AFB 100%);
-    background: linear-gradient(to top right, #38c6ff 0%, #037AFB 100%);
+    background: -webkit-gradient(linear, left bottom, right top, from(#66b0ff), to(#007bff));
+    background: -webkit-linear-gradient(bottom left, #66b0ff 0%, #007bff 100%);
+    background: -moz-linear-gradient(bottom left, #66b0ff 0%, #007bff 100%);
+    background: -o-linear-gradient(bottom left, #66b0ff 0%, #007bff 100%);
+    background: linear-gradient(to top right, #66b0ff 0%, #007bff 100%);
 }
 
 /* ==========================================================================
