@@ -30,7 +30,7 @@ $('#statCase').on('click', function (e) {
                        duration = resp["duration"][i];
                        suiteName = resp["suite_name"][i];
                        $('#statTable > tbody:last-child').append('<tr><td>' + suiteName + '</td><td>' + tester + '</td><td>' + testResult + '</td>' +
-                        '<td>' + duration + '</td><td>' + runDate + '</td></tr>');
+                        '<td>' + new Date(duration * 1000).toISOString().substr(11, 8) + '</td><td>' + runDate + '</td></tr>');
                     }
                 }
             }).fail(function () {
