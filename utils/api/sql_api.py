@@ -213,14 +213,24 @@ def get_test_case_states_for_suites(suites):
 
 def get_test_run_date_duration(test_suite_id, case_ado_id):
     data_list = connection.execute(select(
-        [table_cases.c.CHANGE_STATE_DATE, table_cases.c.DURATION_SEC, table_suites.c.TEST_SUITE_NAME]).select_from(
+        [table_cases.c.CHANGE_STATE_DATE, table_cases.c.DURATION_SEC, table_suites.c.TEST_SUITE_NAME, table_cases.c.EXECUTED_BY, table_cases.c.STATUS]).select_from(
         join(table_suites, table_cases, table_suites.c.TEST_SUITE_ID == table_cases.c.TEST_SUITE_ID))
                                    .where(table_cases.c.TEST_CASE_ADO_ID == case_ado_id)).fetchall()
+
     execution_date = [datetime.datetime.strptime(str(data[0]), '%Y-%m-%d %H:%M:%S.%f').strftime("%b %d %Y %H:%M:%S") for
                       data in data_list]
     duration = [str(data[1]) for data in data_list]
     test_suite = [str(data[2]) for data in data_list]
-    return execution_date, duration, test_suite
+    tester = [str(data[3]) for data in data_list]
+    state = [str(data[4]) for data in data_list]
+    return execution_date, duration, test_suite, tester, state
+
+
+def get_test_case_failures_statistics(test_suite_id, case_ado_id):
+    data_list = connection.execute(select(
+        [table_cases.c.CHANGE_STATE_DATE, table_cases.c.DURATION_SEC, table_suites.c.TEST_SUITE_NAME]).select_from(
+        join(table_suites, table_cases, table_suites.c.TEST_SUITE_ID == table_cases.c.TEST_SUITE_ID))
+                                   .where(table_cases.c.TEST_CASE_ADO_ID == case_ado_id)).fetchall()
 
 
 def set_test_case_for_user(suite_id, test_case_id, json_data):

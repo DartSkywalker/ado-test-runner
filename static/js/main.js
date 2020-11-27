@@ -13,8 +13,8 @@ $('#statCase').on('click', function (e) {
 
     $("#mt tr.active").each(function () {
         if (true) {
-            tester = $(this).find('td:nth-child(4)').text().trim();
-            testResult = $(this).find('td:nth-child(3)').text().trim();
+            // tester = $(this).find('td:nth-child(4)').text().trim();
+            // testResult = $(this).find('td:nth-child(3)').text().trim();
             adoId = $(this).find('td:nth-child(1)').text().trim();
 
             $.ajax({
@@ -29,6 +29,17 @@ $('#statCase').on('click', function (e) {
                        runDate = resp["date"][i];
                        duration = resp["duration"][i];
                        suiteName = resp["suite_name"][i];
+                       tester = resp["tester"][i];
+                       testResult = resp["state"][i];
+
+                       if (testResult === 'Passed') {
+                           testResult = "✅ &nbsp;Passed"
+                       } else if (testResult === 'Failed') {
+                           testResult = "❌ &nbsp;Failed"
+                       } else if (testResult === 'Blocked') {
+                           testResult = "🚫 &nbsp;Blocked"
+                       }
+
                        $('#statTable > tbody:last-child').append('<tr><td>' + suiteName + '</td><td>' + tester + '</td><td>' + testResult + '</td>' +
                         '<td>' + new Date(duration * 1000).toISOString().substr(11, 8) + '</td><td>' + runDate + '</td></tr>');
                     }
@@ -37,8 +48,6 @@ $('#statCase').on('click', function (e) {
                 console.log('Failed');
                 alert("Cannot load statistics. Internal Server Error");
             });
-
-
 
             $('.statPopUp').css("display", "block")
         }
