@@ -1,6 +1,8 @@
-
 //--------------------------------------------------------------------------------------------
 // Test Cases List
+
+$('[data-toggle="popover"]').popover()
+
 $('#statCase').on('click', function (e) {
     //Load data for statistics
     let runDate;
@@ -9,6 +11,9 @@ $('#statCase').on('click', function (e) {
     let testResult;
     let adoId;
     let suiteName;
+    let failureDetails;
+    let failureStepNum;
+    let failureStepComment;
     let testSuiteId = window.location.href.substr(window.location.href.lastIndexOf("/")).replace("/", "");
 
     $("#mt tr.active").each(function () {
@@ -24,24 +29,43 @@ $('#statCase').on('click', function (e) {
                 console.log('Done: ', responseData);
                 let resp = JSON.parse(responseData)
                 $("#statTable > tbody").empty();
-                for (let i = 0; i < resp["duration"].length; i++){
+                for (let i = 0; i < resp["duration"].length; i++) {
                     if (resp["duration"][i] !== "None") {
-                       runDate = resp["date"][i];
-                       duration = resp["duration"][i];
-                       suiteName = resp["suite_name"][i];
-                       tester = resp["tester"][i];
-                       testResult = resp["state"][i];
+                        runDate = resp["date"][i];
+                        duration = resp["duration"][i];
+                        suiteName = resp["suite_name"][i];
+                        tester = resp["tester"][i];
+                        testResult = resp["state"][i];
+                        failureDetails = resp["failure_details"][i];
 
-                       if (testResult === 'Passed') {
-                           testResult = "✅ &nbsp;Passed"
-                       } else if (testResult === 'Failed') {
-                           testResult = "❌ &nbsp;Failed"
-                       } else if (testResult === 'Blocked') {
-                           testResult = "🚫 &nbsp;Blocked"
-                       }
+                        if (testResult === 'Passed') {
+                            testResult = "✅ &nbsp;Passed"
+                            $('#statTable > tbody:last-child').append('<tr><td>' + suiteName + '</td><td>' + tester + '</td><td>' + testResult + '</td>' +
+                                '<td>' + new Date(duration * 1000).toISOString().substr(11, 8) + '</td><td>' + runDate + '</td></tr>');
+                        } else if (testResult === 'Failed') {
+                            testResult = "❌ &nbsp;Failed"
 
-                       $('#statTable > tbody:last-child').append('<tr><td>' + suiteName + '</td><td>' + tester + '</td><td>' + testResult + '</td>' +
-                        '<td>' + new Date(duration * 1000).toISOString().substr(11, 8) + '</td><td>' + runDate + '</td></tr>');
+                            failureStepNum = failureDetails[0];
+                            failureStepComment = failureDetails[1];
+
+
+                            $('#statTable > tbody:last-child').append('<tr class="failure-row"><td>' + suiteName + '</td><td>' + tester + '</td><td>'
+                                +
+                                '<span data-trigger="hover" data-html="true" data-toggle="popover" title="Failure details" data-content="<b>Step #:</b> '+failureStepNum+' <br\><b>Comment: </b>'+failureStepComment+'">'+testResult+'</span>\n'
+                                +
+                                '</td>' +
+                                '<td>' + new Date(duration * 1000).toISOString().substr(11, 8) + '</td><td>' + runDate + '</td></tr>');
+                                $('[data-toggle="popover"]').popover()
+
+
+
+
+                        } else if (testResult === 'Blocked') {
+                            testResult = "🚫 &nbsp;Blocked"
+                            $('#statTable > tbody:last-child').append('<tr><td>' + suiteName + '</td><td>' + tester + '</td><td>' + testResult + '</td>' +
+                                '<td>' + new Date(duration * 1000).toISOString().substr(11, 8) + '</td><td>' + runDate + '</td></tr>');
+                        }
+
                     }
                 }
             }).fail(function () {
@@ -54,6 +78,8 @@ $('#statCase').on('click', function (e) {
     });
 });
 
+
+
 // If the target of the click isn't the container
 $(document).mouseup(function (e) {
     var container = $(".statPopUp");
@@ -63,38 +89,18 @@ $(document).mouseup(function (e) {
 });
 
 $(document).ready(function () {
-        $(".set-user").on('change', function () {
-            let userId;
-            if ($("#mt tr.active").length > 1) {
-                $("#mt tr.active:first").each(function () {
-                    userId = $(this).find("select.set-user:first-child").val();
-                    console.log(userId)
-                });
-                $("#mt tr.active").each(function () {
-                    $(this).find("select.set-user:first-child").val(userId);
-                    toSave = {};
-                    toSave['userid'] = userId;
-                    var testCaseId = $(this).closest('tr').find('td.tcid').text().trim();
-                    let suiteId = window.location.href.substr(window.location.href.lastIndexOf("/")).replace("/", "");
-                    $.ajax({
-                        url: "/save_user/" + suiteId + "/" + testCaseId,
-                        data: JSON.stringify(toSave),
-                        type: 'POST',
-                        contentType: 'application/json'
-                    }).done(function (responseData) {
-                        console.log('Done: ', responseData);
-                    }).fail(function () {
-                        console.log('Failed');
-                    });
-                });
-            } else {
-
+    $(".set-user").on('change', function () {
+        let userId;
+        if ($("#mt tr.active").length > 1) {
+            $("#mt tr.active:first").each(function () {
+                userId = $(this).find("select.set-user:first-child").val();
+                console.log(userId)
+            });
+            $("#mt tr.active").each(function () {
+                $(this).find("select.set-user:first-child").val(userId);
                 toSave = {};
-                userId = $(this).val();
                 toSave['userid'] = userId;
-
                 var testCaseId = $(this).closest('tr').find('td.tcid').text().trim();
-
                 let suiteId = window.location.href.substr(window.location.href.lastIndexOf("/")).replace("/", "");
                 $.ajax({
                     url: "/save_user/" + suiteId + "/" + testCaseId,
@@ -106,25 +112,45 @@ $(document).ready(function () {
                 }).fail(function () {
                     console.log('Failed');
                 });
-            }
-        });
+            });
+        } else {
+
+            toSave = {};
+            userId = $(this).val();
+            toSave['userid'] = userId;
+
+            var testCaseId = $(this).closest('tr').find('td.tcid').text().trim();
+
+            let suiteId = window.location.href.substr(window.location.href.lastIndexOf("/")).replace("/", "");
+            $.ajax({
+                url: "/save_user/" + suiteId + "/" + testCaseId,
+                data: JSON.stringify(toSave),
+                type: 'POST',
+                contentType: 'application/json'
+            }).done(function (responseData) {
+                console.log('Done: ', responseData);
+            }).fail(function () {
+                console.log('Failed');
+            });
+        }
+    });
 });
 
 $('#mt tr.clickable-row td:nth-child(2)').on('click', function (event) {
-        if (event.altKey) {
+    if (event.altKey) {
 
-            $(this).closest('tr.clickable-row').addClass('active');
-            $('.runTest').hide();
-            $('.statistics').hide();
-        } else if ($(this).closest('tr.clickable-row').hasClass('active')) {
+        $(this).closest('tr.clickable-row').addClass('active');
+        $('.runTest').hide();
+        $('.statistics').hide();
+    } else if ($(this).closest('tr.clickable-row').hasClass('active')) {
 
-        } else {
-            $(this).closest('tr.clickable-row').addClass('active').siblings().removeClass('active');
-            $('#runCase').attr("href", window.location.href + "/" + $(this).closest('tr.clickable-row').children('td:first-child').text().trim())
-            $('.runTest').show();
-            $('.statistics').show();
+    } else {
+        $(this).closest('tr.clickable-row').addClass('active').siblings().removeClass('active');
+        $('#runCase').attr("href", window.location.href + "/" + $(this).closest('tr.clickable-row').children('td:first-child').text().trim())
+        $('.runTest').show();
+        $('.statistics').show();
 
-        }
+    }
 });
 
 //--------------------------------------------------------------------------------------------
@@ -138,66 +164,66 @@ $(document).on('click', '#signup', function (e) {
     let inviteCode = $("#invite").val();
     let password = $("#password").val();
 
-        $.ajax({
-            type: "POST",
-            url: "/signup",
-            data: JSON.stringify({
-                username: username,
-                token: token,
-                invite: inviteCode,
-                password: password,
-            }),
-            contentType: 'application/json',
-            success: function (result) {
-                $(location).attr('href', '/login')
-            },
-            error: function (result) {
-                alert('Invalid Invite Code. Please, double check it and try again.')
-            }
-        });
+    $.ajax({
+        type: "POST",
+        url: "/signup",
+        data: JSON.stringify({
+            username: username,
+            token: token,
+            invite: inviteCode,
+            password: password,
+        }),
+        contentType: 'application/json',
+        success: function (result) {
+            $(location).attr('href', '/login')
+        },
+        error: function (result) {
+            alert('Invalid Invite Code. Please, double check it and try again.')
+        }
+    });
 
 })
 
 //New Registration
-    const sign_in_btn = document.querySelector("#sign-in-btn");
-    const sign_up_btn = document.querySelector("#sign-up-btn");
-    const container = document.querySelector(".container");
+const sign_in_btn = document.querySelector("#sign-in-btn");
+const sign_up_btn = document.querySelector("#sign-up-btn");
+const container = document.querySelector(".container");
 
-    sign_up_btn.addEventListener("click", () => {
-        container.classList.add("sign-up-mode");
-    });
+sign_up_btn.addEventListener("click", () => {
+    container.classList.add("sign-up-mode");
+});
 
-    sign_in_btn.addEventListener("click", () => {
-        container.classList.remove("sign-up-mode");
-    });
+sign_in_btn.addEventListener("click", () => {
+    container.classList.remove("sign-up-mode");
+});
 
 //--------------------------------------------------------------------------------------------
 //Settings
 
 $("#save").on("click", function (e) {
-        e.preventDefault();
-        let token = $("#token").val();
-        $.ajax({
-            type: "POST",
-            url: "/settings",
-            data: JSON.stringify({token: token}),
-            contentType: 'application/json',
-            success: function (result) {
-                $("#saveSuccess").css('display', 'flex')
-                $("#saveSuccess").fadeOut(3000)
-            },
-            error: function (result) {
-                $("#saveFailed").css('display', 'flex')
-                $('#token').addClass('errorHighlight');
-                setTimeout(function () {
-                    $('#token').removeClass('errorHighlight');
-                }, 3000);
-                $("#saveFailed").fadeOut(3000)
-            }
-        });
+    e.preventDefault();
+    let token = $("#token").val();
+    $.ajax({
+        type: "POST",
+        url: "/settings",
+        data: JSON.stringify({token: token}),
+        contentType: 'application/json',
+        success: function (result) {
+            $("#saveSuccess").css('display', 'flex')
+            $("#saveSuccess").fadeOut(3000)
+        },
+        error: function (result) {
+            $("#saveFailed").css('display', 'flex')
+            $('#token').addClass('errorHighlight');
+            setTimeout(function () {
+                $('#token').removeClass('errorHighlight');
+            }, 3000);
+            $("#saveFailed").fadeOut(3000)
+        }
     });
+});
 
-$(document).on('click','#savePassword',function(e) {
+$(document).on('click', '#savePassword', function (e) {
     e.preventDefault();
     let newPass = $("#newPass").val();
     let newPassConfirm = $("#newPassConfirm").val();
