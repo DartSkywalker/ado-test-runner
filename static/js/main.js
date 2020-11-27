@@ -48,10 +48,16 @@ $('#statCase').on('click', function (e) {
                             failureStepNum = failureDetails[0];
                             failureStepComment = failureDetails[1];
 
+                            let dataStr = "";
+                            for (let i=0;i < failureStepNum.length; i++) {
+                                dataStr += '<p><b>Step #:</b>'+failureStepNum[i]+'<br\><b>Comment: </b>'+failureStepComment[i] + '</p>'
+                            }
 
                             $('#statTable > tbody:last-child').append('<tr class="failure-row"><td>' + suiteName + '</td><td>' + tester + '</td><td>'
                                 +
-                                '<span data-trigger="hover" data-html="true" data-toggle="popover" title="Failure details" data-content="<b>Step #:</b> '+failureStepNum+' <br\><b>Comment: </b>'+failureStepComment+'">'+testResult+'</span>\n'
+                                '<span data-trigger="hover" data-html="true" data-toggle="popover" title="Failure details" data-content="'
+                                +dataStr+'">' +
+                                ''+testResult+'</span>\n'
                                 +
                                 '</td>' +
                                 '<td>' + new Date(duration * 1000).toISOString().substr(11, 8) + '</td><td>' + runDate + '</td></tr>');

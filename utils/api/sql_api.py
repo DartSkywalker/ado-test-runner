@@ -249,7 +249,7 @@ def get_test_run_date_duration(test_suite_id, case_ado_id):
             expected = [str(data[2]) for data in step_data]
             comment = [str(data[4]) if str(data[4]) != 'None' else "" for data in step_data]
 
-            failure_details.append([step_num[0], comment[0]])
+            failure_details.append([step_num, comment])
         else:
             failure_details.append("")
     logger.warning(failure_details)

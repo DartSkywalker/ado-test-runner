@@ -1132,4 +1132,18 @@ td.subtr {
 
 .popover {
     z-index: 1010; /* A value higher than 1010 that solves the problem */
+    max-width: 350px;
+}
+
+.popover-header {
+    color: #fff;
+    background: #037AFB;
+}
+.popover-body {
+    color: #343A40;
+}
+
+.popover p {
+    margin-bottom: 5px;
+    border-bottom: 1px solid #DEE2E6;
 }
