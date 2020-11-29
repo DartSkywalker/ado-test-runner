@@ -7,3 +7,4 @@ class user(db.Model, UserMixin):
     password = db.Column(db.String(100))
     token = db.Column(db.String(100))
     role = db.Column(db.String(100))
+    team = db.Column(db.Integer)

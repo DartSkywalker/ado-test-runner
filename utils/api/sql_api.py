@@ -4,13 +4,14 @@ from sqlite3.dbapi2 import Error
 
 from flask import g
 from flask_login import current_user
-
+from ...team_db_models import create_teams_table
 from loguru import logger
 from sqlalchemy import create_engine, MetaData, Table, select, desc, and_, join
+from sqlalchemy_utils import database_exists, create_database
+
 from sqlalchemy.pool import SingletonThreadPool
 
-my_sql = 'mysql+mysqlconnector://user:user@localhost:3306/ado'
-postgres = 'postgresql+psycopg2://user:user@localhost:5432/ado'
+postgres = 'postgresql+psycopg2://user:user@localhost:5432/maindb'
 
 
 def sql_connection():
@@ -38,6 +39,7 @@ table_user = Table('user', meta)
 table_suites = Table('TEST_SUITES', meta)
 table_cases = Table('TEST_CASES', meta)
 table_steps = Table('TEST_STEPS', meta)
+table_teams = Table('TEAMS_INFO', meta)
 
 
 def get_test_suites_from_database():
@@ -408,3 +410,45 @@ def delete_test_suite(suite_id):
     except Exception as e:
         logger.critical(Exception)
         return False
+
+def get_teams_list():
+    teams_data = connection.execute(select([table_teams.c.TEAM, table_teams.c.ID])).fetchall()
+    team_id = [data[0] for data in teams_data]
+    team_name = [data[1] for data in teams_data]
+    return dict(zip(team_name, team_id))
+
+
+def get_teams_data_admin():
+    teams_data = connection.execute(select([table_teams.c.TEAM, table_teams.c.ID])).fetchall()
+    team_id = [data[1] for data in teams_data]
+    team_name = [data[0] for data in teams_data]
+    team_members = []
+    for id in team_id:
+        team_members_db = connection.execute(select([table_user.c.username]).where(table_user.c.team == id)).fetchall()
+        team_members.append([data[0] for data in team_members_db])
+    teams_dict = dict(zip(team_id, zip(team_name, team_members)))
+    logger.warning(teams_dict)
+    return teams_dict
+
+
+def create_new_database(db_name):
+    eng = create_engine("postgresql+psycopg2://user:user@localhost:5432/" + db_name + "_db")
+    create_database(eng.url)
+    conn = eng.connect()
+    create_teams_table(conn, eng)
+
+
+def create_new_team(team_name):
+    try:
+        db_name = team_name.replace(" ", "_")
+
+        create_new_database(db_name)
+        connection.execute(table_teams.insert().values(TEAM=team_name, DATABASE=db_name))
+
+        logger.warning(team_name)
+        logger.warning(db_name)
+        return True
+    except TypeError as e:
+        logger.critical(e, f"Error while creating the {team_name} team.")
+        return False
+

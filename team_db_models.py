@@ -1,24 +1,11 @@
-from sqlalchemy import create_engine, ForeignKey
+from sqlalchemy import ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, DateTime
-from sqlalchemy.orm import relationship
 from sqlalchemy import MetaData, Table
+
 from sqlalchemy.sql import func
 
-postgres = 'postgresql+psycopg2://user:user@localhost:5432/ado'
-
-engine = create_engine(postgres, echo=False)
-connection = engine.connect()
 Base = declarative_base()
-
-class user(Base):
-    __tablename__ = 'user'
-    id = Column(Integer, primary_key=True) # primary keys are required by SQLAlchemy
-    username = Column(String(100), unique=True)
-    password = Column(String(100))
-    token = Column(String(100))
-    role = Column(String(100))
-    # test_case=relationship("TEST_CASES")
 
 class Test_Suites(Base):
     __tablename__ = 'TEST_SUITES'
@@ -36,7 +23,7 @@ class Test_Cases(Base):
     TEST_CASE_NAME = Column(String)
     STATUS = Column(String)
     DURATION_SEC = Column(Integer)
-    EXECUTED_BY = Column(String, ForeignKey('user.username'))
+    EXECUTED_BY = Column(String)
     CHANGE_STATE_DATE = Column(DateTime(timezone=False), server_default=func.now())
     # test_step = relationship("TEST_STEPS")
 
@@ -50,18 +37,8 @@ class Test_Steps(Base):
     STEP_STATUS = Column(String)
     COMMENT = Column(String)
 
-class Invite_Info(Base):
-    __tablename__ = 'INVITE_INFO'
-    ID = Column(Integer, primary_key=True, autoincrement=True)
-    CODE = Column(String)
-    ACTIVATED = Column(String)
-    ACTIVATED_BY = Column(Integer)
-
-def create_table():
+def create_teams_table(connection, engine):
     metadata = MetaData()
     Base.metadata.create_all(engine)
     connection.close()
     engine.dispose()
-
-# Uncomment to create a new DB tables
-# create_table()

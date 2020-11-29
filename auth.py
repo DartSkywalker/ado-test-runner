@@ -5,6 +5,7 @@ from .models import user
 from flask_login import login_user, logout_user, login_required, current_user
 from loguru import logger
 from .utils import utils
+from .utils.api import sql_api
 import json
 
 auth = Blueprint('auth', __name__)
@@ -13,7 +14,7 @@ auth = Blueprint('auth', __name__)
 def login():
     if current_user.is_authenticated == True:
         return redirect(url_for('main.test_suites'))
-    return render_template('registration.html')
+    return render_template('registration.html', teams=sql_api.get_teams_list())
 
 @auth.route('/login', methods=['POST'])
 def login_post():
@@ -36,7 +37,7 @@ def login_post():
 def signup():
     if current_user.is_authenticated == True:
         return redirect(url_for('main.test_suites'))
-    return render_template('registration.html', sign_up_mode="true")
+    return render_template('registration.html', sign_up_mode="true", teams=sql_api.get_teams_list())
 
 @auth.route('/signup', methods=['POST'])
 def signup_post():
@@ -44,6 +45,7 @@ def signup_post():
     username = data['username']
     password = data['password']
     invite = data['invite']
+    team_id = data['team']
     token = data['token']
 
     logger.warning(data)
@@ -51,7 +53,7 @@ def signup_post():
         return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
     else:
         new_user = user(username=username, password=generate_password_hash(password, method='sha256'), token=token,
-                        role='engineer')
+                        role='engineer', team=team_id)
 
         # add the new user to the database
         db.session.add(new_user)

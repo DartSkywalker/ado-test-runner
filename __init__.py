@@ -9,7 +9,7 @@ def create_app():
     app = Flask(__name__)
 
     app.config['SECRET_KEY'] = 'secret-key-goes-here'
-    postgres = 'postgresql+psycopg2://user:user@localhost:5432/ado'
+    postgres = 'postgresql+psycopg2://user:user@localhost:5432/maindb'
 
     app.config['SQLALCHEMY_DATABASE_URI'] = postgres
 

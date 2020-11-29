@@ -5,7 +5,7 @@ from .utils.api import async_functions
 from .utils.api import ado_api
 from flask_login import login_required, current_user
 from loguru import logger
-from .models_data import create_table
+from .main_db_models import create_table
 from io import StringIO
 import json
 from .utils.utils import get_invites_table, generate_invite_codes, get_user_role, get_users_dict, set_new_user_role, change_password_for_user
@@ -196,7 +196,7 @@ def admin_panel():
         users_dict = get_users_dict()
         return render_template('admin_panel.html', ids=ids, code=code, activated=activated,
                                username=sql_api.get_current_user(), usersdict=users_dict,
-                               user_roles_list=USER_ROLES)
+                               user_roles_list=USER_ROLES, teams=sql_api.get_teams_data_admin())
     else:
         return redirect(url_for("main.test_suites"))
 
@@ -205,6 +205,14 @@ def admin_panel():
 @login_required
 def generate_invites(num):
     if generate_invite_codes(num):
+        return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+    else:
+        return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
+
+@main.route('/create_team/<team_name>', methods=['GET'])
+@login_required
+def create_new_team(team_name):
+    if sql_api.create_new_team(team_name):
         return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
     else:
         return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}

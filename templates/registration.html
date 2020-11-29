@@ -61,6 +61,14 @@
                     <input type="text" id="invite" placeholder="Invite Code"/>
                 </div>
                 <div class="input-field">
+                    <i class="fas fa-users"></i>
+                    <select id="team_selector">
+                        {% for id, team_name in teams.items() %}
+                            <option value="{{ id }}">{{ team_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input-field">
                     <i class="fas fa-lock"></i>
                     <input type="password" id="password" placeholder="Password"/>
                 </div>

@@ -168,6 +168,7 @@ $(document).on('click', '#signup', function (e) {
     let username = $("#username").val();
     let token = $("#token").val();
     let inviteCode = $("#invite").val();
+    let teamId = $("#team_selector").val();
     let password = $("#password").val();
 
     $.ajax({
@@ -177,6 +178,7 @@ $(document).on('click', '#signup', function (e) {
             username: username,
             token: token,
             invite: inviteCode,
+            team: teamId,
             password: password,
         }),
         contentType: 'application/json',
