@@ -81,6 +81,8 @@ def get_test_cases_from_db_by_suite_name(test_suite_id):
     test_case_dict = dict(zip(test_cases_id_list, zip(test_cases_name_list, test_cases_link_list,
                                                       test_cases_status, test_cases_executed)))
     return test_case_dict
+
+
 # get_test_cases_from_db_by_suite_name('Velocity Test Cases')
 
 
@@ -210,19 +212,57 @@ def get_test_case_states_for_suites(suites):
             'Ready': [[case[1], case[2], case[3]] for case in status if case[0] == 'Ready'],
             'Paused': [[case[1], case[2], case[3]] for case in status if case[0] == 'Paused']}
     return result, result_detailed
+
+
 # get_test_case_states_for_suites([2])
 
 
 def get_test_run_date_duration(test_suite_id, case_ado_id):
     data_list = connection.execute(select(
-        [table_cases.c.CHANGE_STATE_DATE, table_cases.c.DURATION_SEC, table_suites.c.TEST_SUITE_NAME]).select_from(
+        [table_cases.c.CHANGE_STATE_DATE, table_cases.c.DURATION_SEC, table_suites.c.TEST_SUITE_NAME,
+         table_cases.c.EXECUTED_BY, table_cases.c.STATUS, table_cases.c.TEST_CASE_ID,
+         table_suites.c.TEST_SUITE_ID]).select_from(
         join(table_suites, table_cases, table_suites.c.TEST_SUITE_ID == table_cases.c.TEST_SUITE_ID))
                                    .where(table_cases.c.TEST_CASE_ADO_ID == case_ado_id)).fetchall()
+
     execution_date = [datetime.datetime.strptime(str(data[0]), '%Y-%m-%d %H:%M:%S.%f').strftime("%b %d %Y %H:%M:%S") for
                       data in data_list]
     duration = [str(data[1]) for data in data_list]
     test_suite = [str(data[2]) for data in data_list]
-    return execution_date, duration, test_suite
+    tester = [str(data[3]) for data in data_list]
+    state = [str(data[4]) for data in data_list]
+    tc_id = [str(data[5]) for data in data_list]
+    test_suite_id = [str(data[6]) for data in data_list]
+
+    failure_details = []
+
+    for i in range(0, len(state)):
+        if state[i] == 'Failed':
+            step_data = connection.execute(select([table_steps.c.STEP_NUMBER, table_steps.c.DESCRIPTION,
+                                                   table_steps.c.EXPECTED_RESULT, table_steps.c.STEP_STATUS,
+                                                   table_steps.c.COMMENT]).select_from(
+                join(table_cases, table_steps, table_cases.c.TEST_CASE_ID == table_steps.c.TEST_CASE_ID)).
+                                           where(
+                and_(table_steps.c.TEST_CASE_ID == tc_id[i], table_cases.c.TEST_SUITE_ID == test_suite_id[i],
+                     table_steps.c.STEP_STATUS == 'Failed'))).fetchall()
+
+            step_num = [str(data[0]) for data in step_data]
+            descr = [str(data[1]) for data in step_data]
+            expected = [str(data[2]) for data in step_data]
+            comment = [str(data[4]) if str(data[4]) != 'None' else "" for data in step_data]
+
+            failure_details.append([step_num, comment])
+        else:
+            failure_details.append("")
+    logger.warning(failure_details)
+    return execution_date, duration, test_suite, tester, state, failure_details
+
+
+def get_test_case_failures_statistics(test_suite_id, case_ado_id):
+    data_list = connection.execute(select(
+        [table_cases.c.CHANGE_STATE_DATE, table_cases.c.DURATION_SEC, table_suites.c.TEST_SUITE_NAME]).select_from(
+        join(table_suites, table_cases, table_suites.c.TEST_SUITE_ID == table_cases.c.TEST_SUITE_ID))
+                                   .where(table_cases.c.TEST_CASE_ADO_ID == case_ado_id)).fetchall()
 
 
 def set_test_case_for_user(suite_id, test_case_id, json_data):
@@ -258,6 +298,8 @@ def set_test_case_state(test_case_id, json_with_step_states):
             update_statement = table_cases.update().where(table_cases.c.TEST_CASE_ID == int(test_case_id)) \
                 .values(STATUS=str(test_case_result), EXECUTED_BY=str(user), DURATION_SEC=str(test_run_duration))
             connection.execute(update_statement)
+
+
 # json = {'0': {'stepNum': 1,'outcome': 'Passed', 'comment':"test"},'1': {'stepNum': 2,'outcome':'Failed'},
 #         '2': {'stepNum': 3,'outcome': 'Passed'},'3': {'stepNum': 4,'outcome':'Failed'},
 #         '4': {'stepNum': 5,'outcome': 'Passed'},'5': {'stepNum': 6,'outcome':'Passed'},
@@ -333,7 +375,6 @@ def get_suite_statistics_by_id(suite_id):
                                          .order_by(table_cases.c.STATUS)
                                          .where(table_cases.c.TEST_SUITE_ID == suite_id)).fetchall()
 
-
     tc_ado_id = [str(data[0]) for data in test_cases_data]
     tc_name = [str(data[1]) for data in test_cases_data]
     tc_state = [str(data[2]) if str(data[2]) != "Ready" else "🤔  Not Executed" for data in test_cases_data]
@@ -342,10 +383,30 @@ def get_suite_statistics_by_id(suite_id):
                     .replace("Blocked", "🚫  Blocked") for state in tc_state]
     tc_executed_by = [str(data[3]) if str(data[3]) != "None" else "" for data in test_cases_data]
     tc_duration = [str(data[4]) if str(data[4]) != "None" else "" for data in test_cases_data]
-    tc_changed_date =[datetime.datetime.strptime(str(data[5]), '%Y-%m-%d %H:%M:%S.%f').strftime("%b %d %Y %H:%M") for
-                      data in test_cases_data]
+    tc_changed_date = [datetime.datetime.strptime(str(data[5]), '%Y-%m-%d %H:%M:%S.%f').strftime("%b %d %Y %H:%M") for
+                       data in test_cases_data]
 
     suite_data_dict = dict(zip(tc_ado_id, zip(tc_name, tc_state, tc_executed_by, tc_duration, tc_changed_date)))
     return suite_name, suite_data_dict
 
 
+def get_test_cases_with_steps_by_suite_id(suite_id):
+    test_cases_list_db = connection.execute(select([table_cases.c.TEST_CASE_ID])
+                                            .where(table_cases.c.TEST_SUITE_ID == suite_id)).fetchall()
+    test_case_ids = [test_case[0] for test_case in test_cases_list_db]
+    return test_case_ids
+
+
+def delete_test_suite(suite_id):
+    try:
+        test_cases_ids = get_test_cases_with_steps_by_suite_id(suite_id)
+
+        for tc_id in test_cases_ids:
+            connection.execute(table_steps.delete().where(table_steps.c.TEST_CASE_ID == tc_id))
+
+        connection.execute(table_cases.delete().where(table_cases.c.TEST_SUITE_ID == suite_id))
+        connection.execute(table_suites.delete().where(table_suites.c.TEST_SUITE_ID == suite_id))
+        return True
+    except Exception as e:
+        logger.critical(Exception)
+        return False

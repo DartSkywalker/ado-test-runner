@@ -69,14 +69,15 @@
                     Hello, {{ username }}
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                    <a class="dropdown-item" href="/settings">Settings</a>
-                    <a class="dropdown-item" href="/logout">Logout</a>
+                                        <a class="dropdown-item" href="/settings">⚙️ &nbsp;Settings</a>
+                    <a class="dropdown-item" href="/logout">🚪 &nbsp;Logout</a>
                 </div>
             </li>
         </ul>
     </div>
 </nav>
 <div class="statPopUp" style="display: none">
+
     <table class="table sttable" style="text-align: center;" id="statTable">
         <thead class="bg-primary font-weight-light thstat" style="color: #fff;">
         <tr>
@@ -91,7 +92,11 @@
     </tbody>
     </table>
 </div>
-
+<ul class='custom-menu-tclist'>
+    <li data-action="run-test"><a class="run_tc_mb3" style="text-decoration: none; color: #333333" href="">🏃 &nbsp;Run Test</a></li>
+  <li data-action="show-statistics">📉 &nbsp;Statistics</li>
+  <li data-action="assign-to">👤 &nbsp;Assign To</li>
+</ul>
 <div class="container-fluid">
     <div class="shifted-list">
         <table class="table mt-3" style="text-align: center;" id="mt">
@@ -183,158 +188,63 @@
         integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
         crossorigin="anonymous"></script>
 
+<script src="../static/js/main.js"></script>
 
 <script>
-    $('#statCase').on('click', function (e) {
-        //Load data for statistics
-        let runDate;
-        let duration;
-        let tester;
-        let testResult;
-        let adoId;
-        let suiteName;
-        let testSuiteId = window.location.href.substr(window.location.href.lastIndexOf("/")).replace("/", "");
+    //--------------------------------------------------------------------------------------------
+//Suites statistics
 
-        $("#mt tr.active").each(function () {
-            {#if ($(this).find('td:nth-child(3)').text().toLowerCase().includes('ready') == false) {#}
-            if (true) {
-                tester = $(this).find('td:nth-child(4)').text().trim();
-                testResult = $(this).find('td:nth-child(3)').text().trim();
-                adoId = $(this).find('td:nth-child(1)').text().trim();
+let xCoord;
+let yCoord;
+let tcId;
+$('tr.clickable-row').on("contextmenu", function (event) {
+    if ($(this).hasClass('active')) {
+        // Avoid the real one
+        event.preventDefault();
 
-                $.ajax({
-                    url: "/getstatistics/" + testSuiteId + "/" + adoId,
-                    type: 'GET'
-                }).done(function (responseData) {
-                    console.log('Done: ', responseData);
-                    let resp = JSON.parse(responseData)
-                    $("#statTable > tbody").empty();
-                    for (let i = 0; i < resp["duration"].length; i++){
-                        if (resp["duration"][i] !== "None") {
-                           runDate = resp["date"][i];
-                           duration = resp["duration"][i];
-                           suiteName = resp["suite_name"][i];
-                           $('#statTable > tbody:last-child').append('<tr><td>' + suiteName + '</td><td>' + tester + '</td><td>' + testResult + '</td>' +
-                            '<td>' + duration + '</td><td>' + runDate + '</td></tr>');
-                        }
-                    }
-                }).fail(function () {
-                    console.log('Failed');
-                    alert("Cannot load statistics. Internal Server Error");
-                });
+        let thisRow = $(this);
+        tcId = $(thisRow).find('td.tcid a').attr('href').split('/').pop();
+        $('.run_tc_mb3').attr("href", window.location.href + "/" + $(this).closest('tr.clickable-row').children('td:first-child').text().trim())
+        // Show contextmenu
+        $(".custom-menu-tclist").finish().toggle(50).
+
+            // In the right position (the mouse)
+            css({
+                top: event.pageY + "px",
+                left: event.pageX + "px"
+            });
+    }
 
 
-
-                $('.statPopUp').css("display", "block")
-            }
-        });
-    });
-
-    // If the target of the click isn't the container
-    $(document).mouseup(function (e) {
-        var container = $(".statPopUp");
-        if (!container.is(e.target) && container.has(e.target).length === 0) {
-            $('.statPopUp').css("display", "none")
-        }
-    });
+});
 
 
+// If the document is clicked somewhere
+$(document).bind("mousedown", function (e) {
+    if (!$(e.target).parents(".custom-menu-tclist").length > 0) {
+        $(".custom-menu-tclist").hide(50);
+    }
+});
+
+
+// If the menu element is clicked
+$(".custom-menu-tclist li").click(function(){
+
+    switch($(this).attr("data-action")) {
+
+        // A case for each action. Your actions here
+
+        case "run-test": ""; break;
+
+    }
+
+    // Hide it AFTER the action was triggered
+    $(".custom-menu-tclist").hide(100);
+  });
+  {#<li data-action="run-test">🏃 &nbsp;Run Test</li>#}
+  {#<li data-action="show-statistics">📉 &nbsp;Statistics</li>#}
+  {#<li data-action="assign-to">👤 &nbsp;Assign To</li>#}
 </script>
 
-
-<script>
-    $(document).ready(function () {
-        $(".set-user").on('change', function () {
-            let userId;
-            if ($("#mt tr.active").length > 1) {
-                $("#mt tr.active:first").each(function () {
-                    userId = $(this).find("select.set-user:first-child").val();
-                    console.log(userId)
-                });
-                $("#mt tr.active").each(function () {
-                    $(this).find("select.set-user:first-child").val(userId);
-                    toSave = {};
-                    toSave['userid'] = userId;
-                    var testCaseId = $(this).closest('tr').find('td.tcid').text().trim();
-                    let suiteId = window.location.href.substr(window.location.href.lastIndexOf("/")).replace("/", "");
-                    $.ajax({
-                        url: "/save_user/" + suiteId + "/" + testCaseId,
-                        data: JSON.stringify(toSave),
-                        type: 'POST',
-                        contentType: 'application/json'
-                    }).done(function (responseData) {
-                        console.log('Done: ', responseData);
-                    }).fail(function () {
-                        console.log('Failed');
-                    });
-                });
-            } else {
-
-                toSave = {};
-                userId = $(this).val();
-                toSave['userid'] = userId;
-
-                var testCaseId = $(this).closest('tr').find('td.tcid').text().trim();
-
-                let suiteId = window.location.href.substr(window.location.href.lastIndexOf("/")).replace("/", "");
-                $.ajax({
-                    url: "/save_user/" + suiteId + "/" + testCaseId,
-                    data: JSON.stringify(toSave),
-                    type: 'POST',
-                    contentType: 'application/json'
-                }).done(function (responseData) {
-                    console.log('Done: ', responseData);
-                }).fail(function () {
-                    console.log('Failed');
-                });
-            }
-        });
-    });
-</script>
-
-{#<script>#}
-{#    //Table MB3#}
-{#    $(function () {#}
-{##}
-{#        var $contextMenu = $("#contextMenu");#}
-{##}
-{#        $("body").on("contextmenu", "table tr", function (e) {#}
-{#            $contextMenu.css({#}
-{#                display: "block",#}
-{#                left: e.pageX,#}
-{#                top: e.pageY#}
-{#            });#}
-{#            return false;#}
-{#        });#}
-{##}
-{#        $contextMenu.on("click", "a", function () {#}
-{#            $contextMenu.hide();#}
-{#        });#}
-{##}
-{#    });#}
-{#</script>#}
-
-<script>
-    $('#mt tr.clickable-row td:nth-child(2)').on('click', function (event) {
-        if (event.altKey) {
-
-            $(this).closest('tr.clickable-row').addClass('active');
-            $('.runTest').hide();
-            $('.statistics').hide();
-        } else if ($(this).closest('tr.clickable-row').hasClass('active')) {
-            {#$(this).find('tr.clickable-row').removeClass('active');#}
-            {#$('.runTest').hide();#}
-            {#$('.statistics').hide();#}
-
-        } else {
-            $(this).closest('tr.clickable-row').addClass('active').siblings().removeClass('active');
-            $('#runCase').attr("href", window.location.href + "/" + $(this).closest('tr.clickable-row').children('td:first-child').text().trim())
-            {#$('#statCase').attr("href", window.location.href + "/" + $(this).closest('tr.clickable-row').children('td:first-child').text().trim() + "/stat")#}
-            $('.runTest').show();
-            $('.statistics').show();
-
-        }
-    });
-</script>
 </body>
 </html>

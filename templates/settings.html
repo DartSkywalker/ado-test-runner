@@ -55,8 +55,8 @@
                     Hello, {{ username }}
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                    <a class="dropdown-item" href="/settings">Settings</a>
-                    <a class="dropdown-item" href="/logout">Logout</a>
+                                        <a class="dropdown-item" href="/settings">⚙️ &nbsp;Settings</a>
+                    <a class="dropdown-item" href="/logout">🚪 &nbsp;Logout</a>
                 </div>
             </li>
         </ul>
@@ -71,7 +71,7 @@
     <div class="wrapper wrapper--w680">
         <div class="card card-4">
             <div class="card-body">
-                <h2 class="title">{{ username }} settings</h2>
+                <h2 class="title">{{ username }}'s profile settings</h2>
                 <form method="POST" name="saveTokenName">
                     <div class="row row-space">
                         <div class="col-12">
@@ -86,8 +86,8 @@
 
                     <div class="row row-space">
                         <div class="col-12">
-                            <div>
-                                <button class="btn btn-default btn--radius-2 btn--blue width-100" name="saveTokenName" id="save"
+                            <div style="align-content: center; text-align: center">
+                                <button class="btn btn-default btn--radius-2 btn--blue width-50" name="saveTokenName" id="save"
                                         value="SaveToken">Update Token</button>
                             </div>
                         </div>
@@ -113,8 +113,8 @@
 
                         <div class="row row-space">
                             <div class="col-12">
-                                <div>
-                                    <button class="btn btn-default btn--radius-2 btn--blue width-100" type="submit"
+                                <div style="align-content: center; text-align: center">
+                                    <button class="btn btn-default btn--radius-2 btn--blue width-50" type="submit"
                                             id="savePassword" value="Update password">Update Password</button>
                                 </div>
                             </div>
@@ -147,61 +147,7 @@
 <script crossorigin="anonymous" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
         src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-<script>
-    $("#save").on("click", function (e) {
-        e.preventDefault();
-        let token = $("#token").val();
-        $.ajax({
-            type: "POST",
-            url: "/settings",
-            data: JSON.stringify({token: token}),
-            contentType: 'application/json',
-            success: function (result) {
-                $("#saveSuccess").css('display', 'flex')
-                $("#saveSuccess").fadeOut(3000)
-            },
-            error: function (result) {
-                $("#saveFailed").css('display', 'flex')
-                $('#token').addClass('errorHighlight');
-                setTimeout(function () {
-                    $('#token').removeClass('errorHighlight');
-                }, 3000);
-                $("#saveFailed").fadeOut(3000)
-            }
-        });
-    });
-</script>
-
-<script>
-$(document).on('click','#savePassword',function(e) {
-    e.preventDefault();
-    let newPass = $("#newPass").val();
-    let newPassConfirm = $("#newPassConfirm").val();
-
-    if (newPass === newPassConfirm) {
-        $.ajax({
-            type: "POST",
-            url: "/changepass",
-            data: JSON.stringify({newpass: newPass}),
-            contentType: 'application/json',
-            success: function (result) {
-                $("#saveSuccess").css('display', 'flex')
-                $("#saveSuccess").fadeOut(3000)
-            },
-            error: function (result) {
-                $("#saveFailed").css('display', 'flex')
-                $('#newPass').addClass('errorHighlight');
-                $('#newPassConfirm').addClass('errorHighlight');
-                setTimeout(function () {
-                    $('#newPassConfirm').removeClass('errorHighlight');
-                    $('#newPass').removeClass('errorHighlight');
-                }, 3000);
-                $("#saveFailed").fadeOut(3000)
-            }
-        });
-    }
-})
-</script>
+<script src="../static/js/main.js"></script>
 
 </body>
 
