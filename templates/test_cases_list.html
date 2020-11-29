@@ -77,6 +77,7 @@
     </div>
 </nav>
 <div class="statPopUp" style="display: none">
+
     <table class="table sttable" style="text-align: center;" id="statTable">
         <thead class="bg-primary font-weight-light thstat" style="color: #fff;">
         <tr>
@@ -91,7 +92,11 @@
     </tbody>
     </table>
 </div>
-
+<ul class='custom-menu-tclist'>
+    <li data-action="run-test"><a class="run_tc_mb3" style="text-decoration: none; color: #333333" href="">🏃 &nbsp;Run Test</a></li>
+  <li data-action="show-statistics">📉 &nbsp;Statistics</li>
+  <li data-action="assign-to">👤 &nbsp;Assign To</li>
+</ul>
 <div class="container-fluid">
     <div class="shifted-list">
         <table class="table mt-3" style="text-align: center;" id="mt">
@@ -184,6 +189,62 @@
         crossorigin="anonymous"></script>
 
 <script src="../static/js/main.js"></script>
+
+<script>
+    //--------------------------------------------------------------------------------------------
+//Suites statistics
+
+let xCoord;
+let yCoord;
+let tcId;
+$('tr.clickable-row').on("contextmenu", function (event) {
+    if ($(this).hasClass('active')) {
+        // Avoid the real one
+        event.preventDefault();
+
+        let thisRow = $(this);
+        tcId = $(thisRow).find('td.tcid a').attr('href').split('/').pop();
+        $('.run_tc_mb3').attr("href", window.location.href + "/" + $(this).closest('tr.clickable-row').children('td:first-child').text().trim())
+        // Show contextmenu
+        $(".custom-menu-tclist").finish().toggle(50).
+
+            // In the right position (the mouse)
+            css({
+                top: event.pageY + "px",
+                left: event.pageX + "px"
+            });
+    }
+
+
+});
+
+
+// If the document is clicked somewhere
+$(document).bind("mousedown", function (e) {
+    if (!$(e.target).parents(".custom-menu-tclist").length > 0) {
+        $(".custom-menu-tclist").hide(50);
+    }
+});
+
+
+// If the menu element is clicked
+$(".custom-menu-tclist li").click(function(){
+
+    switch($(this).attr("data-action")) {
+
+        // A case for each action. Your actions here
+
+        case "run-test": ""; break;
+
+    }
+
+    // Hide it AFTER the action was triggered
+    $(".custom-menu-tclist").hide(100);
+  });
+  {#<li data-action="run-test">🏃 &nbsp;Run Test</li>#}
+  {#<li data-action="show-statistics">📉 &nbsp;Statistics</li>#}
+  {#<li data-action="assign-to">👤 &nbsp;Assign To</li>#}
+</script>
 
 </body>
 </html>
