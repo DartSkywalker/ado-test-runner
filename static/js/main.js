@@ -21,9 +21,9 @@ $('#statCase').on('click', function (e) {
             // tester = $(this).find('td:nth-child(4)').text().trim();
             // testResult = $(this).find('td:nth-child(3)').text().trim();
             adoId = $(this).find('td:nth-child(1)').text().trim();
-
+            let ajaxUrl = window.location.href.replace(window.location.href.split("/").slice(Math.max(window.location.href.split("/").length - 2, 0)).join("/"), 'getstatistics/')
             $.ajax({
-                url: "/getstatistics/" + testSuiteId + "/" + adoId,
+                url: ajaxUrl + testSuiteId + "/" + adoId,
                 type: 'GET'
             }).done(function (responseData) {
                 console.log('Done: ', responseData);
@@ -108,8 +108,9 @@ $(document).ready(function () {
                 toSave['userid'] = userId;
                 var testCaseId = $(this).closest('tr').find('td.tcid').text().trim();
                 let suiteId = window.location.href.substr(window.location.href.lastIndexOf("/")).replace("/", "");
+                let ajaxUrl = window.location.href.replace(window.location.href.split("/").slice(Math.max(window.location.href.split("/").length - 2, 0)).join("/"), 'save_user/')
                 $.ajax({
-                    url: "/save_user/" + suiteId + "/" + testCaseId,
+                    url: ajaxUrl + suiteId + "/" + testCaseId,
                     data: JSON.stringify(toSave),
                     type: 'POST',
                     contentType: 'application/json'
@@ -128,8 +129,10 @@ $(document).ready(function () {
             var testCaseId = $(this).closest('tr').find('td.tcid').text().trim();
 
             let suiteId = window.location.href.substr(window.location.href.lastIndexOf("/")).replace("/", "");
+            let ajaxUrl = window.location.href.replace(window.location.href.split("/").slice(Math.max(window.location.href.split("/").length - 2, 0)).join("/"), 'save_user/')
+
             $.ajax({
-                url: "/save_user/" + suiteId + "/" + testCaseId,
+                url: ajaxUrl + suiteId + "/" + testCaseId,
                 data: JSON.stringify(toSave),
                 type: 'POST',
                 contentType: 'application/json'

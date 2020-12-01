@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, render_template, redirect, url_for, request, flash, session, g, current_app
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from .models import user
@@ -22,16 +22,18 @@ def login_post():
     password = request.form.get('password')
 
     user_inst = user.query.filter_by(username=username).first()
-    # check if the user actually exists
-    # take the user-supplied password, hash it, and compare it to the hashed password in the database
+
 
     if not user_inst or not check_password_hash(user_inst.password, password):
         flash('Invalid credentials. Check you input and try again.')
-        return redirect(url_for('auth.login')) # if the user doesn't exist or password is wrong, reload the page
+        return redirect(url_for('auth.login'))
 
     login_user(user_inst)
+
+    g.team_name = "GEOPH"
+
     # if the above check passes, then we know the user has the right credentials
-    return redirect(url_for('main.test_suites'))
+    return redirect(url_for('main.test_suites', team_name=sql_api.get_current_user_team_db()))
 
 @auth.route('/signup')
 def signup():

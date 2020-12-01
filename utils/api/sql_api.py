@@ -2,7 +2,7 @@ import datetime
 import sqlite3
 from sqlite3.dbapi2 import Error
 
-from flask import g
+from flask import g, session, current_app
 from flask_login import current_user
 from ...team_db_models import create_teams_table
 from loguru import logger
@@ -11,41 +11,35 @@ from sqlalchemy_utils import database_exists, create_database
 
 from sqlalchemy.pool import SingletonThreadPool
 
-postgres = 'postgresql+psycopg2://user:user@localhost:5432/maindb'
+postgres_main = 'postgresql+psycopg2://user:user@localhost:5432/maindb'
+
 
 
 def sql_connection():
-    engine = create_engine(postgres, echo=False, pool_recycle=2)
+    engine = create_engine(postgres_main, echo=False, pool_recycle=2)
     connection = engine.connect()
     meta = MetaData()
     meta.reflect(bind=engine)
     return connection, meta
 
 
-def create_db_connection(db_file):
-    """
-    Create a database connection to a SQLite database
-    """
-    conn = None
-    try:
-        conn = sqlite3.connect(db_file)
-        return conn
-    except Error as e:
-        logger.critical(f"Cannot connect to {db_file} database")
-
-
 connection, meta = sql_connection()
 table_user = Table('user', meta)
-table_suites = Table('TEST_SUITES', meta)
-table_cases = Table('TEST_CASES', meta)
-table_steps = Table('TEST_STEPS', meta)
 table_teams = Table('TEAMS_INFO', meta)
 
 
-def get_test_suites_from_database():
+
+
+
+
+
+
+
+def get_test_suites_from_database(connection, meta):
     """
     Return suite with its id's
     """
+    table_suites = Table('TEST_SUITES', meta)
     test_suites_list_db = connection.execute(select([table_suites.c.TEST_SUITE_ID,
                                                      table_suites.c.TEST_SUITE_NAME]).distinct()).fetchall()
     test_suites_ids = [suite[0] for suite in test_suites_list_db]
@@ -57,13 +51,15 @@ def get_test_suites_from_database():
     return result
 
 
-def get_test_suite_name_by_id(suite_id):
+def get_test_suite_name_by_id(suite_id, connection, meta):
+    table_suites = Table('TEST_SUITES', meta)
     suite_name = connection.execute(select([table_suites.c.TEST_SUITE_NAME]).
                                     where(table_suites.c.TEST_SUITE_ID == suite_id)).fetchone()[0]
     return suite_name
 
 
-def get_test_cases_from_db_by_suite_name(test_suite_id):
+def get_test_cases_from_db_by_suite_name(test_suite_id, connection, meta):
+    table_cases = Table('TEST_CASES', meta)
     test_cases_list_db = connection.execute(select([table_cases.c.TEST_CASE_ADO_ID,
                                                     table_cases.c.TEST_CASE_NAME,
                                                     table_cases.c.STATUS,
@@ -92,6 +88,23 @@ def get_current_user():
     return str(user[0][0])
 
 
+def get_current_user_team():
+    g.user = current_user.get_id()
+    query = select([table_user.c.team]).where(table_user.c.id == g.user)
+    user = connection.execute(query).fetchall()
+    team_id = user[0][0]
+    team_name = connection.execute(select([table_teams.c.TEAM]).where(table_teams.c.ID == team_id)).fetchone()[0]
+    return team_name
+
+def get_current_user_team_db():
+    g.user = current_user.get_id()
+    query = select([table_user.c.team]).where(table_user.c.id == g.user)
+    team_id = connection.execute(query).fetchone()[0]
+    logger.warning(team_id)
+    team_name = connection.execute(select([table_teams.c.DATABASE]).where(table_teams.c.ID == team_id)).fetchone()[0]
+    return team_name
+
+
 def get_all_users():
     query = select([table_user.c.username, table_user.c.id])
     users = connection.execute(query).fetchall()
@@ -101,10 +114,11 @@ def get_all_users():
     return users_dict
 
 
-def get_test_case_steps_by_id(test_case_id):
+def get_test_case_steps_by_id(test_case_id, connection ,meta):
     """
     Return steps/expected results based on suite_id and case_id
     """
+    table_steps = Table('TEST_STEPS', meta)
     steps_expected = connection.execute(select([table_steps.c.STEP_NUMBER,
                                                 table_steps.c.DESCRIPTION,
                                                 table_steps.c.EXPECTED_RESULT,
@@ -121,7 +135,9 @@ def get_test_case_steps_by_id(test_case_id):
     return steps_list
 
 
-def get_test_suites_info():
+def get_test_suites_info(connection, meta):
+    table_suites = Table('TEST_SUITES', meta)
+    table_cases = Table('TEST_CASES', meta)
     suites_info_db = connection.execute(select([table_suites.c.TEST_SUITE_ID,
                                                 table_suites.c.TEST_SUITE_NAME,
                                                 table_suites.c.CREATED_BY,
@@ -170,30 +186,32 @@ def get_test_suites_info():
     return suite_info_dict
 
 
-def get_test_case_name_by_id(test_case_id):
+def get_test_case_name_by_id(test_case_id, connection, meta):
+    table_cases = Table('TEST_CASES', meta)
     test_case_name = connection.execute(select([table_cases.c.TEST_CASE_NAME]).
                                         where(table_cases.c.TEST_CASE_ID == test_case_id)).fetchone()[0]
     return test_case_name
 
 
-def get_test_case_id_by_ado_id(suite_id, test_case_ado_id):
+def get_test_case_id_by_ado_id(suite_id, test_case_ado_id, connection, meta):
+    table_cases = Table('TEST_CASES', meta)
     test_case_id = connection.execute(select([table_cases.c.TEST_CASE_ID])
                                       .where(and_(table_cases.c.TEST_SUITE_ID == suite_id,
                                                   table_cases.c.TEST_CASE_ADO_ID == test_case_ado_id))).fetchone()[0]
     return test_case_id
 
 
-def get_list_of_suites():
-    connection, meta = sql_connection()
+def get_list_of_suites(connection, meta):
     suites = Table('TEST_SUITES', meta)
     test_suites_list_db = connection.execute(select([suites.columns['TEST_SUITE_ID']]).distinct()).fetchall()
     test_suites_ids = [suite[0] for suite in test_suites_list_db]
     return test_suites_ids
 
 
-def get_test_case_states_for_suites(suites):
+def get_test_case_states_for_suites(suites, connection, meta):
     result = {}
     result_detailed = {}
+    table_cases = Table('TEST_CASES', meta)
     for test_suite in suites:
         status = connection.execute(select([table_cases.c.STATUS, table_cases.c.TEST_CASE_ID,
                                             table_cases.c.TEST_CASE_ADO_ID, table_cases.c.TEST_CASE_NAME])
@@ -217,7 +235,10 @@ def get_test_case_states_for_suites(suites):
 # get_test_case_states_for_suites([2])
 
 
-def get_test_run_date_duration(test_suite_id, case_ado_id):
+def get_test_run_date_duration(test_suite_id, case_ado_id, connection, meta):
+    table_cases = Table('TEST_CASES', meta)
+    table_steps = Table('TEST_STEPS', meta)
+    table_suites = Table('TEST_SUITES', meta)
     data_list = connection.execute(select(
         [table_cases.c.CHANGE_STATE_DATE, table_cases.c.DURATION_SEC, table_suites.c.TEST_SUITE_NAME,
          table_cases.c.EXECUTED_BY, table_cases.c.STATUS, table_cases.c.TEST_CASE_ID,
@@ -258,26 +279,31 @@ def get_test_run_date_duration(test_suite_id, case_ado_id):
     return execution_date, duration, test_suite, tester, state, failure_details
 
 
-def get_test_case_failures_statistics(test_suite_id, case_ado_id):
+def get_test_case_failures_statistics(test_suite_id, case_ado_id, connection, meta):
+    table_cases = Table('TEST_CASES', meta)
+    table_suites = Table('TEST_SUITES', meta)
     data_list = connection.execute(select(
         [table_cases.c.CHANGE_STATE_DATE, table_cases.c.DURATION_SEC, table_suites.c.TEST_SUITE_NAME]).select_from(
         join(table_suites, table_cases, table_suites.c.TEST_SUITE_ID == table_cases.c.TEST_SUITE_ID))
                                    .where(table_cases.c.TEST_CASE_ADO_ID == case_ado_id)).fetchall()
 
 
-def set_test_case_for_user(suite_id, test_case_id, json_data):
+def set_test_case_for_user(suite_id, test_case_id, json_data, connection_t, meta_t):
     username = connection.execute(select([table_user.c.username]) \
                                   .where(table_user.c.id == json_data['userid'])).fetchone()[0]
+    table_cases = Table('TEST_CASES', meta_t)
     update_statement = table_cases.update().where(and_
                                                   (table_cases.c.TEST_SUITE_ID == suite_id,
                                                    table_cases.c.TEST_CASE_ADO_ID == test_case_id)) \
         .values(EXECUTED_BY=username)
-    connection.execute(update_statement)
+    connection_t.execute(update_statement)
 
 
-def set_test_case_state(test_case_id, json_with_step_states):
+def set_test_case_state(test_case_id, json_with_step_states, connection, meta):
     # g.user = current_user.get_id()
     # query = select([table_user.columns['username']]).where(table_user.columns['id'] == g.user)
+    table_cases = Table('TEST_CASES', meta)
+    table_steps = Table('TEST_STEPS', meta)
     user = get_current_user()
     for id, statistic in json_with_step_states.items():
         if id != 'testResult':
@@ -318,8 +344,10 @@ def update_user_token(token):
         return 'failed'
 
 
-def update_test_steps_sql(test_case_id, json_with_step_states):
+def update_test_steps_sql(test_case_id, json_with_step_states, connection, meta):
     user = get_current_user()
+    table_cases = Table('TEST_CASES', meta)
+    table_steps = Table('TEST_STEPS', meta)
     for id, statistic in json_with_step_states.items():
         if id != 'testResult':
             step_number = list(statistic.values())[0]
@@ -365,7 +393,9 @@ def update_test_steps_sql(test_case_id, json_with_step_states):
             connection.execute(update_statement)
 
 
-def get_suite_statistics_by_id(suite_id):
+def get_suite_statistics_by_id(suite_id, connection, meta):
+    table_cases = Table('TEST_CASES', meta)
+    table_suites = Table('TEST_STEPS', meta)
     suite_name = connection.execute(select([table_suites.c.TEST_SUITE_NAME])
                                     .where(table_suites.c.TEST_SUITE_ID == suite_id)).fetchone()[0]
 
@@ -390,16 +420,20 @@ def get_suite_statistics_by_id(suite_id):
     return suite_name, suite_data_dict
 
 
-def get_test_cases_with_steps_by_suite_id(suite_id):
+def get_test_cases_with_steps_by_suite_id(suite_id, connection, meta):
+    table_cases = Table('TEST_CASES', meta)
     test_cases_list_db = connection.execute(select([table_cases.c.TEST_CASE_ID])
                                             .where(table_cases.c.TEST_SUITE_ID == suite_id)).fetchall()
     test_case_ids = [test_case[0] for test_case in test_cases_list_db]
     return test_case_ids
 
 
-def delete_test_suite(suite_id):
+def delete_test_suite(suite_id, connection, meta):
+    table_suites = Table('TEST_SUITES', meta)
+    table_cases = Table('TEST_CASES', meta)
+    table_steps = Table('TEST_STEPS', meta)
     try:
-        test_cases_ids = get_test_cases_with_steps_by_suite_id(suite_id)
+        test_cases_ids = get_test_cases_with_steps_by_suite_id(suite_id, connection, meta)
 
         for tc_id in test_cases_ids:
             connection.execute(table_steps.delete().where(table_steps.c.TEST_CASE_ID == tc_id))

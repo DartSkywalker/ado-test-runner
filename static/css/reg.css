@@ -94,6 +94,20 @@ form.sign-in-form {
   font-size: 1.1rem;
 }
 
+select {
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 55px;
+      font-weight: 600;
+  font-size: 1.1rem;
+  color: #aaa !important;
+    width: 95%;
+}
+
+option {
+    color: #aaa;
+}
+
 .input-field input {
   background: none;
   outline: none;
@@ -101,7 +115,7 @@ form.sign-in-form {
   line-height: 1;
   font-weight: 600;
   font-size: 1.1rem;
-  color: #333;
+  color: #aaa;
 }
 
 .input-field input::placeholder {

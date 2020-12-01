@@ -2,11 +2,12 @@ import requests
 import json
 from loguru import logger
 from . import ado_parser
-from .sql_api import sql_connection, table_cases, get_current_user, \
+from .sql_api import sql_connection, get_current_user, \
     get_test_case_steps_by_id, connection, meta
 from ..constants import get_ado_token_for_user, QUERY_LINK, WIQL_LINK, HEADERS, WORKITEM_LINK
 # from utils.api import ado_parser
 from sqlalchemy.sql import select
+from sqlalchemy import Table
 
 
 # connection, meta = sql_connection()
@@ -77,7 +78,8 @@ def get_test_case_steps_by_url(test_case_url):
         return steps_list
 
 
-def check_access_to_test_case_ado(test_case_id):
+def check_access_to_test_case_ado(test_case_id, connection, meta):
+    table_cases = Table('TEST_CASES', meta)
     test_case_ado_id = connection.execute(select([table_cases.c.TEST_CASE_ADO_ID])
                                           .where(table_cases.c.TEST_CASE_ID == test_case_id)).fetchone()[0]
     r = requests.get(WORKITEM_LINK + str(test_case_ado_id), headers=HEADERS,
@@ -97,11 +99,12 @@ def check_access_to_ado_query(query_id):
         return False
 
 
-def update_test_steps_in_ado(test_case_sql_id, data):
+def update_test_steps_in_ado(test_case_sql_id, data, connection, meta):
     # Getting the list of test case steps before the changes
-    test_case_steps = get_test_case_steps_by_id(test_case_sql_id)
+    test_case_steps = get_test_case_steps_by_id(test_case_sql_id, connection, meta)
 
     # Getting the ADO id of the test case
+    table_cases = Table('TEST_CASES', meta)
     test_case_ADO_id = connection.execute(
         select([table_cases.c.TEST_CASE_ADO_ID]).where(table_cases.c.TEST_CASE_ID == test_case_sql_id)).fetchall()
     test_case_ADO_id = test_case_ADO_id[len(test_case_ADO_id) - 1][0]

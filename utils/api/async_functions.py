@@ -5,11 +5,11 @@ from aiohttp import ClientSession
 from flask import g
 from flask_login import current_user
 from loguru import logger
-from sqlalchemy import select
+from sqlalchemy import select, Table
 
 from . import ado_parser
 from .ado_api import get_test_cases_urls_by_query_id, get_query_name_by_query_id
-from .sql_api import table_user, table_suites, table_cases, table_steps, get_current_user, connection
+from .sql_api import table_user, get_current_user, connection
 from ..constants import HEADERS, get_ado_token_for_user
 
 
@@ -45,16 +45,19 @@ def get_all_test_case_data_async(query_id):
 # print(get_all_test_case_data_async('1f70f015-030a-48ca-9674-4bfd123c801c'))
 
 
-def create_new_test_suite_in_db(query_id):
+def create_new_test_suite_in_db(query_id, connection_t, meta_t):
     logger.debug(query_id)
     test_cases_dict, test_suite_name = get_all_test_case_data_async(query_id), get_query_name_by_query_id(query_id)
     g.user = current_user.get_id()
     query = select([table_user.c.username]).where(table_user.c.id == g.user)
     user = connection.execute(query).fetchall()
-    connection.execute(table_suites.insert().values(TEST_SUITE_NAME=test_suite_name,
+    table_suites = Table('TEST_SUITES', meta_t)
+    table_cases = Table('TEST_CASES', meta_t)
+    table_steps = Table('TEST_STEPS', meta_t)
+    connection_t.execute(table_suites.insert().values(TEST_SUITE_NAME=test_suite_name,
                                                     CREATED_BY=str(user[0][0])))
 
-    test_suite_ids = connection.execute(select([table_suites.c.TEST_SUITE_ID])
+    test_suite_ids = connection_t.execute(select([table_suites.c.TEST_SUITE_ID])
         .where(
         table_suites.c.TEST_SUITE_NAME == str(test_suite_name))).fetchall()
     test_suite_id = test_suite_ids[len(test_suite_ids) - 1][0]
@@ -65,16 +68,16 @@ def create_new_test_suite_in_db(query_id):
         test_case_name = test_case[0]
         step_number = 1
 
-        connection.execute(table_cases.insert().values(TEST_SUITE_ID=str(test_suite_id),
+        connection_t.execute(table_cases.insert().values(TEST_SUITE_ID=str(test_suite_id),
                                                        TEST_CASE_ADO_ID=str(id),
                                                        TEST_CASE_NAME=str(test_case_name),
                                                        STATUS='Ready'))
         for test_steps in test_case[1]:
-            test_sql_case_ids = connection.execute(select([table_cases.c.TEST_CASE_ID])
+            test_sql_case_ids = connection_t.execute(select([table_cases.c.TEST_CASE_ID])
                                                    .where(table_cases.c.TEST_CASE_ADO_ID == id)).fetchall()
             test_sql_case_id = test_sql_case_ids[len(test_sql_case_ids) - 1][0]
             # print(test_sql_case_id)
-            connection.execute(table_steps.insert().values(TEST_CASE_ID=int(test_sql_case_id),
+            connection_t.execute(table_steps.insert().values(TEST_CASE_ID=int(test_sql_case_id),
                                                            STEP_NUMBER=str(step_number),
                                                            DESCRIPTION=test_steps[0],
                                                            EXPECTED_RESULT=test_steps[1]))

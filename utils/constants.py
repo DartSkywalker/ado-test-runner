@@ -5,6 +5,7 @@ from .api import sql_api
 from flask_login import current_user
 from flask import g
 from sqlalchemy.sql import table, column, select, update, insert
+from loguru import logger
 from sqlalchemy import Table, MetaData, create_engine, and_,desc
 
 def get_ado_token_for_user(username):
