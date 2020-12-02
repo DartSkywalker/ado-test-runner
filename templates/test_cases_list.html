@@ -69,7 +69,7 @@
                     Hello, {{ username }}
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                                        <a class="dropdown-item" href="/settings">⚙️ &nbsp;Settings</a>
+                    <a class="dropdown-item" href="/settings">⚙️ &nbsp;Settings</a>
                     <a class="dropdown-item" href="/logout">🚪 &nbsp;Logout</a>
                 </div>
             </li>
@@ -88,15 +88,22 @@
             <th scope="col">Date</th>
         </tr>
         </thead>
-    <tbody>
-    </tbody>
+        <tbody>
+        </tbody>
     </table>
 </div>
 <ul class='custom-menu-tclist'>
-    <li data-action="run-test"><a class="run_tc_mb3" style="text-decoration: none; color: #333333" href="">🏃 &nbsp;Run Test</a></li>
-  <li data-action="show-statistics" class="show_stat_mb3">📉 &nbsp;Statistics</li>
-  <li data-action="assign-to">👤 &nbsp;Assign To</li>
+    <li data-action="run-test"><a class="run_tc_mb3" style="text-decoration: none; color: #333333" href="">🏃 &nbsp;Run
+        Test</a></li>
+    <li data-action="show-statistics" class="show_stat_mb3">📉 &nbsp;Statistics</li>
+    <li data-action="assign-to"><a id='assign-to-a'>👤 &nbsp;Assign&nbsp;➡️</a></li>
 </ul>
+        <ul class="assign-to-submenu" style="display: none !important;">
+            {% for user_id, user_name in users_dict.items() %}
+                <li class="user-to-set" value="{{ user_id }}">{{ user_name }}</li>
+            {% endfor %}
+        </ul>
+
 <div class="container-fluid">
     <div class="shifted-list">
         <table class="table mt-3" style="text-align: center;" id="mt">
@@ -192,60 +199,126 @@
 
 <script>
     //--------------------------------------------------------------------------------------------
-//Suites statistics
+    //Suites statistics
 
-let xCoord;
-let yCoord;
-let tcId;
-$('tr.clickable-row').on("contextmenu", function (event) {
-    if ($(this).hasClass('active')) {
-        // Avoid the real one
-        event.preventDefault();
+    let xCoord;
+    let yCoord;
+    let tcId;
+    $('tr.clickable-row').on("contextmenu", function (event) {
+        if ($(this).hasClass('active')) {
+            // Avoid the real one
+            let xCoord = event.pageX;
+            let yCoord = event.pageY;
+            event.preventDefault();
 
-        let thisRow = $(this);
-        tcId = $(thisRow).find('td.tcid a').attr('href').split('/').pop();
-        $('.run_tc_mb3').attr("href", window.location.href + "/" + $(this).closest('tr.clickable-row').children('td:first-child').text().trim())
+            let thisRow = $(this);
+            tcId = $(thisRow).find('td.tcid a').attr('href').split('/').pop();
+            $('.run_tc_mb3').attr("href", window.location.href + "/" + $(this).closest('tr.clickable-row').children('td:first-child').text().trim())
 
 
-        // Show contextmenu
-        $(".custom-menu-tclist").finish().toggle(50).
+            // Show contextmenu
+            $(".custom-menu-tclist").finish().toggle(50).
 
-            // In the right position (the mouse)
-            css({
-                top: event.pageY + "px",
-                left: event.pageX + "px"
+                // In the right position (the mouse)
+                css({
+                    top: event.pageY + "px",
+                    left: event.pageX + "px"
+                });
+        }
+
+
+    });
+
+
+    // If the document is clicked somewhere
+    $(document).bind("mousedown", function (e) {
+        if (!$(e.target).parents(".custom-menu-tclist, .assign-to-submenu").length > 0) {
+            $(".custom-menu-tclist").hide(50);
+            $('.assign-to-submenu').css('display', 'none')
+
+        }
+    });
+
+
+    $("#assign-to-a").on("mouseover", function (e) {
+        $('.assign-to-submenu').css('display', 'block')
+        let left = $(this).offset().left;
+        let top = $(this).offset().top;
+
+
+        $('.assign-to-submenu').css('left', left + 105 + 'px')
+        $('.assign-to-submenu').css('top', top - 10 + 'px')
+
+
+    });
+    $("#assign-to-a .assign-to-submenu").on("mousedown", function () {
+        $('.assign-to-submenu').css('display', 'none')
+    });
+
+    // If the menu element is clicked
+    $(".custom-menu-tclist li").click(function () {
+
+        switch ($(this).attr("data-action")) {
+
+            // A case for each action. Your actions here
+
+            case "run-test":
+                "";
+                break;
+
+        }
+
+        // Hide it AFTER the action was triggered
+        $(".custom-menu-tclist").hide(100);
+    });
+    {#<li data-action="run-test">🏃 &nbsp;Run Test</li>#}
+    {#<li data-action="show-statistics">📉 &nbsp;Statistics</li>#}
+    {#<li data-action="assign-to">👤 &nbsp;Assign To</li>#}
+</script>
+
+<script>
+
+    $(".user-to-set").on('click', function (e) {
+        e.preventDefault();
+        let userId = $(this).val();
+        if ($("#mt tr.active").length > 1) {
+
+            $("#mt tr.active").each(function () {
+                toSave = {};
+                toSave['userid'] = userId;
+                var testCaseId = $(this).closest('tr').find('td.tcid').text().trim();
+                let suiteId = window.location.href.substr(window.location.href.lastIndexOf("/")).replace("/", "");
+                $.ajax({
+                    url: "/save_user/" + suiteId + "/" + testCaseId,
+                    data: JSON.stringify(toSave),
+                    type: 'POST',
+                    contentType: 'application/json'
+                }).done(function (responseData) {
+                    console.log('Done: ', responseData);
+                }).fail(function () {
+                    console.log('Failed');
+                });
             });
-    }
+        } else {
 
+            toSave = {};
+            toSave['userid'] = userId;
 
-});
-
-
-// If the document is clicked somewhere
-$(document).bind("mousedown", function (e) {
-    if (!$(e.target).parents(".custom-menu-tclist").length > 0) {
-        $(".custom-menu-tclist").hide(50);
-    }
-});
-
-
-// If the menu element is clicked
-$(".custom-menu-tclist li").click(function(){
-
-    switch($(this).attr("data-action")) {
-
-        // A case for each action. Your actions here
-
-        case "run-test": ""; break;
-
-    }
-
-    // Hide it AFTER the action was triggered
-    $(".custom-menu-tclist").hide(100);
-  });
-  {#<li data-action="run-test">🏃 &nbsp;Run Test</li>#}
-  {#<li data-action="show-statistics">📉 &nbsp;Statistics</li>#}
-  {#<li data-action="assign-to">👤 &nbsp;Assign To</li>#}
+            var testCaseId = $('#mt tr.active').find('td.tcid').text().trim();
+            console.log(testCaseId)
+            let suiteId = window.location.href.substr(window.location.href.lastIndexOf("/")).replace("/", "");
+            $.ajax({
+                url: "/save_user/" + suiteId + "/" + testCaseId,
+                data: JSON.stringify(toSave),
+                type: 'POST',
+                contentType: 'application/json'
+            }).done(function (responseData) {
+                console.log('Done: ', responseData);
+            }).fail(function () {
+                console.log('Failed');
+            });
+        }
+    });
 </script>
 
 </body>
