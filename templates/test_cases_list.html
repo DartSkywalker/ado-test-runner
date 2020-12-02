@@ -94,7 +94,7 @@
 </div>
 <ul class='custom-menu-tclist'>
     <li data-action="run-test"><a class="run_tc_mb3" style="text-decoration: none; color: #333333" href="">🏃 &nbsp;Run Test</a></li>
-  <li data-action="show-statistics">📉 &nbsp;Statistics</li>
+  <li data-action="show-statistics" class="show_stat_mb3">📉 &nbsp;Statistics</li>
   <li data-action="assign-to">👤 &nbsp;Assign To</li>
 </ul>
 <div class="container-fluid">
@@ -205,6 +205,8 @@ $('tr.clickable-row').on("contextmenu", function (event) {
         let thisRow = $(this);
         tcId = $(thisRow).find('td.tcid a').attr('href').split('/').pop();
         $('.run_tc_mb3').attr("href", window.location.href + "/" + $(this).closest('tr.clickable-row').children('td:first-child').text().trim())
+
+
         // Show contextmenu
         $(".custom-menu-tclist").finish().toggle(50).
 

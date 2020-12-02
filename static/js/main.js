@@ -3,7 +3,7 @@
 
 $('[data-toggle="popover"]').popover()
 
-$('#statCase').on('click', function (e) {
+$('#statCase, .show_stat_mb3').on('click', function showCaseStatistics(e) {
     //Load data for statistics
     let runDate;
     let duration;
