@@ -1005,6 +1005,7 @@ td.subtr {
 
 .statPopUp {
     position: absolute;
+    position: fixed;
     margin-top: 70px;
     padding: 0;
     max-width: 620px;
