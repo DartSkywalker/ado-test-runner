@@ -144,21 +144,21 @@ $(document).ready(function () {
 
 $('#mt tr.clickable-row td:nth-child(2)').on('click', function (event) {
     if (event.altKey) {
-
         $(this).closest('tr.clickable-row').addClass('active');
         $('.runTest').hide();
         $('.statistics').hide();
     } else if ($(this).closest('tr.clickable-row').hasClass('active')) {
-
+        $(this).closest('tr.clickable-row').addClass('active').siblings().removeClass('active');
     } else {
         $(this).closest('tr.clickable-row').addClass('active').siblings().removeClass('active');
         $('#runCase').attr("href", window.location.href + "/" + $(this).closest('tr.clickable-row').children('td:first-child').text().trim())
         $('.runTest').show();
         $('.statistics').show();
-
     }
 });
-
+$('body').on('dbclick', 'tr', function (event) {
+    alert('asd')
+});
 //--------------------------------------------------------------------------------------------
 //Signup
 $('.help-icon-reg').popover();
