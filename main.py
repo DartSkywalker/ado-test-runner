@@ -50,7 +50,7 @@ def add_test_suite():
             # return redirect(url_for('main.test_cases_list', test_suite_name=request.form.get('test_suites')))
 
     query_id = request.form['query_id']
-    if query_id == "":
+    if query_id == "" or len(query_id) < 36 or len(query_id) > 36:
         flash('Please, enter a valid Query ID')
         return redirect(url_for('main.test_suites'))
     if ado_api.check_access_to_ado_query(query_id):
