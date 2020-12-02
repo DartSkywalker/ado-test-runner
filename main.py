@@ -140,7 +140,7 @@ def about_page(team_name):
 @main.route('/')
 @login_required
 def redirect_from_main():
-    return redirect(url_for('main.test_suites', team_name=sql_api.get_current_user_team()))
+    return redirect(url_for('main.test_suites', team_name=sql_api.get_current_user_team_db()))
 
 
 @main.route('/<team_name>/settings', methods=['GET', 'POST'])

@@ -30,7 +30,7 @@
 
 <body>
 <nav class="navbar navbar-dark bg-primary navbar-expand-lg">
-    <a class="navbar-brand" href="/suites">
+    <a class="navbar-brand" href="suites">
         <img src="../static/css/running.svg" width="30" height="30" class="d-inline-block align-top" alt="">
         TRunner</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
@@ -146,13 +146,18 @@
                     <thead class="bg-primary font-weight-light" style="color: #fff;">
                     <th>ID</th>
                     <th>Team Name</th>
-                    <th>Team Members</th>
+                    <th>Members</th>
+                    <th>Prefix</th>
+                    <th>Database</th>
+                    <th></th>
                     </thead>
                     {% for id, team_data in teams.items() %}
                         <tr>
                             <td>{{ id }}</td>
                             <td>{{ team_data[0] }}</td>
                             <td>{{ team_data[1] }}</td>
+                            <td>{{ team_data[2] }}</td>
+                            <td>{{ team_data[3] }}</td>
                         </tr>
                     {% endfor %}
                 </table>

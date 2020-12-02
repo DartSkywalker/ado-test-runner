@@ -453,14 +453,16 @@ def get_teams_list():
 
 
 def get_teams_data_admin():
-    teams_data = connection.execute(select([table_teams.c.TEAM, table_teams.c.ID])).fetchall()
+    teams_data = connection.execute(select([table_teams.c.TEAM, table_teams.c.ID, table_teams.c.DATABASE])).fetchall()
     team_id = [data[1] for data in teams_data]
     team_name = [data[0] for data in teams_data]
+    team_prefix = [data[2] for data in teams_data]
+    team_db_name = [data[2]+'_db' for data in teams_data]
     team_members = []
     for id in team_id:
         team_members_db = connection.execute(select([table_user.c.username]).where(table_user.c.team == id)).fetchall()
         team_members.append([data[0] for data in team_members_db])
-    teams_dict = dict(zip(team_id, zip(team_name, team_members)))
+    teams_dict = dict(zip(team_id, zip(team_name, team_members, team_prefix, team_db_name)))
     logger.warning(teams_dict)
     return teams_dict
 
