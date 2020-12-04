@@ -281,12 +281,14 @@
     $(".user-to-set").on('click', function (e) {
         e.preventDefault();
         let userId = $(this).val();
+        let userName = $(this).text();
         if ($("#mt tr.active").length > 1) {
 
             $("#mt tr.active").each(function () {
                 toSave = {};
                 toSave['userid'] = userId;
                 var testCaseId = $(this).closest('tr').find('td.tcid').text().trim();
+                $(this).closest('tr').find('select.set-user').val(userId);
                 let suiteId = window.location.href.substr(window.location.href.lastIndexOf("/")).replace("/", "");
                 $.ajax({
                     url: "/save_user/" + suiteId + "/" + testCaseId,
@@ -305,6 +307,7 @@
             toSave['userid'] = userId;
 
             var testCaseId = $('#mt tr.active').find('td.tcid').text().trim();
+            $('body').find('tr.active select.set-user').val(userId);
             console.log(testCaseId)
             let suiteId = window.location.href.substr(window.location.href.lastIndexOf("/")).replace("/", "");
             $.ajax({
