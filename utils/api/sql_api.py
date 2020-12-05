@@ -252,9 +252,41 @@ def get_test_run_date_duration(test_suite_id, case_ado_id):
             failure_details.append([step_num, comment])
         else:
             failure_details.append("")
-    logger.warning(failure_details)
     return execution_date, duration, test_suite, tester, state, failure_details
 
+def get_failure_details_report(test_suite_id, case_ado_id):
+    data_list = connection.execute(select(
+        [table_cases.c.CHANGE_STATE_DATE, table_cases.c.DURATION_SEC, table_suites.c.TEST_SUITE_NAME,
+         table_cases.c.EXECUTED_BY, table_cases.c.STATUS, table_cases.c.TEST_CASE_ID,
+         table_suites.c.TEST_SUITE_ID]).select_from(
+        join(table_suites, table_cases, table_suites.c.TEST_SUITE_ID == table_cases.c.TEST_SUITE_ID))
+                                   .where(and_(table_cases.c.TEST_CASE_ADO_ID == case_ado_id, table_cases.c.TEST_SUITE_ID == test_suite_id))).fetchall()
+
+    state = [str(data[4]) for data in data_list]
+    tc_id = [str(data[5]) for data in data_list]
+    test_suite_id = [str(data[6]) for data in data_list]
+
+    failure_details = []
+
+    for i in range(0, len(state)):
+        if state[i] == 'Failed':
+            step_data = connection.execute(select([table_steps.c.STEP_NUMBER, table_steps.c.DESCRIPTION,
+                                                   table_steps.c.EXPECTED_RESULT, table_steps.c.STEP_STATUS,
+                                                   table_steps.c.COMMENT]).select_from(
+                join(table_cases, table_steps, table_cases.c.TEST_CASE_ID == table_steps.c.TEST_CASE_ID)).
+                                           where(
+                and_(table_steps.c.TEST_CASE_ID == tc_id[i], table_cases.c.TEST_SUITE_ID == test_suite_id[i],
+                     table_steps.c.STEP_STATUS == 'Failed'))).fetchall()
+
+            step_num = [str(data[0]) for data in step_data]
+            descr = [str(data[1]) for data in step_data]
+            expected = [str(data[2]) for data in step_data]
+            comment = [str(data[4]) if str(data[4]) != 'None' else "" for data in step_data]
+
+            failure_details.append([step_num, descr, expected, comment])
+        else:
+            failure_details.append("")
+    return failure_details
 
 def get_test_case_failures_statistics(test_suite_id, case_ado_id):
     data_list = connection.execute(select(
@@ -383,8 +415,11 @@ def get_suite_statistics_by_id(suite_id):
     tc_duration = [str(data[4]) if str(data[4]) != "None" else "" for data in test_cases_data]
     tc_changed_date = [datetime.datetime.strptime(str(data[5]), '%Y-%m-%d %H:%M:%S.%f').strftime("%b %d %Y %H:%M") for
                        data in test_cases_data]
+    tc_failure_details = []
+    for tc_id in tc_ado_id:
+        tc_failure_details.append(get_failure_details_report(suite_id, tc_id))
 
-    suite_data_dict = dict(zip(tc_ado_id, zip(tc_name, tc_state, tc_executed_by, tc_duration, tc_changed_date)))
+    suite_data_dict = dict(zip(tc_ado_id, zip(tc_name, tc_state, tc_executed_by, tc_duration, tc_changed_date, tc_failure_details)))
     return suite_name, suite_data_dict
 
 
