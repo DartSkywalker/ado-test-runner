@@ -232,12 +232,12 @@
 
     // If the document is clicked somewhere
     $(document).bind("mousedown", function (e) {
-        if (!$(e.target).parents(".custom-menu-tclist, .assign-to-submenu").length > 0) {
+        if (!$(e.target).parents(".custom-menu-tclist").length > 0) {
             $(".custom-menu-tclist").hide(50);
-            $('.assign-to-submenu').css('display', 'none')
-
         }
     });
+
+
 
 
     $("#assign-to-a").on("mouseover", function (e) {
@@ -251,9 +251,7 @@
 
 
     });
-    $("#assign-to-a .assign-to-submenu").on("mousedown", function () {
-        $('.assign-to-submenu').css('display', 'none')
-    });
+
 
     // If the menu element is clicked
     $(".custom-menu-tclist li").click(function () {
@@ -321,6 +319,7 @@
                 console.log('Failed');
             });
         }
+        $(this).parent().hide();
     });
 </script>
 
