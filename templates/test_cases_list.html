@@ -283,6 +283,7 @@
         if ($("#mt tr.active").length > 1) {
 
             $("#mt tr.active").each(function () {
+                if ($(this).closest('tr').find('td.testCaseState').text().trim() == "❕  Ready") {
                 toSave = {};
                 toSave['userid'] = userId;
                 var testCaseId = $(this).closest('tr').find('td.tcid').text().trim();
@@ -298,6 +299,7 @@
                 }).fail(function () {
                     console.log('Failed');
                 });
+                }
             });
         } else {
 
@@ -305,19 +307,21 @@
             toSave['userid'] = userId;
 
             var testCaseId = $('#mt tr.active').find('td.tcid').text().trim();
-            $('body').find('tr.active select.set-user').val(userId);
-            console.log(testCaseId)
-            let suiteId = window.location.href.substr(window.location.href.lastIndexOf("/")).replace("/", "");
-            $.ajax({
-                url: "/save_user/" + suiteId + "/" + testCaseId,
-                data: JSON.stringify(toSave),
-                type: 'POST',
-                contentType: 'application/json'
-            }).done(function (responseData) {
-                console.log('Done: ', responseData);
-            }).fail(function () {
-                console.log('Failed');
-            });
+            if ($('#mt tr.active').find('td.testCaseState').text().trim() == "❕  Ready") {
+
+                $('body').find('tr.active select.set-user').val(userId);
+                let suiteId = window.location.href.substr(window.location.href.lastIndexOf("/")).replace("/", "");
+                $.ajax({
+                    url: "/save_user/" + suiteId + "/" + testCaseId,
+                    data: JSON.stringify(toSave),
+                    type: 'POST',
+                    contentType: 'application/json'
+                }).done(function (responseData) {
+                    console.log('Done: ', responseData);
+                }).fail(function () {
+                    console.log('Failed');
+                });
+            }
         }
         $(this).parent().hide();
     });
