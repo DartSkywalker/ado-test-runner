@@ -175,10 +175,15 @@ def get_test_case_name_by_id(test_case_id):
 
 
 def get_test_case_id_by_ado_id(suite_id, test_case_ado_id):
-    test_case_id = connection.execute(select([table_cases.c.TEST_CASE_ID])
-                                      .where(and_(table_cases.c.TEST_SUITE_ID == suite_id,
-                                                  table_cases.c.TEST_CASE_ADO_ID == test_case_ado_id))).fetchone()[0]
-    return test_case_id
+    try:
+        query = select([table_cases.c.TEST_CASE_ID]).where(and_(table_cases.c.TEST_SUITE_ID == suite_id,
+                                                                table_cases.c.TEST_CASE_ADO_ID == test_case_ado_id))
+        test_case_id = connection.execute(query).fetchone()[0]
+        return test_case_id
+    except Exception as e:
+        logger.critical("Test case: %s was not found in suite: %s" % (test_case_ado_id, suite_id))
+        logger.critical(e)
+        return False
 
 
 def get_list_of_suites():
@@ -441,5 +446,20 @@ def delete_test_suite(suite_id):
         connection.execute(table_suites.delete().where(table_suites.c.TEST_SUITE_ID == suite_id))
         return True
     except Exception as e:
-        logger.critical(Exception)
+        logger.critical(e)
         return False
+
+
+def delete_test_case_from_suite(suite_id, test_case_ado_id):
+    try:
+        tc_id = get_test_case_id_by_ado_id(suite_id, test_case_ado_id)
+        if tc_id == False:
+            return False
+
+        connection.execute(table_steps.delete().where(table_steps.c.TEST_CASE_ID == tc_id))
+        connection.execute(table_cases.delete().where(table_cases.c.TEST_CASE_ID == tc_id))
+        return True
+    except Exception as e:
+        logger.critical(e)
+        return False
+delete_test_case_from_suite('2','75712')
