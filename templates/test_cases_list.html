@@ -96,6 +96,7 @@
     <li data-action="run-test"><a class="run_tc_mb3" style="text-decoration: none; color: #333333" href="">🏃 &nbsp;Run
         Test</a></li>
     <li data-action="show-statistics" class="show_stat_mb3">📉 &nbsp;Statistics</li>
+    <li data-action="show-statistics" class="delete_case_mb3">🗑 &nbsp;Delete Case</li>
     <li data-action="assign-to"><a id='assign-to-a'>👤 &nbsp;Assign&nbsp;➡️</a></li>
 </ul>
         <ul class="assign-to-submenu" style="display: none !important;">
@@ -275,7 +276,6 @@
 </script>
 
 <script>
-
     $(".user-to-set").on('click', function (e) {
         e.preventDefault();
         let userId = $(this).val();
@@ -317,14 +317,43 @@
                     type: 'POST',
                     contentType: 'application/json'
                 }).done(function (responseData) {
-                    console.log('Done: ', responseData);
+                    location.reload();
                 }).fail(function () {
-                    console.log('Failed');
+                    alert('Failed to remove test cases. Only managers allowed to delete test cases from suites.');
                 });
             }
         }
         $(this).parent().hide();
     });
+</script>
+
+<script>
+$(".delete_case_mb3").on('click', function (e) {
+
+    let tcsIdsToDelete = [];
+    let tcsNamesToDelete = [];
+    let suiteId = window.location.href.substr(window.location.href.lastIndexOf("/")).replace("/", "");
+    $("#mt tr.active").each(function () {
+        var testCaseId = $(this).closest('tr').find('td.tcid').text().trim();
+        var tcsName = $(this).closest('tr').find('td:nth-child(2)').text().trim();
+        tcsIdsToDelete.push(testCaseId);
+        tcsNamesToDelete.push(tcsName);
+    });
+    if (confirm("Do you really want to delete following test cases from the suite?\n" + tcsNamesToDelete.join("\n"))) {
+        let tcsToRemove = {ado_ids: tcsIdsToDelete}
+        $.ajax({
+            url: '/delete_test_case/' + suiteId,
+            data: JSON.stringify(tcsToRemove),
+            type: 'POST',
+            contentType: 'application/json'
+        }).done(function (responseData) {
+            console.log('Done: ', responseData);
+        }).fail(function () {
+            alert('Cannot delete the test case. Only managers allowed to remove test cases from suites.');
+        });
+    }
+});
+
 </script>
 
 </body>

@@ -462,4 +462,4 @@ def delete_test_case_from_suite(suite_id, test_case_ado_id):
     except Exception as e:
         logger.critical(e)
         return False
-delete_test_case_from_suite('2','75712')
+# delete_test_case_from_suite('2','75712')

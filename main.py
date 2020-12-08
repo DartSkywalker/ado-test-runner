@@ -257,3 +257,15 @@ def delete_test_suite(suite_id):
     else:
         return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
 
+
+@main.route('/delete_test_case/<suite_id>', methods=['POST'])
+@login_required
+def delete_test_case_from_suite(suite_id):
+    data = request.get_json()
+    user_role = get_user_role()
+    if user_role != 'engineer':
+        for tc_ado_id in data['ado_ids']:
+            sql_api.delete_test_case_from_suite(suite_id, tc_ado_id)
+        return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+    else:
+        return json.dumps({'success': True}), 500, {'ContentType': 'application/json'}
