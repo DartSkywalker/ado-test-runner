@@ -174,11 +174,11 @@
         </ul>
     </div>
 
-    <div id='passFailedChart' style="width: 562px; height: 400px; padding: 0 !important; z-index: 100;">
+    <div id='passFailedChart' style="width: 555px; height: 400px; padding: 0 !important; z-index: 100;">
         <canvas id="pie-chart" style="z-index: 100;"></canvas>
     </div>
 
-    <div id='executed-by' style="width: 562px; height: 400px; padding: 0 !important;">
+    <div id='executed-by' style="width: 555px; height: 400px; padding: 0 !important;">
         <canvas id="executed-pie-chart"></canvas>
     </div>
 
@@ -228,25 +228,25 @@
                     </div>
                 </td>
             </tr>
-            {% if tc_data[1] == '❌ \xa0Failed' %}
+{#            {% if tc_data[1] == '❌ \xa0Failed' %}#}
                 {% for i in range(0, tc_data[5][0][0]|length) %}
                 <tr>
 
-                    <td class="subtr hiddenRow" style="background-color: rgba(255,0,0,0.1);">
+                    <td class="subtr hiddenRow" style="background-color: rgba(255,0,0,0.1); border-top: 2px solid red; vertical-align: top;">
                         <div class="accordian-body collapse" style="text-align: center;" id="failed_{{ ado_id }}"><b>Step #: </b> {{ tc_data[5][0][0][i] }}</div>
                     </td>
                     <td class="subtr hiddenRow" style="background-color: rgba(255,0,0,0.1);">
-                        <div class="accordian-body collapse" style="text-align: left; border-bottom: 1px solid black; " id="failed_{{ ado_id }}">
-                            <p style="text-align: center"><b>Step action:</b></p><br/>
-                            <p style="padding-left: 20px">{{ tc_data[5][0][1][i] | safe}}</p><br/>
-                            <p style="text-align: center"><b>Expected Result:</b></p><br/>
-                            <p style="margin-left: 20px">{{ tc_data[5][0][2][i] | safe}}</p><br/>
+                        <div class="accordian-body collapse" style="text-align: left; border-bottom: 1px solid black; padding-left: 20px" id="failed_{{ ado_id }}">
+                            <p style="text-align: left; padding-bottom: 0px"><b>Step action:</b></p>
+                            <p style="">{{ tc_data[5][0][1][i] | safe}}</p>
+                            <p style="text-align: left; padding-bottom: 0px"><b>Comment:</b></p>
+                            {{ tc_data[5][0][3][i] }}
                         </div>
                     </td>
-                    <td class="subtr hiddenRow" style="background-color: rgba(255,0,0,0.1);">
-                        <div class="accordian-body collapse" style="text-align: center; " id="failed_{{ ado_id }}">
-                            <b>Comment:</b><br/>
-                            {{ tc_data[5][0][3][i] }}
+                    <td class="subtr hiddenRow" style="background-color: rgba(255,0,0,0.1); vertical-align: top;">
+                        <div class="accordian-body collapse" style="text-align: left; padding-left: 5px" id="failed_{{ ado_id }}">
+                            <p style="text-align: left"><b>Expected Result:</b></p>
+                            <p style="">{{ tc_data[5][0][2][i] | safe}}</p>
                         </div>
                     </td>
                     <td class="subtr hiddenRow">
@@ -261,7 +261,7 @@
                 </tr>
 
                 {% endfor %}
-            {% endif %}
+{#            {% endif %}#}
         {% endfor %}
 
     </table>

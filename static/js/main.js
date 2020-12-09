@@ -40,8 +40,23 @@ $('#statCase, .show_stat_mb3').on('click', function showCaseStatistics(e) {
 
                         if (testResult === 'Passed') {
                             testResult = "✅ &nbsp;Passed"
-                            $('#statTable > tbody:last-child').append('<tr><td>' + suiteName + '</td><td>' + tester + '</td><td>' + testResult + '</td>' +
+                            failureStepNum = failureDetails[0];
+                            failureStepComment = failureDetails[1];
+
+                            let dataStr = "";
+                            for (let i=0;i < failureStepNum.length; i++) {
+                                dataStr += '<p><b>Step #:</b>'+failureStepNum[i]+'<br\><b>Comment: </b>'+failureStepComment[i] + '</p>'
+                            }
+
+                            $('#statTable > tbody:last-child').append('<tr class="failure-row"><td>' + suiteName + '</td><td>' + tester + '</td><td>'
+                                +
+                                '<span data-trigger="hover" data-html="true" data-toggle="popover" title="Failed steps" data-content="'
+                                +dataStr+'">' +
+                                ''+testResult+'</span>\n'
+                                +
+                                '</td>' +
                                 '<td>' + new Date(duration * 1000).toISOString().substr(11, 8) + '</td><td>' + runDate + '</td></tr>');
+                                $('[data-toggle="popover"]').popover()
                         } else if (testResult === 'Failed') {
                             testResult = "❌ &nbsp;Failed"
 
@@ -55,7 +70,7 @@ $('#statCase, .show_stat_mb3').on('click', function showCaseStatistics(e) {
 
                             $('#statTable > tbody:last-child').append('<tr class="failure-row"><td>' + suiteName + '</td><td>' + tester + '</td><td>'
                                 +
-                                '<span data-trigger="hover" data-html="true" data-toggle="popover" title="Failure details" data-content="'
+                                '<span data-trigger="hover" data-html="true" data-toggle="popover" title="Failed steps" data-content="'
                                 +dataStr+'">' +
                                 ''+testResult+'</span>\n'
                                 +
@@ -68,10 +83,43 @@ $('#statCase, .show_stat_mb3').on('click', function showCaseStatistics(e) {
 
                         } else if (testResult === 'Blocked') {
                             testResult = "🚫 &nbsp;Blocked"
-                            $('#statTable > tbody:last-child').append('<tr><td>' + suiteName + '</td><td>' + tester + '</td><td>' + testResult + '</td>' +
-                                '<td>' + new Date(duration * 1000).toISOString().substr(11, 8) + '</td><td>' + runDate + '</td></tr>');
-                        }
+                            failureStepNum = failureDetails[0];
+                            failureStepComment = failureDetails[1];
 
+                            let dataStr = "";
+                            for (let i=0;i < failureStepNum.length; i++) {
+                                dataStr += '<p><b>Step #:</b>'+failureStepNum[i]+'<br\><b>Comment: </b>'+failureStepComment[i] + '</p>'
+                            }
+
+                            $('#statTable > tbody:last-child').append('<tr class="failure-row"><td>' + suiteName + '</td><td>' + tester + '</td><td>'
+                                +
+                                '<span data-trigger="hover" data-html="true" data-toggle="popover" title="Failed steps" data-content="'
+                                +dataStr+'">' +
+                                ''+testResult+'</span>\n'
+                                +
+                                '</td>' +
+                                '<td>' + new Date(duration * 1000).toISOString().substr(11, 8) + '</td><td>' + runDate + '</td></tr>');
+                                $('[data-toggle="popover"]').popover()
+                        } else if (testResult === 'Pause') {
+                            testResult = "⏸ &nbsp;Pause"
+                            failureStepNum = failureDetails[0];
+                            failureStepComment = failureDetails[1];
+
+                            let dataStr = "";
+                            for (let i=0;i < failureStepNum.length; i++) {
+                                dataStr += '<p><b>Step #:</b>'+failureStepNum[i]+'<br\><b>Comment: </b>'+failureStepComment[i] + '</p>'
+                            }
+
+                            $('#statTable > tbody:last-child').append('<tr class="failure-row"><td>' + suiteName + '</td><td>' + tester + '</td><td>'
+                                +
+                                '<span data-trigger="hover" data-html="true" data-toggle="popover" title="Failed steps" data-content="'
+                                +dataStr+'">' +
+                                ''+testResult+'</span>\n'
+                                +
+                                '</td>' +
+                                '<td>' + new Date(duration * 1000).toISOString().substr(11, 8) + '</td><td>' + runDate + '</td></tr>');
+                                $('[data-toggle="popover"]').popover()
+                            }
                     }
                 }
             }).fail(function () {
