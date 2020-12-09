@@ -173,7 +173,10 @@ def check_access_to_ado_item(test_case_id):
 @login_required
 def get_test_case_statistics(test_suite_id, case_ado_id):
     try:
-        date, duration, test_suite, tester, state, failure_details = sql_api.get_test_run_date_duration(test_suite_id, case_ado_id)
+        date, duration, test_suite, tester, state, failure_details = \
+            sql_api.get_test_run_date_duration(test_suite_id, case_ado_id)
+        logger.warning(failure_details)
+        logger.warning(state)
         return json.dumps({'success': True, 'duration': duration, 'date': date, 'suite_name': test_suite,
                            'tester': tester, 'state': state, 'failure_details': failure_details}), \
                200, {'ContentType': 'application/json'}
