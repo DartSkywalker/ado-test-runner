@@ -244,13 +244,23 @@ def check_valid_invite(code):
 def suite_reporter(suite_id):
     suite_name, suite_data_dict = sql_api.get_suite_statistics_by_id(suite_id)
     # logger.warning(suite_data_dict)
-    # return render_template('report_template.html', suite_name=suite_name, suite_data=suite_data_dict)
+    return render_template('report_template.html', suite_name=suite_name, suite_data=suite_data_dict, suite_id=suite_id)
+    # meta_string = (render_template('report_template.html', suite_name=suite_name, suite_data=suite_data_dict))
+    # return Response(meta_string,
+    #                 mimetype="text/plain",
+    #                    headers={"Content-Disposition":
+    #                                 "attachment;filename=TReport.html"})
+
+@main.route('/suitereport/<suite_id>/download')
+@login_required
+def suite_reporter_download(suite_id):
+    suite_name, suite_data_dict = sql_api.get_suite_statistics_by_id(suite_id)
+    # logger.warning(suite_data_dict)
     meta_string = (render_template('report_template.html', suite_name=suite_name, suite_data=suite_data_dict))
     return Response(meta_string,
                     mimetype="text/plain",
                        headers={"Content-Disposition":
                                     "attachment;filename=TReport.html"})
-
 
 @main.route('/deletesuite/<suite_id>')
 @login_required

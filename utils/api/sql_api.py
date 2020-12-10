@@ -406,7 +406,8 @@ def get_suite_statistics_by_id(suite_id):
 
     test_cases_data = connection.execute(select([table_cases.c.TEST_CASE_ADO_ID, table_cases.c.TEST_CASE_NAME,
                                                  table_cases.c.STATUS, table_cases.c.EXECUTED_BY,
-                                                 table_cases.c.DURATION_SEC, table_cases.c.CHANGE_STATE_DATE])
+                                                 table_cases.c.DURATION_SEC, table_cases.c.CHANGE_STATE_DATE,
+                                                 table_cases.c.TEST_CASE_ID])
                                          .order_by(table_cases.c.STATUS)
                                          .where(table_cases.c.TEST_SUITE_ID == suite_id)).fetchall()
 
@@ -425,7 +426,9 @@ def get_suite_statistics_by_id(suite_id):
     for tc_id in tc_ado_id:
         tc_failure_details.append(get_failure_details_report(suite_id, tc_id))
 
-    suite_data_dict = dict(zip(tc_ado_id, zip(tc_name, tc_state, tc_executed_by, tc_duration, tc_changed_date, tc_failure_details)))
+    tc_db_id = [str(data[6]) for data in test_cases_data]
+
+    suite_data_dict = dict(zip(tc_ado_id, zip(tc_name, tc_state, tc_executed_by, tc_duration, tc_changed_date, tc_failure_details, tc_db_id)))
     return suite_name, suite_data_dict
 
 
