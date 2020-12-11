@@ -282,3 +282,11 @@ def delete_test_case_from_suite(suite_id):
         return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
     else:
         return json.dumps({'success': True}), 500, {'ContentType': 'application/json'}
+
+
+@main.route("/suite_creator")
+@login_required
+def suite_creator():
+    tc_dict = sql_api.get_all_test_cases()
+    # logger.warning(tc_dict)
+    return render_template('suites_creator.html', tc_data=tc_dict, username=sql_api.get_current_user())

@@ -245,7 +245,7 @@ def get_test_run_date_duration(test_suite_id, case_ado_id):
                                                table_steps.c.EXPECTED_RESULT, table_steps.c.STEP_STATUS,
                                                table_steps.c.COMMENT]).select_from(
             join(table_cases, table_steps, table_cases.c.TEST_CASE_ID == table_steps.c.TEST_CASE_ID)).
-                                       where(
+            where(
             and_(table_steps.c.TEST_CASE_ID == tc_id[i], table_cases.c.TEST_SUITE_ID == test_suite_id[i],
                  table_steps.c.STEP_STATUS == 'Failed'))).fetchall()
 
@@ -259,13 +259,15 @@ def get_test_run_date_duration(test_suite_id, case_ado_id):
         #     failure_details.append("")
     return execution_date, duration, test_suite, tester, state, failure_details
 
+
 def get_failure_details_report(test_suite_id, case_ado_id):
     data_list = connection.execute(select(
         [table_cases.c.CHANGE_STATE_DATE, table_cases.c.DURATION_SEC, table_suites.c.TEST_SUITE_NAME,
          table_cases.c.EXECUTED_BY, table_cases.c.STATUS, table_cases.c.TEST_CASE_ID,
          table_suites.c.TEST_SUITE_ID]).select_from(
         join(table_suites, table_cases, table_suites.c.TEST_SUITE_ID == table_cases.c.TEST_SUITE_ID))
-                                   .where(and_(table_cases.c.TEST_CASE_ADO_ID == case_ado_id, table_cases.c.TEST_SUITE_ID == test_suite_id))).fetchall()
+                                   .where(
+        and_(table_cases.c.TEST_CASE_ADO_ID == case_ado_id, table_cases.c.TEST_SUITE_ID == test_suite_id))).fetchall()
 
     state = [str(data[4]) for data in data_list]
     tc_id = [str(data[5]) for data in data_list]
@@ -279,7 +281,7 @@ def get_failure_details_report(test_suite_id, case_ado_id):
                                                table_steps.c.EXPECTED_RESULT, table_steps.c.STEP_STATUS,
                                                table_steps.c.COMMENT]).select_from(
             join(table_cases, table_steps, table_cases.c.TEST_CASE_ID == table_steps.c.TEST_CASE_ID)).
-                                       where(
+            where(
             and_(table_steps.c.TEST_CASE_ID == tc_id[i], table_cases.c.TEST_SUITE_ID == test_suite_id[i],
                  table_steps.c.STEP_STATUS == 'Failed'))).fetchall()
 
@@ -292,6 +294,7 @@ def get_failure_details_report(test_suite_id, case_ado_id):
         # else:
         #     failure_details.append("")
     return failure_details
+
 
 def get_test_case_failures_statistics(test_suite_id, case_ado_id):
     data_list = connection.execute(select(
@@ -428,7 +431,9 @@ def get_suite_statistics_by_id(suite_id):
 
     tc_db_id = [str(data[6]) for data in test_cases_data]
 
-    suite_data_dict = dict(zip(tc_ado_id, zip(tc_name, tc_state, tc_executed_by, tc_duration, tc_changed_date, tc_failure_details, tc_db_id)))
+    suite_data_dict = dict(zip(tc_ado_id,
+                               zip(tc_name, tc_state, tc_executed_by, tc_duration, tc_changed_date, tc_failure_details,
+                                   tc_db_id)))
     return suite_name, suite_data_dict
 
 
@@ -466,4 +471,13 @@ def delete_test_case_from_suite(suite_id, test_case_ado_id):
     except Exception as e:
         logger.critical(e)
         return False
+
+
 # delete_test_case_from_suite('2','75712')
+
+def get_all_test_cases():
+    test_cases_db = connection.execute(select([table_cases.c.TEST_CASE_ADO_ID,
+                                               table_cases.c.TEST_CASE_NAME]).distinct()).fetchall()
+    tc_ado_id = [str(data[0]) for data in test_cases_db]
+    tc_name = [str(data[1]) for data in test_cases_db]
+    return dict(zip(tc_ado_id, tc_name))
