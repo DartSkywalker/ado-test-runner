@@ -42,7 +42,7 @@
     </button>
     <ul class="navbar-nav">
         <li class="nav-item active">
-            <a class="nav-link" href="/suites">Add Suite<span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="/suites" data-toggle="modal" data-target="#addCaseToSuite">Add Suite<span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item active">
             <a class="nav-link" href="/suitify">Available Suites<span class="sr-only">(current)</span></a>
@@ -61,7 +61,7 @@
     <div class="navbar-collapse collapse  order-3 dual-collapse2">
         <ul class="navbar-nav ml-auto">
             <li class="nav-item active action-items">
-                <a class="nav-link" href="">➕ Add<span class="sr-only">(current)</span></a>
+                <a class="nav-link" data-toggle="modal" data-target="#addCaseToSuite" data-backdrop="static" data-keyboard="false">➕ Add<span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item active action-items">
                 <a class="nav-link" href="">➖ Delete<span class="sr-only">(current)</span></a>
@@ -92,10 +92,50 @@
     </div>
 </nav>
 
+<div class="modal fade" id="addCaseToSuite" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="addToSuiteLabel"></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            <input type="text" id="search_input_modal" onkeyup="searchTestCases('allCasesTable', 'search_input_modal')" placeholder="Search for Test Cases..">
+
+            <table class="table mt-3" style="text-align: center;" id="allCasesTable">
+            <thead class="bg-primary font-weight-light" style="color: #ffffff;">
+            <tr>
+                <th scope="col">Use</th>
+                <th scope="col">ID</th>
+                <th scope="col">Test Case</th>
+            </tr>
+            </thead>
+            {% for tc_id, tc_name in all_cases_dict.items() %}
+                <tr>
+                    <td><input type="checkbox" class="add_to_suite_checkbox" id="{{ tc_id }}"></td>
+                    <td>{{ tc_id }}</td>
+                    <td>{{ tc_name }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+
+            </div>
+            <div class="modal-footer">
+                <button class="align-self-end btn-index btn--radius-2 btn--blue" type="submit" name="btn"
+                        id="addSuite" value="addSuite">Save
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="container-fluid">
     <div class="shifted-list">
-        <input type="text" id="search_input" onkeyup="searchTestCases()" placeholder="Search for Test Cases..">
+        <input type="text" id="search_input" onkeyup="searchTestCases('test_cases_table', 'search_input')" placeholder="Search for Test Cases..">
 
         <table class="table mt-3" style="text-align: center;" id="test_cases_table">
             <thead class="bg-primary font-weight-light" style="color: #ffffff;">
@@ -134,6 +174,7 @@
     <script>
         $(document).ready(function () {
             let firstOptionSuiteId = $("#suites-selector option:first").val();
+            let testSuiteName = $( "#suites-selector option:selected" ).text();
                 $.ajax({
                 url: "/get_suite_cases/" + firstOptionSuiteId,
                 type: 'GET'
@@ -149,6 +190,7 @@
                         '<td>' + value[0] + '</td>' +
                         '</tr>');
                 });
+                $('#addToSuiteLabel').text('Add to ' + testSuiteName);
             }).fail(function () {
                 console.log('Failed');
                 alert("Cannot test cases for suiteId"+firstOptionSuiteId+". Internal Server Error");
@@ -166,12 +208,12 @@
         });
     </script>
     <script>
-        function searchTestCases() {
+        function searchTestCases(tableId, inputId) {
             // Declare variables
             var input, filter, table, tr, td, i, txtValue;
-            input = document.getElementById("search_input");
+            input = document.getElementById(inputId);
             filter = input.value.toUpperCase();
-            table = document.getElementById("test_cases_table");
+            table = document.getElementById(tableId);
             tr = table.getElementsByTagName("tr");
 
             // Loop through all table rows, and hide those who don't match the search query
@@ -191,6 +233,7 @@
     <script>
         $('#suites-selector').on('change', function () {
             let testSuiteId = $(this).val()
+            let testSuiteName = $( "#suites-selector option:selected" ).text();
             $.ajax({
                 url: "/get_suite_cases/" + testSuiteId,
                 type: 'GET'
@@ -206,6 +249,8 @@
                         '<td>' + value[0] + '</td>' +
                         '</tr>');
                 });
+                $('#addToSuiteLabel').text('Add to ' + testSuiteName);
+
             }).fail(function () {
                 console.log('Failed');
                 alert("Cannot test cases for suiteId"+testSuiteId+". Internal Server Error");

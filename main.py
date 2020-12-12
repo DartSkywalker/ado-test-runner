@@ -301,10 +301,10 @@ def get_all_test_cases_from_test_suite(suite_id):
 @main.route("/suites_manager")
 @login_required
 def suites_manager():
-    # tc_dict = sql_api.get_all_test_cases()
+    tc_dict = sql_api.get_all_test_cases()
 
     # logger.warning(tc_dict)
-    return render_template('suites_manager.html', username=sql_api.get_current_user(), test_suite_dict=sql_api.get_test_suites_from_database())
+    return render_template('suites_manager.html', all_cases_dict=tc_dict, username=sql_api.get_current_user(), test_suite_dict=sql_api.get_test_suites_from_database())
 
 
 @main.route("/get_suite_cases/<suite_id>")
