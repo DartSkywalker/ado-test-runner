@@ -308,6 +308,22 @@ h6 {
     font-family: "Poppins", "Arial", "Helvetica Neue", sans-serif;
 }
 
+.btn-2 {
+    display: inline-block;
+    padding: 0;
+    margin-right: 50px;
+    height: 20px;
+    line-height: 20px;
+    -webkit-transition: all 0.4s ease;
+    -o-transition: all 0.4s ease;
+    -moz-transition: all 0.4s ease;
+    transition: all 0.4s ease;
+    cursor: pointer;
+    font-size: 14px;
+    color: #fff;
+    font-family: "Poppins", "Arial", "Helvetica Neue", sans-serif;
+}
+
 .btn-index {
     display: inline-block;
     line-height: 50px;
@@ -1208,3 +1224,27 @@ td.subtr {
     font-size: 16px;
 }
 
+.dropdown-selector {
+    padding-left: 15px;
+}
+
+#suites-selector {
+    background: none;
+    border: 0;
+    color: #fff;
+    border-bottom: 1px solid #fff;
+    font-size: 14px;
+}
+
+.suite-create {
+    color: #fff !important;
+    border-bottom: 1px solid #fff;
+    margin-right: 20px !important;
+    border-radius: 0.25rem;
+}
+
+.action-items {
+    margin-right: 25px;
+    border-bottom: 1px solid #fff;
+    border-radius: 0.25rem;
+}

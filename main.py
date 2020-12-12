@@ -290,3 +290,25 @@ def suite_creator():
     tc_dict = sql_api.get_all_test_cases()
     # logger.warning(tc_dict)
     return render_template('suites_creator.html', tc_data=tc_dict, username=sql_api.get_current_user())
+
+
+@main.route("/suites_cases/<suite_id>")
+@login_required
+def get_all_test_cases_from_test_suite(suite_id):
+    pass
+
+
+@main.route("/suites_manager")
+@login_required
+def suites_manager():
+    # tc_dict = sql_api.get_all_test_cases()
+
+    # logger.warning(tc_dict)
+    return render_template('suites_manager.html', username=sql_api.get_current_user(), test_suite_dict=sql_api.get_test_suites_from_database())
+
+
+@main.route("/get_suite_cases/<suite_id>")
+@login_required
+def get_test_cases_by_suite_id(suite_id):
+    suite_cases = sql_api.get_test_cases_from_db_by_suite_name(suite_id)
+    return json.dumps({'success': True, 'suite_cases': suite_cases}), 200, {'ContentType': 'application/json'}
