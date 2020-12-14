@@ -64,7 +64,7 @@
                 <a class="nav-link" data-toggle="modal" data-target="#addCaseToSuite" data-backdrop="static" data-keyboard="false">➕ Add<span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item active action-items">
-                <a class="nav-link" href="">➖ Delete<span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="" id="deleteCaseFromSuite">➖ Delete<span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle suite-create" href="#" id="navbarDropdownMenuLink" role="button"
@@ -94,7 +94,7 @@
 
 <div class="modal fade" id="addCaseToSuite" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-dialog modal-dialog-top modal-dialog-scrollable modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="addToSuiteLabel"></h4>
@@ -125,7 +125,7 @@
             </div>
             <div class="modal-footer">
                 <button class="align-self-end btn-index btn--radius-2 btn--blue" type="submit" name="btn"
-                        id="addSuite" value="addSuite">Save
+                        id="SaveToSuite" value="addToTestSuite">Add Test Cases
                 </button>
 
             </div>
@@ -133,7 +133,7 @@
     </div>
 </div>
 
-<div class="container-fluid">
+< class="container-fluid">
     <div class="shifted-list">
         <input type="text" id="search_input" onkeyup="searchTestCases('test_cases_table', 'search_input')" placeholder="Search for Test Cases..">
 
@@ -198,15 +198,7 @@
         });
     </script>
 
-    <script>
-        $(".checked_tc").change(function () {
-            if ($(this).closest('tr').hasClass('active')) {
-                $(this).closest('tr').removeClass('active')
-            } else {
-                $(this).closest('tr').addClass('active')
-            }
-        });
-    </script>
+
     <script>
         function searchTestCases(tableId, inputId) {
             // Declare variables
@@ -244,8 +236,8 @@
                 Object.keys(testCasesData).map(function (tc_id, index) {
                     var value = testCasesData[tc_id];
                     $('#test_cases_table thead:last').after('<tr class="test_case_row">' +
-                        '<td><input type="checkbox" class="checked_tc" id="' + tc_id + '"></td>' +
-                        '<td>' + tc_id + '</td>' +
+                        '<td class="check-container"><input type="checkbox" class="check-row" id="' + tc_id + '"></td>' +
+                        '<td class="tcid">' + tc_id + '</td>' +
                         '<td>' + value[0] + '</td>' +
                         '</tr>');
                 });
@@ -257,6 +249,42 @@
             });
         });
     </script>
+    <script>
+        $('#test_cases_table').on("change", "input[type=\"checkbox\"]", function(){
+            if ($(this).closest('tr').hasClass('active')) {
+                $(this).closest('tr').removeClass('active')
+            } else {
+                $(this).closest('tr').addClass('active')
+            }
+        });
+    </script>
+
+<script>
+    $("#deleteCaseFromSuite").on('click', function (e) {
+    let tcsIdsToDelete = [];
+    let tcsNamesToDelete = [];
+    let suiteId = $('#suites-selector').val();
+    $("#test_cases_table tr.active").each(function () {
+        var testCaseId = $(this).closest('tr').find('td.tcid').text().trim();
+        var tcsName = $(this).closest('tr').find('td:nth-child(3)').text().trim();
+        tcsIdsToDelete.push(testCaseId);
+        tcsNamesToDelete.push(tcsName);
+    });
+    if (confirm("Do you really want to delete following test cases from the suite?\n" + tcsNamesToDelete.join("\n"))) {
+        let tcsToRemove = {ado_ids: tcsIdsToDelete}
+        $.ajax({
+            url: '/delete_test_case/' + suiteId,
+            data: JSON.stringify(tcsToRemove),
+            type: 'POST',
+            contentType: 'application/json'
+        }).done(function (responseData) {
+            console.log('Done: ', responseData);
+        }).fail(function () {
+            alert('Cannot delete the test case. Only managers allowed to remove test cases from suites.');
+        });
+    }
+});
+</script>
 </div>
 </body>
 </html>
