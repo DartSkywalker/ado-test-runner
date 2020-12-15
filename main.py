@@ -244,13 +244,23 @@ def check_valid_invite(code):
 def suite_reporter(suite_id):
     suite_name, suite_data_dict = sql_api.get_suite_statistics_by_id(suite_id)
     # logger.warning(suite_data_dict)
-    # return render_template('report_template.html', suite_name=suite_name, suite_data=suite_data_dict)
+    return render_template('report_template.html', suite_name=suite_name, suite_data=suite_data_dict, suite_id=suite_id)
+    # meta_string = (render_template('report_template.html', suite_name=suite_name, suite_data=suite_data_dict))
+    # return Response(meta_string,
+    #                 mimetype="text/plain",
+    #                    headers={"Content-Disposition":
+    #                                 "attachment;filename=TReport.html"})
+
+@main.route('/suitereport/<suite_id>/download')
+@login_required
+def suite_reporter_download(suite_id):
+    suite_name, suite_data_dict = sql_api.get_suite_statistics_by_id(suite_id)
+    # logger.warning(suite_data_dict)
     meta_string = (render_template('report_template.html', suite_name=suite_name, suite_data=suite_data_dict))
     return Response(meta_string,
                     mimetype="text/plain",
                        headers={"Content-Disposition":
                                     "attachment;filename=TReport.html"})
-
 
 @main.route('/deletesuite/<suite_id>')
 @login_required
@@ -272,3 +282,60 @@ def delete_test_case_from_suite(suite_id):
         return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
     else:
         return json.dumps({'success': True}), 500, {'ContentType': 'application/json'}
+
+
+@main.route("/suite_creator")
+@login_required
+def suite_creator():
+    tc_dict = sql_api.get_all_test_cases()
+    # logger.warning(tc_dict)
+    return render_template('suites_creator.html', tc_data=tc_dict, username=sql_api.get_current_user())
+
+
+@main.route("/suites_cases/<suite_id>")
+@login_required
+def get_all_test_cases_from_test_suite(suite_id):
+    pass
+
+
+@main.route("/suites_manager", methods=['GET'])
+@login_required
+def suites_manager():
+    tc_dict = sql_api.get_all_test_cases()
+
+    # logger.warning(tc_dict)
+    return render_template('suites_manager.html', all_cases_dict=tc_dict, username=sql_api.get_current_user(), test_suite_dict=sql_api.get_test_suites_from_database())
+
+@main.route('/add_test_suite_by_query_id/<query_id>')
+@login_required
+def add_new_test_suite(query_id):
+        # if query_id == "" or len(query_id) < 36 or len(query_id) > 36:
+        #     flash('Please, enter a valid Query ID')
+        #     return redirect(url_for('main.suites_manager'))
+        if ado_api.check_access_to_ado_query(query_id):
+            async_functions.create_new_test_suite_in_db(str(query_id))
+            return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+        else:
+            flash('Access denied. Please check your ADO Token')
+            return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
+
+
+# @main.route('/suites_manager', methods=['POST'])
+    # @login_required
+    # def add_test_suite():
+    #     query_id = request.form['query_id']
+    #     if query_id == "" or len(query_id) < 36 or len(query_id) > 36:
+    #         flash('Please, enter a valid Query ID')
+    #         return redirect(url_for('main.test_suites'))
+    #     if ado_api.check_access_to_ado_query(query_id):
+    #         async_functions.create_new_test_suite_in_db(str(query_id))
+    #         return redirect(url_for('main.test_suites'))
+    #     else:
+    #         flash('Access denied. Please check your ADO Token')
+    #         return redirect(url_for('main.suites_manager'))
+
+@main.route("/get_suite_cases/<suite_id>")
+@login_required
+def get_test_cases_by_suite_id(suite_id):
+    suite_cases = sql_api.get_test_cases_from_db_by_suite_name(suite_id)
+    return json.dumps({'success': True, 'suite_cases': suite_cases}), 200, {'ContentType': 'application/json'}

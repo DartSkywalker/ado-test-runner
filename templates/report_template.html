@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ SUITE_NAME }} Report</title>
+    <title>{{ suite_name }} Report</title>
     <style>
         body {
             font-family: "Poppins", "Arial", "Helvetica Neue", sans-serif;
@@ -83,10 +83,10 @@
         }
 
         .footer {
-            position: fixed;
+            position: relative;
             bottom: 0;
             padding: 0;
-            width: 80%;
+            width: 100%;
             background-color: #037AFB;
             color: #fff;
             text-align: left;
@@ -94,7 +94,7 @@
             margin: 0 auto;
             height: 20px;
             font-size: 12px;
-            line-height: 0px;
+            line-height: 17px;
         }
 
         .footer-link {
@@ -161,7 +161,8 @@
 <div class="container">
     <div class="topnav">
         <a class="active" href="#">TRunner</a>
-        <a>Report for {{ suite_name }}</a>
+        <a style="color: #fff">{{ suite_name }}</a>
+        <a href="{{ suite_id }}/download" style="color: #fff; padding-left: 60%;">Download HTML report</a>
     </div>
 
     <div class="statistics">
@@ -187,7 +188,7 @@
                 style="display: inline-block; margin-top: 0; width: 80%; height: 300px; padding: 0 !important; z-index: 0;"></canvas>
     </div>
 
-    <table class="result-table" style="text-align: center;" id="mt">
+    <table class="result-table" style="text-align: center; margin-bottom: 15px;" id="mt">
         <thead class="" style="color: #ffffff; background-color: #037AFB">
         <tr>
             <th scope="col">ADO ID</th>
@@ -205,7 +206,7 @@
                        href="https://dev.azure.com/HAL-LMKRD/RESDEV/_workitems/edit/{{ ado_id }}">{{ ado_id }}</a>
                 </td>
                 <td>
-                    <p class="text-dark">{{ tc_data[0] }}</p>
+                    <p class="text-dark"><a href="/run/{{ suite_id }}/{{ tc_data[6] }}">{{ tc_data[0] }}</a></p>
                 </td>
                 <td width="160px" class="testCaseState clickable-row accordion-toggle" data-toggle="collapse" data-target="#failed_{{ ado_id }}">
                     <p class="text-dark">
@@ -232,18 +233,18 @@
                 {% for i in range(0, tc_data[5][0][0]|length) %}
                 <tr>
 
-                    <td class="subtr hiddenRow" style="background-color: rgba(255,0,0,0.1); border-top: 2px solid red; vertical-align: top;">
+                    <td class="subtr hiddenRow" style="background-color: rgb(255,230,230); border-top: 2px solid #ff0000; vertical-align: top;">
                         <div class="accordian-body collapse" style="text-align: center;" id="failed_{{ ado_id }}"><b>Step #: </b> {{ tc_data[5][0][0][i] }}</div>
                     </td>
-                    <td class="subtr hiddenRow" style="background-color: rgba(255,0,0,0.1);">
+                    <td class="subtr hiddenRow" style="background-color: rgb(255,230,230);">
                         <div class="accordian-body collapse" style="text-align: left; border-bottom: 1px solid black; padding-left: 20px" id="failed_{{ ado_id }}">
-                            <p style="text-align: left; padding-bottom: 0px"><b>Step action:</b></p>
+                            <p style="text-align: left; padding-bottom: 0"><b>Step action:</b></p>
                             <p style="">{{ tc_data[5][0][1][i] | safe}}</p>
-                            <p style="text-align: left; padding-bottom: 0px"><b>Comment:</b></p>
+                            <p style="text-align: left; padding-bottom: 0"><b>Comment:</b></p>
                             {{ tc_data[5][0][3][i] }}
                         </div>
                     </td>
-                    <td class="subtr hiddenRow" style="background-color: rgba(255,0,0,0.1); vertical-align: top;">
+                    <td class="subtr hiddenRow" style="background-color: rgb(255,230,230); vertical-align: top;">
                         <div class="accordian-body collapse" style="text-align: left; padding-left: 5px" id="failed_{{ ado_id }}">
                             <p style="text-align: left"><b>Expected Result:</b></p>
                             <p style="">{{ tc_data[5][0][2][i] | safe}}</p>
@@ -267,7 +268,7 @@
     </table>
 
     <div class="footer">
-        <p><a href="https://trunner.herokuapp.com/" class="footer-link">TRunner</a>All rights reserved © 2021</p>
+        <p><a href="https://trunner.herokuapp.com/" class="footer-link" style="margin: 0; padding-left: 10px !important;"> TRunner</a> All rights reserved © 2021</p>
     </div>
 </div>
 
