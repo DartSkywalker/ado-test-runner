@@ -320,19 +320,21 @@ def add_new_test_suite(query_id):
             return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
 
 
-# @main.route('/suites_manager', methods=['POST'])
-    # @login_required
-    # def add_test_suite():
-    #     query_id = request.form['query_id']
-    #     if query_id == "" or len(query_id) < 36 or len(query_id) > 36:
-    #         flash('Please, enter a valid Query ID')
-    #         return redirect(url_for('main.test_suites'))
-    #     if ado_api.check_access_to_ado_query(query_id):
-    #         async_functions.create_new_test_suite_in_db(str(query_id))
-    #         return redirect(url_for('main.test_suites'))
-    #     else:
-    #         flash('Access denied. Please check your ADO Token')
-    #         return redirect(url_for('main.suites_manager'))
+@main.route("/add_cases_to_suite/", methods=['POST'])
+@login_required
+def add_cases_to_suite():
+    data = request.get_json()
+    logger.warning(data)
+    suite_id = data['suiteId']
+    tc_ids_list = data['tcIds']
+    try:
+        for tc_id in tc_ids_list:
+            sql_api.add_test_case_to_the_suite(suite_id, tc_id)
+        return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+    except Exception as e:
+        logger.critical(e)
+        return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
+
 
 @main.route("/get_suite_cases/<suite_id>")
 @login_required
