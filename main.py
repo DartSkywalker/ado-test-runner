@@ -298,7 +298,7 @@ def get_all_test_cases_from_test_suite(suite_id):
     pass
 
 
-@main.route("/suites_manager")
+@main.route("/suites_manager", methods=['GET'])
 @login_required
 def suites_manager():
     tc_dict = sql_api.get_all_test_cases()
@@ -306,6 +306,33 @@ def suites_manager():
     # logger.warning(tc_dict)
     return render_template('suites_manager.html', all_cases_dict=tc_dict, username=sql_api.get_current_user(), test_suite_dict=sql_api.get_test_suites_from_database())
 
+@main.route('/add_test_suite_by_query_id/<query_id>')
+@login_required
+def add_new_test_suite(query_id):
+        # if query_id == "" or len(query_id) < 36 or len(query_id) > 36:
+        #     flash('Please, enter a valid Query ID')
+        #     return redirect(url_for('main.suites_manager'))
+        if ado_api.check_access_to_ado_query(query_id):
+            async_functions.create_new_test_suite_in_db(str(query_id))
+            return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+        else:
+            flash('Access denied. Please check your ADO Token')
+            return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
+
+
+# @main.route('/suites_manager', methods=['POST'])
+    # @login_required
+    # def add_test_suite():
+    #     query_id = request.form['query_id']
+    #     if query_id == "" or len(query_id) < 36 or len(query_id) > 36:
+    #         flash('Please, enter a valid Query ID')
+    #         return redirect(url_for('main.test_suites'))
+    #     if ado_api.check_access_to_ado_query(query_id):
+    #         async_functions.create_new_test_suite_in_db(str(query_id))
+    #         return redirect(url_for('main.test_suites'))
+    #     else:
+    #         flash('Access denied. Please check your ADO Token')
+    #         return redirect(url_for('main.suites_manager'))
 
 @main.route("/get_suite_cases/<suite_id>")
 @login_required
