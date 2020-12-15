@@ -1249,3 +1249,10 @@ td.subtr {
     border-radius: 0.25rem;
 }
 
+.styled-input {
+    border: none;
+    border-bottom: 2px solid #0878F8;
+    border-radius: 0;
+    box-shadow: none;
+    background: #fff;
+}

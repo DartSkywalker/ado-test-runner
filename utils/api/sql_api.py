@@ -488,10 +488,12 @@ def delete_test_case_from_suite(suite_id, test_case_ado_id):
 
 def get_all_test_cases():
     test_cases_db = connection.execute(select([table_cases.c.TEST_CASE_ADO_ID,
-                                               table_cases.c.TEST_CASE_NAME]).distinct()).fetchall()
+                                               table_cases.c.TEST_CASE_NAME,
+                                               table_cases.c.TEST_CASE_ID]).distinct()).fetchall()
     tc_ado_id = [str(data[0]) for data in test_cases_db]
     tc_name = [str(data[1]) for data in test_cases_db]
-    return dict(zip(tc_ado_id, tc_name))
+    tc_db_id = [str(data[2]) for data in test_cases_db]
+    return dict(zip(tc_ado_id, zip(tc_name, tc_db_id)))
 
 
 def create_suite(test_suite_name):

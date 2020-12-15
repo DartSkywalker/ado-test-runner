@@ -76,7 +76,7 @@
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
                     <a class="dropdown-item" data-toggle="modal" data-target="#addFromAdoQuery">📡️ &nbsp;From ADO
                         Query</a>
-                    <a class="dropdown-item" href="">🕳 &nbsp;Empty Suite</a>
+                    <a class="dropdown-item" data-toggle="modal" data-target="#createEmptySuite" href="">🕳 &nbsp;Empty Suite</a>
                     <a class="dropdown-item" href="">📑 &nbsp;From Existing Suite</a>
                 </div>
             </li>
@@ -120,9 +120,9 @@
                     </thead>
                     {% for tc_id, tc_name in all_cases_dict.items() %}
                         <tr>
-                            <td><input type="checkbox" class="add_to_suite_checkbox" id="{{ tc_id }}"></td>
+                            <td class="tc-id-checkbox"><input type="checkbox" class="add_to_suite_checkbox" value="{{ tc_name[1] }}"></td>
                             <td>{{ tc_id }}</td>
-                            <td>{{ tc_name }}</td>
+                            <td>{{ tc_name[0] }}</td>
                         </tr>
                     {% endfor %}
                 </table>
@@ -152,12 +152,12 @@
                 <div class="row row-space">
                     <div class="col-12">
                         <div class="input-group">
-                            <input class="input--style-4" type="text" name="query_id" id="query_id"
+                            <input class="input--style-4 styled-input" type="text" name="query_id" id="query_id"
                                    placeholder="Query ID">
                         </div>
                     </div>
                     <div class="col-12">
-                        <button class="align-self-end btn-index btn--radius-2 btn--blue" style="margin-left:65%" type="submit" name="btn"
+                        <button class="align-self-end btn-index btn--radius-2 btn--blue" style="margin-left:50%; width: 220px;" type="submit" name="btn"
                                 id="addSuite" value="addSuite">Add Suite
                         </button>
                     </div>
@@ -170,7 +170,41 @@
         </div>
     </div>
 </div>
-< class="container-fluid">
+
+<div class="modal fade" id="createEmptySuite" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-mg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Create Empty Suite</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row row-space">
+                    <div class="col-12">
+                        <div class="input-group">
+                            <input class="input--style-4 styled-input" type="text" name="query_id" id="query_id"
+                                   placeholder="Test Suite Name">
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button class="align-self-end btn-index btn--radius-2 btn--blue" style="margin-left:65%; width: 150px;" type="submit" name="btn"
+                                id="createEmpty" value="createEmpty">Create
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
 <div class="shifted-list">
     <input type="text" id="search_input" onkeyup="searchTestCases('test_cases_table', 'search_input')"
            placeholder="Search for Test Cases..">
@@ -284,6 +318,9 @@
         }
     }
 </script>
+
+
+
 <script>
     $('#suites-selector').on('change', function () {
         let testSuiteId = $(this).val()
@@ -319,7 +356,41 @@
             $(this).closest('tr').addClass('active')
         }
     });
+    $('#allCasesTable').on("change", "input[type=\"checkbox\"]", function () {
+        if ($(this).closest('tr').hasClass('active')) {
+            $(this).closest('tr').removeClass('active')
+        } else {
+            $(this).closest('tr').addClass('active')
+        }
+    });
 </script>
+
+
+<script>
+    $('#SaveToSuite').on('click', function (e) {
+        let tcIds = [];
+        let suiteId = $('#suites-selector').val();
+        $("#allCasesTable tr.active").each(function () {
+            tcIds.push($(this).find('td.tc-id-checkbox').find('input').val())
+        });
+        let updateData = {
+            suiteId: suiteId,
+            tcIds: tcIds
+        }
+        $.ajax({
+                url: '/add_cases_to_suite/',
+                data: JSON.stringify(updateData),
+                type: 'POST',
+                contentType: 'application/json'
+            }).done(function (responseData) {
+                console.log('Done: ', responseData);
+                location.reload()
+            }).fail(function () {
+                alert('Cannot insert test cases into the suite. Internal Server Error');
+            });
+    });
+</script>
+
 
 <script>
     $("#deleteCaseFromSuite").on('click', function (e) {
