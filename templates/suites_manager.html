@@ -78,7 +78,8 @@
                         Query</a>
                     <a class="dropdown-item" data-toggle="modal" data-target="#createEmptySuite" href="">🕳 &nbsp;Empty
                         Suite</a>
-                    <a class="dropdown-item" href="">📑 &nbsp;From Existing Suite</a>
+                    <a class="dropdown-item" data-toggle="modal" data-target="#copyFromExistingSuite">📑 &nbsp;From
+                        Existing Suite</a>
                 </div>
             </li>
 
@@ -207,6 +208,46 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="copyFromExistingSuite" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-mg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Copy Test Suite</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row row-space">
+                    <div class="col-12">
+                        <div class="input-group">
+                            <select class="form-control pretty-select" id="suites-selector-modal">
+                                {% for suite_id, suite_name in test_suite_dict.items() %}
+                                    <option value="{{ suite_id }}">{{ suite_name }}</option>
+                                {% endfor %}
+                            </select>
+                            <input class="input--style-4 styled-input" type="text" id="newSuiteName"
+                                   placeholder="Test Suite Name">
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button class="align-self-end btn-index btn--radius-2 btn--blue"
+                                style="margin-left:65%; width: 150px;" type="submit" name="btn"
+                                id="createEmpty" value="createEmpty">Create
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="container-fluid">
     <div class="shifted-list">
@@ -451,9 +492,9 @@
                                 .attr("value", suite_id)
                                 .text(suiteName));
                     });
-                    $("#suites-selector option").filter(function() {
-                          return $(this).text() === suiteName;
-                        }).prop('selected', true);
+                    $("#suites-selector option").filter(function () {
+                        return $(this).text() === suiteName;
+                    }).prop('selected', true);
                     $('#test_cases_table tr.test_case_row').remove();
 
                 }).fail(function () {
