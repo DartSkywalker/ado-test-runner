@@ -64,7 +64,7 @@ def add_test_suite():
 @main.route('/cases/<suite_id>', methods=['GET', 'POST'])
 @login_required
 def test_cases_list(suite_id):
-    test_cases_dict = sql_api.get_test_cases_from_db_by_suite_name(suite_id)
+    test_cases_dict = sql_api.get_test_cases_from_db_by_suite_id(suite_id)
     test_suite_name = sql_api.get_test_suite_name_by_id(suite_id)
     return render_template('test_cases_list.html', test_suite_name=test_suite_name, test_cases_dict=test_cases_dict,
                            username=sql_api.get_current_user(),
@@ -337,5 +337,5 @@ def add_new_test_suite(query_id):
 @main.route("/get_suite_cases/<suite_id>")
 @login_required
 def get_test_cases_by_suite_id(suite_id):
-    suite_cases = sql_api.get_test_cases_from_db_by_suite_name(suite_id)
+    suite_cases = sql_api.get_test_cases_from_db_by_suite_id(suite_id)
     return json.dumps({'success': True, 'suite_cases': suite_cases}), 200, {'ContentType': 'application/json'}

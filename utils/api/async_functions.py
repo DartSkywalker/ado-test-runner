@@ -72,8 +72,7 @@ def create_new_test_suite_in_db(query_id):
         for test_steps in test_case[1]:
             test_sql_case_ids = connection.execute(select([table_cases.c.TEST_CASE_ID])
                                                    .where(table_cases.c.TEST_CASE_ADO_ID == id)).fetchall()
-            test_sql_case_id = test_sql_case_ids[len(test_sql_case_ids) - 1][0]
-            # print(test_sql_case_id)
+            test_sql_case_id = sorted(test_sql_case_ids)[len(test_sql_case_ids) - 1][0]
             connection.execute(table_steps.insert().values(TEST_CASE_ID=int(test_sql_case_id),
                                                            STEP_NUMBER=str(step_number),
                                                            DESCRIPTION=test_steps[0],

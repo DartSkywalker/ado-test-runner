@@ -61,7 +61,7 @@ def get_test_suite_name_by_id(suite_id):
     return suite_name
 
 
-def get_test_cases_from_db_by_suite_name(test_suite_id):
+def get_test_cases_from_db_by_suite_id(test_suite_id):
     test_cases_list_db = connection.execute(select([table_cases.c.TEST_CASE_ADO_ID,
                                                     table_cases.c.TEST_CASE_NAME,
                                                     table_cases.c.STATUS,
@@ -182,6 +182,17 @@ def get_test_case_id_by_ado_id(suite_id, test_case_ado_id):
         return test_case_id
     except Exception as e:
         logger.critical("Test case: %s was not found in suite: %s" % (test_case_ado_id, suite_id))
+        logger.critical(e)
+        return False
+
+
+def get_test_case_ado_id_by_id(test_case_id):
+    try:
+        query = select([table_cases.c.TEST_CASE_ADO_ID]).where(table_cases.c.TEST_CASE_ID == test_case_id)
+        test_case_id = connection.execute(query).fetchone()[0]
+        return test_case_id
+    except Exception as e:
+        logger.critical("Test case: %s was not found in suite: %s" % (test_case_id))
         logger.critical(e)
         return False
 
@@ -481,3 +492,71 @@ def get_all_test_cases():
     tc_ado_id = [str(data[0]) for data in test_cases_db]
     tc_name = [str(data[1]) for data in test_cases_db]
     return dict(zip(tc_ado_id, tc_name))
+
+
+def create_suite(test_suite_name):
+    try:
+        g.user = current_user.get_id()
+        query = select([table_user.c.username]).where(table_user.c.id == g.user)
+        user = connection.execute(query).fetchall()
+
+        connection.execute(table_suites.insert().values(TEST_SUITE_NAME=test_suite_name,
+                                                        CREATED_BY=str(user[0][0])))
+
+        test_suite_ids = connection.execute(select([table_suites.c.TEST_SUITE_ID])
+            .where(
+            table_suites.c.TEST_SUITE_NAME == str(test_suite_name))).fetchall()
+        test_suite_id = test_suite_ids[len(test_suite_ids) - 1][0]
+        print(test_suite_id)
+        return test_suite_id
+    except Exception as e:
+        logger.critical(e)
+        return False
+# create_suite("source_suite")
+
+
+def add_test_case_to_the_suite(test_suite_id, test_case_id):
+    try:
+        test_suite_name = get_test_suite_name_by_id(test_suite_id)
+        test_case_ado_id = get_test_case_ado_id_by_id(test_case_id)
+        test_case_name = get_test_case_name_by_id(test_case_id)
+        test_case_steps = get_test_case_steps_by_id(test_case_id)
+
+        logger.debug("Test case: " + str(test_case_name))
+
+        connection.execute(table_cases.insert().values(TEST_SUITE_ID=str(test_suite_id),
+                                                       TEST_CASE_ADO_ID=str(test_case_ado_id),
+                                                       TEST_CASE_NAME=str(test_case_name),
+                                                       STATUS='Ready'))
+        for test_steps in test_case_steps:
+            test_sql_case_ids = connection.execute(select([table_cases.c.TEST_CASE_ID])
+                                                   .where(table_cases.c.TEST_CASE_ADO_ID == test_case_ado_id)).fetchall()
+            test_sql_case_id = sorted(test_sql_case_ids)[len(test_sql_case_ids) - 1][0]
+            # print(test_sql_case_id)
+            connection.execute(table_steps.insert().values(TEST_CASE_ID=int(test_sql_case_id),
+                                                           STEP_NUMBER=str(test_steps[0]),
+                                                           DESCRIPTION=test_steps[1],
+                                                           EXPECTED_RESULT=test_steps[2]))
+        logger.info(f"'{test_case_name}' was successfully added to the test suite '{test_suite_name}'")
+        return True
+    except Exception as e:
+        logger.critical(e)
+        return False
+# add_test_case_to_the_suite(31,202)
+
+
+def copy_test_cases_from_existing_suite(source_suite_id, target_suite_id):
+    try:
+        source_suite_name = get_test_suite_name_by_id(source_suite_id)
+        list_of_test_cases = get_test_cases_from_db_by_suite_id(source_suite_id)
+        for test_case in list_of_test_cases:
+            add_test_case_to_the_suite(target_suite_id, get_test_case_id_by_ado_id(source_suite_id, test_case))
+        return True
+    except Exception as e:
+        logger.critical(e)
+        return False
+# copy_test_cases_from_existing_suite(31,32)
+
+# TODO
+def update_test_case_to_the_latest_revision(test_case_id):
+    pass
