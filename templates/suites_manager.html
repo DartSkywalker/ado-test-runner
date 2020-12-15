@@ -76,7 +76,8 @@
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
                     <a class="dropdown-item" data-toggle="modal" data-target="#addFromAdoQuery">📡️ &nbsp;From ADO
                         Query</a>
-                    <a class="dropdown-item" data-toggle="modal" data-target="#createEmptySuite" href="">🕳 &nbsp;Empty Suite</a>
+                    <a class="dropdown-item" data-toggle="modal" data-target="#createEmptySuite" href="">🕳 &nbsp;Empty
+                        Suite</a>
                     <a class="dropdown-item" href="">📑 &nbsp;From Existing Suite</a>
                 </div>
             </li>
@@ -120,7 +121,8 @@
                     </thead>
                     {% for tc_id, tc_name in all_cases_dict.items() %}
                         <tr>
-                            <td class="tc-id-checkbox"><input type="checkbox" class="add_to_suite_checkbox" value="{{ tc_name[1] }}"></td>
+                            <td class="tc-id-checkbox"><input type="checkbox" class="add_to_suite_checkbox"
+                                                              value="{{ tc_name[1] }}"></td>
                             <td>{{ tc_id }}</td>
                             <td>{{ tc_name[0] }}</td>
                         </tr>
@@ -157,7 +159,8 @@
                         </div>
                     </div>
                     <div class="col-12">
-                        <button class="align-self-end btn-index btn--radius-2 btn--blue" style="margin-left:50%; width: 220px;" type="submit" name="btn"
+                        <button class="align-self-end btn-index btn--radius-2 btn--blue"
+                                style="margin-left:50%; width: 220px;" type="submit" name="btn"
                                 id="addSuite" value="addSuite">Add Suite
                         </button>
                     </div>
@@ -185,12 +188,13 @@
                 <div class="row row-space">
                     <div class="col-12">
                         <div class="input-group">
-                            <input class="input--style-4 styled-input" type="text" name="query_id" id="query_id"
+                            <input class="input--style-4 styled-input" type="text" id="newSuiteName"
                                    placeholder="Test Suite Name">
                         </div>
                     </div>
                     <div class="col-12">
-                        <button class="align-self-end btn-index btn--radius-2 btn--blue" style="margin-left:65%; width: 150px;" type="submit" name="btn"
+                        <button class="align-self-end btn-index btn--radius-2 btn--blue"
+                                style="margin-left:65%; width: 150px;" type="submit" name="btn"
                                 id="createEmpty" value="createEmpty">Create
                         </button>
                     </div>
@@ -205,179 +209,177 @@
 </div>
 
 <div class="container-fluid">
-<div class="shifted-list">
-    <input type="text" id="search_input" onkeyup="searchTestCases('test_cases_table', 'search_input')"
-           placeholder="Search for Test Cases..">
+    <div class="shifted-list">
+        <input type="text" id="search_input" onkeyup="searchTestCases('test_cases_table', 'search_input')"
+               placeholder="Search for Test Cases..">
 
-    <table class="table mt-3" style="text-align: center;" id="test_cases_table">
-        <thead class="bg-primary font-weight-light" style="color: #ffffff;">
-        <tr>
-            <th scope="col">Use</th>
-            <th scope="col">ID</th>
-            <th scope="col">Test Case</th>
-        </tr>
-        </thead>
-        {#            {% for tc_id, tc_name in tc_data.items() %}#}
-        {#                <tr class="test_case_row">#}
-        {#                    <td><input type="checkbox" class="checked_tc" id="{{ tc_id }}"></td>#}
-        {#                    <td>{{ tc_id }}</td>#}
-        {#                    <td>{{ tc_name }}</td>#}
-        {#                </tr>#}
-        {#            {% endfor %}#}
-    </table>
-</div>
+        <table class="table mt-3" style="text-align: center;" id="test_cases_table">
+            <thead class="bg-primary font-weight-light" style="color: #ffffff;">
+            <tr>
+                <th scope="col">Use</th>
+                <th scope="col">ID</th>
+                <th scope="col">Test Case</th>
+            </tr>
+            </thead>
+            {#            {% for tc_id, tc_name in tc_data.items() %}#}
+            {#                <tr class="test_case_row">#}
+            {#                    <td><input type="checkbox" class="checked_tc" id="{{ tc_id }}"></td>#}
+            {#                    <td>{{ tc_id }}</td>#}
+            {#                    <td>{{ tc_name }}</td>#}
+            {#                </tr>#}
+            {#            {% endfor %}#}
+        </table>
+    </div>
 
-<script
-        src="https://code.jquery.com/jquery-3.5.1.min.js"
-        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
-        crossorigin="anonymous"></script>
-<script crossorigin="anonymous" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
-        src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-<script crossorigin="anonymous" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
-        src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script
+            src="https://code.jquery.com/jquery-3.5.1.min.js"
+            integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+            crossorigin="anonymous"></script>
+    <script crossorigin="anonymous" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+            src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+            src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-<script
-        src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
-        integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
-        crossorigin="anonymous"></script>
+    <script
+            src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+            integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+            crossorigin="anonymous"></script>
 
-<script src="../static/js/main.js"></script>
+    <script src="../static/js/main.js"></script>
 
-<script>
-    $(document).ready(function () {
-        let firstOptionSuiteId = $("#suites-selector option:first").val();
-        let testSuiteName = $("#suites-selector option:selected").text();
-        $.ajax({
-            url: "/get_suite_cases/" + firstOptionSuiteId,
-            type: 'GET'
-        }).done(function (responseData) {
-            dataObject = JSON.parse(responseData);
-            testCasesData = dataObject['suite_cases'];
-            $('#test_cases_table tr.test_case_row').remove();
-            Object.keys(testCasesData).map(function (tc_id, index) {
-                var value = testCasesData[tc_id];
-                $('#test_cases_table thead:last').after('<tr class="test_case_row">' +
-                    '<td><input type="checkbox" class="checked_tc" id="' + tc_id + '"></td>' +
-                    '<td>' + tc_id + '</td>' +
-                    '<td>' + value[0] + '</td>' +
-                    '</tr>');
-            });
-            $('#addToSuiteLabel').text('Add to ' + testSuiteName);
-        }).fail(function () {
-            console.log('Failed');
-            alert("Cannot test cases for suiteId" + firstOptionSuiteId + ". Internal Server Error");
-        });
-    });
-</script>
-<script>
-    $(document).ready(function () {
-        $("#addSuite").click(function () {
-            let queryId = $('#query_id').val();
-            $(this).html(
-                `<span class="spinner-border" role="status" aria-hidden="true"></span> Processing...`
-            );
+    <script>
+        $(document).ready(function () {
+            let firstOptionSuiteId = $("#suites-selector option:first").val();
+            let testSuiteName = $("#suites-selector option:selected").text();
             $.ajax({
-                url: '/add_test_suite_by_query_id/' + queryId,
-                type: 'GET',
-                contentType: 'application/json'
+                url: "/get_suite_cases/" + firstOptionSuiteId,
+                type: 'GET'
             }).done(function (responseData) {
-                location.reload();
+                dataObject = JSON.parse(responseData);
+                testCasesData = dataObject['suite_cases'];
+                $('#test_cases_table tr.test_case_row').remove();
+                Object.keys(testCasesData).map(function (tc_id, index) {
+                    var value = testCasesData[tc_id];
+                    $('#test_cases_table thead:last').after('<tr class="test_case_row">' +
+                        '<td><input type="checkbox" class="checked_tc" id="' + tc_id + '"></td>' +
+                        '<td>' + tc_id + '</td>' +
+                        '<td>' + value[0] + '</td>' +
+                        '</tr>');
+                });
+                $('#addToSuiteLabel').text('Add to ' + testSuiteName);
             }).fail(function () {
-                alert('Access denied. Please check your ADO Token');
-                location.reload();
+                console.log('Failed');
+                alert("Cannot test cases for suiteId" + firstOptionSuiteId + ". Internal Server Error");
             });
-        })
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $("#addSuite").click(function () {
+                let queryId = $('#query_id').val();
+                $(this).html(
+                    `<span class="spinner-border" role="status" aria-hidden="true"></span> Processing...`
+                );
+                $.ajax({
+                    url: '/add_test_suite_by_query_id/' + queryId,
+                    type: 'GET',
+                    contentType: 'application/json'
+                }).done(function (responseData) {
+                    location.reload();
+                }).fail(function () {
+                    alert('Access denied. Please check your ADO Token');
+                    location.reload();
+                });
+            })
 
 
         });
 
-</script>
+    </script>
 
 
+    <script>
+        function searchTestCases(tableId, inputId) {
+            // Declare variables
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById(inputId);
+            filter = input.value.toUpperCase();
+            table = document.getElementById(tableId);
+            tr = table.getElementsByTagName("tr");
 
-<script>
-    function searchTestCases(tableId, inputId) {
-        // Declare variables
-        var input, filter, table, tr, td, i, txtValue;
-        input = document.getElementById(inputId);
-        filter = input.value.toUpperCase();
-        table = document.getElementById(tableId);
-        tr = table.getElementsByTagName("tr");
-
-        // Loop through all table rows, and hide those who don't match the search query
-        for (i = 0; i < tr.length; i++) {
-            td = tr[i].getElementsByTagName("td")[2];
-            if (td) {
-                txtValue = td.textContent || td.innerText;
-                if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                    tr[i].style.display = "";
-                } else {
-                    tr[i].style.display = "none";
+            // Loop through all table rows, and hide those who don't match the search query
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[2];
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
                 }
             }
         }
-    }
-</script>
+    </script>
 
 
+    <script>
+        $('#suites-selector').on('change', function () {
+            let testSuiteId = $(this).val()
+            let testSuiteName = $("#suites-selector option:selected").text();
+            $.ajax({
+                url: "/get_suite_cases/" + testSuiteId,
+                type: 'GET'
+            }).done(function (responseData) {
+                dataObject = JSON.parse(responseData);
+                testCasesData = dataObject['suite_cases'];
+                $('#test_cases_table tr.test_case_row').remove();
+                Object.keys(testCasesData).map(function (tc_id, index) {
+                    var value = testCasesData[tc_id];
+                    $('#test_cases_table thead:last').after('<tr class="test_case_row">' +
+                        '<td class="check-container"><input type="checkbox" class="check-row" id="' + tc_id + '"></td>' +
+                        '<td class="tcid">' + tc_id + '</td>' +
+                        '<td>' + value[0] + '</td>' +
+                        '</tr>');
+                });
+                $('#addToSuiteLabel').text('Add to ' + testSuiteName);
 
-<script>
-    $('#suites-selector').on('change', function () {
-        let testSuiteId = $(this).val()
-        let testSuiteName = $("#suites-selector option:selected").text();
-        $.ajax({
-            url: "/get_suite_cases/" + testSuiteId,
-            type: 'GET'
-        }).done(function (responseData) {
-            dataObject = JSON.parse(responseData);
-            testCasesData = dataObject['suite_cases'];
-            $('#test_cases_table tr.test_case_row').remove();
-            Object.keys(testCasesData).map(function (tc_id, index) {
-                var value = testCasesData[tc_id];
-                $('#test_cases_table thead:last').after('<tr class="test_case_row">' +
-                    '<td class="check-container"><input type="checkbox" class="check-row" id="' + tc_id + '"></td>' +
-                    '<td class="tcid">' + tc_id + '</td>' +
-                    '<td>' + value[0] + '</td>' +
-                    '</tr>');
+            }).fail(function () {
+                console.log('Failed');
+                alert("Cannot test cases for suiteId" + testSuiteId + ". Internal Server Error");
             });
-            $('#addToSuiteLabel').text('Add to ' + testSuiteName);
-
-        }).fail(function () {
-            console.log('Failed');
-            alert("Cannot test cases for suiteId" + testSuiteId + ". Internal Server Error");
         });
-    });
-</script>
-<script>
-    $('#test_cases_table').on("change", "input[type=\"checkbox\"]", function () {
-        if ($(this).closest('tr').hasClass('active')) {
-            $(this).closest('tr').removeClass('active')
-        } else {
-            $(this).closest('tr').addClass('active')
-        }
-    });
-    $('#allCasesTable').on("change", "input[type=\"checkbox\"]", function () {
-        if ($(this).closest('tr').hasClass('active')) {
-            $(this).closest('tr').removeClass('active')
-        } else {
-            $(this).closest('tr').addClass('active')
-        }
-    });
-</script>
-
-
-<script>
-    $('#SaveToSuite').on('click', function (e) {
-        let tcIds = [];
-        let suiteId = $('#suites-selector').val();
-        $("#allCasesTable tr.active").each(function () {
-            tcIds.push($(this).find('td.tc-id-checkbox').find('input').val())
+    </script>
+    <script>
+        $('#test_cases_table').on("change", "input[type=\"checkbox\"]", function () {
+            if ($(this).closest('tr').hasClass('active')) {
+                $(this).closest('tr').removeClass('active')
+            } else {
+                $(this).closest('tr').addClass('active')
+            }
         });
-        let updateData = {
-            suiteId: suiteId,
-            tcIds: tcIds
-        }
-        $.ajax({
+        $('#allCasesTable').on("change", "input[type=\"checkbox\"]", function () {
+            if ($(this).closest('tr').hasClass('active')) {
+                $(this).closest('tr').removeClass('active')
+            } else {
+                $(this).closest('tr').addClass('active')
+            }
+        });
+    </script>
+
+
+    <script>
+        $('#SaveToSuite').on('click', function (e) {
+            let tcIds = [];
+            let suiteId = $('#suites-selector').val();
+            $("#allCasesTable tr.active").each(function () {
+                tcIds.push($(this).find('td.tc-id-checkbox').find('input').val())
+            });
+            let updateData = {
+                suiteId: suiteId,
+                tcIds: tcIds
+            }
+            $.ajax({
                 url: '/add_cases_to_suite/',
                 data: JSON.stringify(updateData),
                 type: 'POST',
@@ -388,39 +390,80 @@
             }).fail(function () {
                 alert('Cannot insert test cases into the suite. Internal Server Error');
             });
-    });
-</script>
-
-
-<script>
-    $("#deleteCaseFromSuite").on('click', function (e) {
-        let tcsIdsToDelete = [];
-        let tcsNamesToDelete = [];
-        let suiteId = $('#suites-selector').val();
-        $("#test_cases_table tr.active").each(function () {
-            var testCaseId = $(this).closest('tr').find('td.tcid').text().trim();
-            var tcsName = $(this).closest('tr').find('td:nth-child(3)').text().trim();
-            tcsIdsToDelete.push(testCaseId);
-            tcsNamesToDelete.push(tcsName);
         });
-        if (confirm("Do you really want to delete following test cases from the suite?\n" + tcsNamesToDelete.join("\n"))) {
-            let tcsToRemove = {ado_ids: tcsIdsToDelete}
+    </script>
+
+
+    <script>
+        $("#deleteCaseFromSuite").on('click', function (e) {
+            let tcsIdsToDelete = [];
+            let tcsNamesToDelete = [];
+            let suiteId = $('#suites-selector').val();
+            $("#test_cases_table tr.active").each(function () {
+                var testCaseId = $(this).closest('tr').find('td.tcid').text().trim();
+                var tcsName = $(this).closest('tr').find('td:nth-child(3)').text().trim();
+                tcsIdsToDelete.push(testCaseId);
+                tcsNamesToDelete.push(tcsName);
+            });
+            if (confirm("Do you really want to delete following test cases from the suite?\n" + tcsNamesToDelete.join("\n"))) {
+                let tcsToRemove = {ado_ids: tcsIdsToDelete}
+                $.ajax({
+                    url: '/delete_test_case/' + suiteId,
+                    data: JSON.stringify(tcsToRemove),
+                    type: 'POST',
+                    contentType: 'application/json'
+                }).done(function (responseData) {
+                    console.log('Done: ', responseData);
+                    $("#test_cases_table tr.active").each(function () {
+                        $(this).remove();
+                    });
+                }).fail(function () {
+                    alert('Cannot delete the test case. Only managers allowed to remove test cases from suites.');
+                });
+            }
+        });
+    </script>
+
+    <script>
+        $("#createEmpty").on('click', function (e) {
+            let suiteName = $("#newSuiteName").val()
+            objToCreate = {suiteName: suiteName}
             $.ajax({
-                url: '/delete_test_case/' + suiteId,
-                data: JSON.stringify(tcsToRemove),
+                url: '/create_empty_suite/',
+                data: JSON.stringify(objToCreate),
                 type: 'POST',
                 contentType: 'application/json'
             }).done(function (responseData) {
                 console.log('Done: ', responseData);
-                $("#test_cases_table tr.active").each(function () {
-                    $(this).remove();
+                $.ajax({
+                    url: '/get_suites_dict/',
+                    type: 'GET',
+                    contentType: 'application/json'
+                }).done(function (responseData) {
+                    console.log('Done: ', responseData);
+                    let data_obj = jQuery.parseJSON(responseData)
+                    let suites_obj = data_obj['suites']
+                    $('#suites-selector > option').remove();
+                    Object.keys(suites_obj).map(function (suite_id, index) {
+                        var suiteName = suites_obj[suite_id];
+                        $('#suites-selector')
+                            .append($("<option></option>")
+                                .attr("value", suite_id)
+                                .text(suiteName));
+                    });
+                    $("#suites-selector option").filter(function() {
+                          return $(this).text() === suiteName;
+                        }).prop('selected', true);
+                    $('#test_cases_table tr.test_case_row').remove();
+
+                }).fail(function () {
+                    alert('Cannot update suites dropdown. Please, reload the page');
                 });
             }).fail(function () {
-                alert('Cannot delete the test case. Only managers allowed to remove test cases from suites.');
+                alert('Cannot create an empty suite. Internal Server Error');
             });
-        }
-    });
-</script>
+        });
+    </script>
 </div>
 </body>
 </html>

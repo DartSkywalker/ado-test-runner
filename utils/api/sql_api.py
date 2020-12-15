@@ -562,3 +562,4 @@ def copy_test_cases_from_existing_suite(source_suite_id, target_suite_id):
 # TODO
 def update_test_case_to_the_latest_revision(test_case_id):
     pass
+

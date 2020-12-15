@@ -341,3 +341,22 @@ def add_cases_to_suite():
 def get_test_cases_by_suite_id(suite_id):
     suite_cases = sql_api.get_test_cases_from_db_by_suite_id(suite_id)
     return json.dumps({'success': True, 'suite_cases': suite_cases}), 200, {'ContentType': 'application/json'}
+
+
+@main.route("/create_empty_suite/", methods=['POST'])
+@login_required
+def create_empty_suite_in_db():
+    data = request.get_json()
+    logger.warning(data)
+    if sql_api.create_suite(data['suiteName']):
+        return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+    else:
+        return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
+
+
+@main.route("/get_suites_dict/", methods=['GET'])
+@login_required
+def get_suites_dict_data():
+    suites_dict = sql_api.get_test_suites_from_database()
+    return json.dumps({'success': True, 'suites': suites_dict}), 200, {'ContentType': 'application/json'}
+
