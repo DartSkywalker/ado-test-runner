@@ -551,15 +551,14 @@ def add_test_case_to_the_suite(test_suite_id, test_case_id):
 
 def copy_test_cases_from_existing_suite(source_suite_id, target_suite_id):
     try:
-        source_suite_name = get_test_suite_name_by_id(source_suite_id)
         list_of_test_cases = get_test_cases_from_db_by_suite_id(source_suite_id)
         for test_case in list_of_test_cases:
-            add_test_case_to_the_suite(target_suite_id, get_test_case_id_by_ado_id(source_suite_id, test_case))
+            add_test_case_to_the_suite(target_suite_id, test_case)
         return True
     except Exception as e:
         logger.critical(e)
         return False
-# copy_test_cases_from_existing_suite(31,32)
+# copy_test_cases_from_existing_suite(23,35)
 
 
 # TODO
