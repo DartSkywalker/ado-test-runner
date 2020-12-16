@@ -228,14 +228,14 @@
                                     <option value="{{ suite_id }}">{{ suite_name }}</option>
                                 {% endfor %}
                             </select>
-                            <input class="input--style-4 styled-input" type="text" id="newSuiteName"
+                            <input class="input--style-4 styled-input" type="text" id="copyFromNewName"
                                    placeholder="Test Suite Name">
                         </div>
                     </div>
                     <div class="col-12">
                         <button class="align-self-end btn-index btn--radius-2 btn--blue"
                                 style="margin-left:65%; width: 150px;" type="submit" name="btn"
-                                id="createEmpty" value="createEmpty">Create
+                                id="createFromExisting" value="createFromExisting">Create
                         </button>
                     </div>
                 </div>
@@ -503,6 +503,25 @@
             }).fail(function () {
                 alert('Cannot create an empty suite. Internal Server Error');
             });
+        });
+    </script>
+    <script>
+        $("#createFromExisting").on('click', function (e) {
+            let copyFromSuiteId = $('#suites-selector-modal').val()
+            let newTestSuiteName = $('#copyFromNewName').val()
+            let objToSend = {newName: newTestSuiteName, targetSuiteId: copyFromSuiteId}
+            $.ajax({
+                url: '/create_suite_from_existing',
+                type: 'POST',
+                data: JSON.stringify(objToSend),
+                contentType: 'application/json'
+            }).done(function (responseData) {
+                console.log('Done: ', responseData);
+                location.reload();
+            }).fail(function () {
+                alert('Cannot copy the suite. Internal Server Error');
+            });
+
         });
     </script>
 </div>

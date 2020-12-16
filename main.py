@@ -360,3 +360,17 @@ def get_suites_dict_data():
     suites_dict = sql_api.get_test_suites_from_database()
     return json.dumps({'success': True, 'suites': suites_dict}), 200, {'ContentType': 'application/json'}
 
+
+@main.route("/create_suite_from_existing", methods=['POST'])
+@login_required
+def create_suite_from_existing():
+    data = request.get_json()
+    new_suite_name = data['newName']
+    suite_copy_from_id = data['targetSuiteId']
+    new_empty_suite_id = sql_api.create_suite(new_suite_name)
+    if new_empty_suite_id:
+        sql_api.copy_test_cases_from_existing_suite(suite_copy_from_id, new_empty_suite_id)
+        return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+    else:
+        return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
+
