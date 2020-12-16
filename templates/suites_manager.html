@@ -411,9 +411,13 @@
     <script>
         $('#SaveToSuite').on('click', function (e) {
             let tcIds = [];
+            let tcAdoIds = [];
+            let tcNames = [];
             let suiteId = $('#suites-selector').val();
             $("#allCasesTable tr.active").each(function () {
                 tcIds.push($(this).find('td.tc-id-checkbox').find('input').val())
+                tcAdoIds.push($(this).find('td:nth-child(2)').text())
+                tcNames.push($(this).find('td:nth-child(3)').text())
             });
             let updateData = {
                 suiteId: suiteId,
@@ -426,7 +430,13 @@
                 contentType: 'application/json'
             }).done(function (responseData) {
                 console.log('Done: ', responseData);
-                location.reload()
+                for (i = 0; i < tcNames.length; i++) {
+                    $('#test_cases_table thead:last').after('<tr class="test_case_row">' +
+                        '<td class="check-container"><input type="checkbox" class="check-row" id="' + tcAdoIds[i] + '"></td>' +
+                        '<td class="tcid">' + tcAdoIds[i] + '</td>' +
+                        '<td>' + tcNames[i] + '</td>' +
+                        '</tr>');
+                }
             }).fail(function () {
                 alert('Cannot insert test cases into the suite. Internal Server Error');
             });
