@@ -65,20 +65,22 @@ def get_test_cases_from_db_by_suite_id(test_suite_id):
     test_cases_list_db = connection.execute(select([table_cases.c.TEST_CASE_ADO_ID,
                                                     table_cases.c.TEST_CASE_NAME,
                                                     table_cases.c.STATUS,
-                                                    table_cases.c.EXECUTED_BY])
-        .order_by(desc(table_cases.c.TEST_CASE_ID)).where(
+                                                    table_cases.c.EXECUTED_BY,
+                                                    table_cases.c.TEST_CASE_ID])
+        .order_by((table_cases.c.TEST_CASE_ID)).where(
         table_cases.c.TEST_SUITE_ID == test_suite_id)).fetchall()
-    test_cases_id_list = [test_case[0] for test_case in test_cases_list_db]
+    test_cases_id_list = [test_case[4] for test_case in test_cases_list_db]
+    test_cases_ado_id_list = [test_case[0] for test_case in test_cases_list_db]
     test_cases_name_list = [test_case[1] for test_case in test_cases_list_db]
     test_cases_status = [test_case[2] for test_case in test_cases_list_db]
     test_cases_executed = [test_case[3] for test_case in test_cases_list_db]
     test_cases_link_list = ["https://dev.azure.com/HAL-LMKRD/RESDEV/_workitems/edit/" + str(tc_id) for tc_id in
-                            test_cases_id_list]
+                            test_cases_ado_id_list]
 
     test_case_dict = dict(zip(test_cases_id_list, zip(test_cases_name_list, test_cases_link_list,
-                                                      test_cases_status, test_cases_executed)))
+                                                          test_cases_status, test_cases_executed, test_cases_ado_id_list)))
     return test_case_dict
-
+# print(len(get_test_cases_from_db_by_suite_id(31)))
 
 # get_test_cases_from_db_by_suite_name('Velocity Test Cases')
 
@@ -558,6 +560,7 @@ def copy_test_cases_from_existing_suite(source_suite_id, target_suite_id):
         logger.critical(e)
         return False
 # copy_test_cases_from_existing_suite(31,32)
+
 
 # TODO
 def update_test_case_to_the_latest_revision(test_case_id):
