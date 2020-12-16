@@ -37,8 +37,11 @@ def set_user_for_test_case(suite_id, test_case_id):
 @main.route('/suites', methods=['GET'])
 @login_required
 def test_suites():
-    return render_template('index.html', test_suite_dict=sql_api.get_test_suites_from_database(),
-                           username=sql_api.get_current_user())
+    suites_list = sql_api.get_list_of_suites()
+    suite_info_dict = sql_api.get_test_suites_info()
+    _, suite_info_dict_detailed = sql_api.get_test_case_states_for_suites(suites_list)
+    return render_template("suite_list.html", username=sql_api.get_current_user(), suite_info=suite_info_dict,
+                           suite_info_detailed=suite_info_dict_detailed)
 
 
 @main.route('/suites', methods=['POST'])
@@ -150,14 +153,14 @@ def test_statistics(suite_id, test_case_id):
     return render_template("statistics.html", test_case_name=test_case_name)
 
 
-@main.route('/suitify')
-@login_required
-def suites_list():
-    suites_list = sql_api.get_list_of_suites()
-    suite_info_dict = sql_api.get_test_suites_info()
-    _, suite_info_dict_detailed = sql_api.get_test_case_states_for_suites(suites_list)
-    return render_template("suite_list.html", username=sql_api.get_current_user(), suite_info=suite_info_dict,
-                           suite_info_detailed=suite_info_dict_detailed)
+# @main.route('/suitify')
+# @login_required
+# def suites_list():
+#     suites_list = sql_api.get_list_of_suites()
+#     suite_info_dict = sql_api.get_test_suites_info()
+#     _, suite_info_dict_detailed = sql_api.get_test_case_states_for_suites(suites_list)
+#     return render_template("suite_list.html", username=sql_api.get_current_user(), suite_info=suite_info_dict,
+#                            suite_info_detailed=suite_info_dict_detailed)
 
 
 @main.route('/checkaccess/<test_case_id>', methods=['POST'])
