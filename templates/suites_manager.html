@@ -53,7 +53,7 @@
         <li class="nav-item active dropdown-selector">
             <select class="form-control" id="suites-selector">
                 {% for suite_id, suite_name in test_suite_dict.items() %}
-                    <option value="{{ suite_id }}">{{ suite_name }}</option>
+                    <option class="select-option" value="{{ suite_id }}">{{ suite_name }}</option>
                 {% endfor %}
             </select>
         </li>

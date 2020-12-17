@@ -1229,11 +1229,16 @@ td.subtr {
 }
 
 #suites-selector {
-    background: #0878F8;
+    background: none;
     border: 0;
     color: #fff;
     border-bottom: 1px solid #fff;
     font-size: 14px;
+}
+
+.select-option {
+    background: #0878F8;
+    color: #fff;
 }
 
 .suite-create {
