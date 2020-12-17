@@ -199,7 +199,7 @@ $('#mt tr.clickable-row td:nth-child(2)').on('click', function (event) {
         $(this).closest('tr.clickable-row').addClass('active').siblings().removeClass('active');
     } else {
         $(this).closest('tr.clickable-row').addClass('active').siblings().removeClass('active');
-        $('#runCase').attr("href", window.location.href + "/" + $(this).closest('tr.clickable-row').children('td:first-child').text().trim())
+        $('#runCase').attr("href", window.location.href + "/" + $(this).closest('tr.clickable-row').children('td:first-child').children('a').attr('id'))
         $('.runTest').show();
         $('.statistics').show();
     }

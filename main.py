@@ -68,6 +68,7 @@ def add_test_suite():
 @login_required
 def test_cases_list(suite_id):
     test_cases_dict = sql_api.get_test_cases_from_db_by_suite_id(suite_id)
+    logger.warning(test_cases_dict)
     test_suite_name = sql_api.get_test_suite_name_by_id(suite_id)
     return render_template('test_cases_list.html', test_suite_name=test_suite_name, test_cases_dict=test_cases_dict,
                            username=sql_api.get_current_user(),
@@ -75,10 +76,10 @@ def test_cases_list(suite_id):
                            test_suite_id=suite_id)
 
 
-@main.route('/cases/<suite_id>/<test_case_ado_id>', methods=['GET', 'POST'])
+@main.route('/cases/<suite_id>/<test_case_id>', methods=['GET', 'POST'])
 @login_required
-def redirect_from_suite_to_run(suite_id, test_case_ado_id):
-    test_case_id = sql_api.get_test_case_id_by_ado_id(suite_id, test_case_ado_id)
+def redirect_from_suite_to_run(suite_id, test_case_id):
+    # test_case_id = sql_api.get_test_case_id_by_ado_id(suite_id, test_case_ado_id)
     return redirect(url_for('main.test_run', test_suite_id=suite_id, test_case_id=test_case_id))
 
 

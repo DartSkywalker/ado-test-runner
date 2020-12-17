@@ -301,8 +301,8 @@
                 Object.keys(testCasesData).map(function (tc_id, index) {
                     var value = testCasesData[tc_id];
                     $('#test_cases_table thead:last').after('<tr class="test_case_row">' +
-                        '<td><input type="checkbox" class="checked_tc" id="' + tc_id + '"></td>' +
-                        '<td>' + tc_id + '</td>' +
+                        '<td><input type="checkbox" class="checked_tc" value="' + tc_id + '"></td>' +
+                        '<td class="tcid">' + value[4] + '</td>' +
                         '<td>' + value[0] + '</td>' +
                         '</tr>');
                 });
@@ -377,8 +377,8 @@
                 Object.keys(testCasesData).map(function (tc_id, index) {
                     var value = testCasesData[tc_id];
                     $('#test_cases_table thead:last').after('<tr class="test_case_row">' +
-                        '<td class="check-container"><input type="checkbox" class="check-row" id="' + tc_id + '"></td>' +
-                        '<td class="tcid">' + tc_id + '</td>' +
+                        '<td class="check-container"><input type="checkbox" class="check-row" value="' + tc_id + '"></td>' +
+                        '<td class="tcid">' + value[4] + '</td>' +
                         '<td>' + value[0] + '</td>' +
                         '</tr>');
                 });
