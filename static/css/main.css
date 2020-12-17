@@ -1229,8 +1229,9 @@ td.subtr {
 }
 
 #suites-selector {
-    background: none;
+    background: #0878F8;
     border: 0;
+    color: #fff;
     border-bottom: 1px solid #fff;
     font-size: 14px;
 }
