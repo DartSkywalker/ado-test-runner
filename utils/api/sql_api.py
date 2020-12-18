@@ -444,9 +444,9 @@ def get_suite_statistics_by_id(suite_id):
 
     tc_db_id = [str(data[6]) for data in test_cases_data]
 
-    suite_data_dict = dict(zip(tc_ado_id,
+    suite_data_dict = dict(zip(tc_db_id,
                                zip(tc_name, tc_state, tc_executed_by, tc_duration, tc_changed_date, tc_failure_details,
-                                   tc_db_id)))
+                                   tc_ado_id)))
     return suite_name, suite_data_dict
 
 

@@ -162,7 +162,7 @@
     <div class="topnav">
         <a class="active" href="#">TRunner</a>
         <a style="color: #fff">{{ suite_name }}</a>
-        <a href="{{ suite_id }}/download" style="color: #fff; padding-left: 60%;">Download HTML report</a>
+        <a href="{{ suite_id }}/download" style="color: #fff; padding-left: 50%;">Download HTML report</a>
     </div>
 
     <div class="statistics">
@@ -199,14 +199,14 @@
             <th scope="col">Date</th>
         </tr>
         </thead>
-        {% for ado_id, tc_data in suite_data.items() %}
+        {% for tc_id, tc_data in suite_data.items() %}
             <tr class="clickable-row">
                 <td class="tcid">
                     <a class="text-dark"
-                       href="https://dev.azure.com/HAL-LMKRD/RESDEV/_workitems/edit/{{ ado_id }}">{{ ado_id }}</a>
+                       href="https://dev.azure.com/HAL-LMKRD/RESDEV/_workitems/edit/{{ tc_data[6] }}">{{ tc_data[6] }}</a>
                 </td>
                 <td>
-                    <p class="text-dark"><a href="/run/{{ suite_id }}/{{ tc_data[6] }}">{{ tc_data[0] }}</a></p>
+                    <p class="text-dark"><a href="/run/{{ suite_id }}/{{ tc_id }}">{{ tc_data[0] }}</a></p>
                 </td>
                 <td width="160px" class="testCaseState clickable-row accordion-toggle" data-toggle="collapse" data-target="#failed_{{ ado_id }}">
                     <p class="text-dark">
