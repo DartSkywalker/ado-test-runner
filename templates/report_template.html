@@ -209,7 +209,7 @@
                        href="https://dev.azure.com/HAL-LMKRD/RESDEV/_workitems/edit/{{ tc_data[6] }}">{{ tc_data[6] }}</a>
                 </td>
                 <td>
-                    <p class="text-dark"><a href="/run/{{ suite_id }}/{{ tc_id }}">{{ tc_data[0] }}</a></p>
+                    <p class="text-dark clickable-row accordion-toggle" data-toggle="collapse" data-target="#failed_{{ tc_id }}">{{ tc_data[0] }}</p>
                 </td>
                 <td width="160px" class="testCaseState clickable-row accordion-toggle" data-toggle="collapse" data-target="#failed_{{ tc_id }}">
                     <p class="text-dark">
