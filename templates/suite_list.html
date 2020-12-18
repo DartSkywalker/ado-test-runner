@@ -10,6 +10,7 @@
     <title>Suites Info</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="icon" type="image/png" href="css/favicon.ico"/>
 
 
     <!-- Icons font CSS-->
@@ -37,10 +38,10 @@
     </button>
     <ul class="navbar-nav">
         <li class="nav-item active">
-            <a class="nav-link" href="/suites">Add Suite<span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="/suites">Test Suites<span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item active">
-            <a class="nav-link" href="/suitify">Available Suites<span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="/suites_manager">Suite Manager<span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item active">
             <a class="nav-link" href="/about">About<span class="sr-only">(current)</span></a>
@@ -238,7 +239,7 @@ $(".custom-menu li").click(function(){
                 window.open('/deletesuite/' + suiteId);
             }
         break;
-        case "create-suite": alert("We are working hard on implementing this..."); break;
+        case "create-suite": window.open('/suite_creator'); break;
         case "ado-export": alert("We are working hard on implementing this..."); break;
     }
 

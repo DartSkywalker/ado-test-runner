@@ -3,7 +3,7 @@
 
 $('[data-toggle="popover"]').popover()
 
-$('#statCase').on('click', function (e) {
+$('#statCase, .show_stat_mb3').on('click', function showCaseStatistics(e) {
     //Load data for statistics
     let runDate;
     let duration;
@@ -40,8 +40,23 @@ $('#statCase').on('click', function (e) {
 
                         if (testResult === 'Passed') {
                             testResult = "✅ &nbsp;Passed"
-                            $('#statTable > tbody:last-child').append('<tr><td>' + suiteName + '</td><td>' + tester + '</td><td>' + testResult + '</td>' +
+                            failureStepNum = failureDetails[0];
+                            failureStepComment = failureDetails[1];
+
+                            let dataStr = "";
+                            for (let i=0;i < failureStepNum.length; i++) {
+                                dataStr += '<p><b>Step #:</b>'+failureStepNum[i]+'<br\><b>Comment: </b>'+failureStepComment[i] + '</p>'
+                            }
+
+                            $('#statTable > tbody:last-child').append('<tr class="failure-row"><td>' + suiteName + '</td><td>' + tester + '</td><td>'
+                                +
+                                '<span data-trigger="hover" data-html="true" data-toggle="popover" title="Failed steps" data-content="'
+                                +dataStr+'">' +
+                                ''+testResult+'</span>\n'
+                                +
+                                '</td>' +
                                 '<td>' + new Date(duration * 1000).toISOString().substr(11, 8) + '</td><td>' + runDate + '</td></tr>');
+                                $('[data-toggle="popover"]').popover()
                         } else if (testResult === 'Failed') {
                             testResult = "❌ &nbsp;Failed"
 
@@ -55,7 +70,7 @@ $('#statCase').on('click', function (e) {
 
                             $('#statTable > tbody:last-child').append('<tr class="failure-row"><td>' + suiteName + '</td><td>' + tester + '</td><td>'
                                 +
-                                '<span data-trigger="hover" data-html="true" data-toggle="popover" title="Failure details" data-content="'
+                                '<span data-trigger="hover" data-html="true" data-toggle="popover" title="Failed steps" data-content="'
                                 +dataStr+'">' +
                                 ''+testResult+'</span>\n'
                                 +
@@ -68,10 +83,43 @@ $('#statCase').on('click', function (e) {
 
                         } else if (testResult === 'Blocked') {
                             testResult = "🚫 &nbsp;Blocked"
-                            $('#statTable > tbody:last-child').append('<tr><td>' + suiteName + '</td><td>' + tester + '</td><td>' + testResult + '</td>' +
-                                '<td>' + new Date(duration * 1000).toISOString().substr(11, 8) + '</td><td>' + runDate + '</td></tr>');
-                        }
+                            failureStepNum = failureDetails[0];
+                            failureStepComment = failureDetails[1];
 
+                            let dataStr = "";
+                            for (let i=0;i < failureStepNum.length; i++) {
+                                dataStr += '<p><b>Step #:</b>'+failureStepNum[i]+'<br\><b>Comment: </b>'+failureStepComment[i] + '</p>'
+                            }
+
+                            $('#statTable > tbody:last-child').append('<tr class="failure-row"><td>' + suiteName + '</td><td>' + tester + '</td><td>'
+                                +
+                                '<span data-trigger="hover" data-html="true" data-toggle="popover" title="Failed steps" data-content="'
+                                +dataStr+'">' +
+                                ''+testResult+'</span>\n'
+                                +
+                                '</td>' +
+                                '<td>' + new Date(duration * 1000).toISOString().substr(11, 8) + '</td><td>' + runDate + '</td></tr>');
+                                $('[data-toggle="popover"]').popover()
+                        } else if (testResult === 'Pause') {
+                            testResult = "⏸ &nbsp;Pause"
+                            failureStepNum = failureDetails[0];
+                            failureStepComment = failureDetails[1];
+
+                            let dataStr = "";
+                            for (let i=0;i < failureStepNum.length; i++) {
+                                dataStr += '<p><b>Step #:</b>'+failureStepNum[i]+'<br\><b>Comment: </b>'+failureStepComment[i] + '</p>'
+                            }
+
+                            $('#statTable > tbody:last-child').append('<tr class="failure-row"><td>' + suiteName + '</td><td>' + tester + '</td><td>'
+                                +
+                                '<span data-trigger="hover" data-html="true" data-toggle="popover" title="Failed steps" data-content="'
+                                +dataStr+'">' +
+                                ''+testResult+'</span>\n'
+                                +
+                                '</td>' +
+                                '<td>' + new Date(duration * 1000).toISOString().substr(11, 8) + '</td><td>' + runDate + '</td></tr>');
+                                $('[data-toggle="popover"]').popover()
+                            }
                     }
                 }
             }).fail(function () {
@@ -144,21 +192,21 @@ $(document).ready(function () {
 
 $('#mt tr.clickable-row td:nth-child(2)').on('click', function (event) {
     if (event.altKey) {
-
         $(this).closest('tr.clickable-row').addClass('active');
         $('.runTest').hide();
         $('.statistics').hide();
     } else if ($(this).closest('tr.clickable-row').hasClass('active')) {
-
+        $(this).closest('tr.clickable-row').addClass('active').siblings().removeClass('active');
     } else {
         $(this).closest('tr.clickable-row').addClass('active').siblings().removeClass('active');
-        $('#runCase').attr("href", window.location.href + "/" + $(this).closest('tr.clickable-row').children('td:first-child').text().trim())
+        $('#runCase').attr("href", window.location.href + "/" + $(this).closest('tr.clickable-row').children('td:first-child').children('a').attr('id'))
         $('.runTest').show();
         $('.statistics').show();
-
     }
 });
-
+$('body').on('dbclick', 'tr', function (event) {
+    alert('asd')
+});
 //--------------------------------------------------------------------------------------------
 //Signup
 $('.help-icon-reg').popover();
@@ -206,56 +254,5 @@ sign_in_btn.addEventListener("click", () => {
 //--------------------------------------------------------------------------------------------
 //Settings
 
-$("#save").on("click", function (e) {
-    e.preventDefault();
-    let token = $("#token").val();
-    $.ajax({
-        type: "POST",
-        url: "/settings",
-        data: JSON.stringify({token: token}),
-        contentType: 'application/json',
-        success: function (result) {
-            $("#saveSuccess").css('display', 'flex')
-            $("#saveSuccess").fadeOut(3000)
-        },
-        error: function (result) {
-            $("#saveFailed").css('display', 'flex')
-            $('#token').addClass('errorHighlight');
-            setTimeout(function () {
-                $('#token').removeClass('errorHighlight');
-            }, 3000);
-            $("#saveFailed").fadeOut(3000)
-        }
-    });
-});
-
-$(document).on('click', '#savePassword', function (e) {
-    e.preventDefault();
-    let newPass = $("#newPass").val();
-    let newPassConfirm = $("#newPassConfirm").val();
-
-    if (newPass === newPassConfirm) {
-        $.ajax({
-            type: "POST",
-            url: "/changepass",
-            data: JSON.stringify({newpass: newPass}),
-            contentType: 'application/json',
-            success: function (result) {
-                $("#saveSuccess").css('display', 'flex')
-                $("#saveSuccess").fadeOut(3000)
-            },
-            error: function (result) {
-                $("#saveFailed").css('display', 'flex')
-                $('#newPass').addClass('errorHighlight');
-                $('#newPassConfirm').addClass('errorHighlight');
-                setTimeout(function () {
-                    $('#newPassConfirm').removeClass('errorHighlight');
-                    $('#newPass').removeClass('errorHighlight');
-                }, 3000);
-                $("#saveFailed").fadeOut(3000)
-            }
-        });
-    }
-})
 
 //--------------------------------------------------------------------------------------------
