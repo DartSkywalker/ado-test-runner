@@ -254,56 +254,5 @@ sign_in_btn.addEventListener("click", () => {
 //--------------------------------------------------------------------------------------------
 //Settings
 
-$("#save").on("click", function (e) {
-    e.preventDefault();
-    let token = $("#token").val();
-    $.ajax({
-        type: "POST",
-        url: "/settings",
-        data: JSON.stringify({token: token}),
-        contentType: 'application/json',
-        success: function (result) {
-            $("#saveSuccess").css('display', 'flex')
-            $("#saveSuccess").fadeOut(3000)
-        },
-        error: function (result) {
-            $("#saveFailed").css('display', 'flex')
-            $('#token').addClass('errorHighlight');
-            setTimeout(function () {
-                $('#token').removeClass('errorHighlight');
-            }, 3000);
-            $("#saveFailed").fadeOut(3000)
-        }
-    });
-});
-
-$(document).on('click', '#savePassword', function (e) {
-    e.preventDefault();
-    let newPass = $("#newPass").val();
-    let newPassConfirm = $("#newPassConfirm").val();
-
-    if (newPass === newPassConfirm) {
-        $.ajax({
-            type: "POST",
-            url: "/changepass",
-            data: JSON.stringify({newpass: newPass}),
-            contentType: 'application/json',
-            success: function (result) {
-                $("#saveSuccess").css('display', 'flex')
-                $("#saveSuccess").fadeOut(3000)
-            },
-            error: function (result) {
-                $("#saveFailed").css('display', 'flex')
-                $('#newPass').addClass('errorHighlight');
-                $('#newPassConfirm').addClass('errorHighlight');
-                setTimeout(function () {
-                    $('#newPassConfirm').removeClass('errorHighlight');
-                    $('#newPass').removeClass('errorHighlight');
-                }, 3000);
-                $("#saveFailed").fadeOut(3000)
-            }
-        });
-    }
-})
 
 //--------------------------------------------------------------------------------------------
