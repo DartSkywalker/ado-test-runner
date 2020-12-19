@@ -195,6 +195,20 @@ $('#mt tr.clickable-row td:nth-child(2)').on('click', function (event) {
         $(this).closest('tr.clickable-row').addClass('active');
         $('.runTest').hide();
         $('.statistics').hide();
+    } else if (event.shiftKey) {
+        document.getSelection().removeAllRanges();
+        let targetRowIndex = $(this).parent().index();
+        let activeRowIndex = $(document).find('tr.active').index();
+        let tableRows = $('tr.clickable-row', '#mt')
+        if (targetRowIndex > activeRowIndex) {
+            for (let i = activeRowIndex; i <= targetRowIndex; i++) {
+                $(tableRows[i]).addClass('active');
+            }
+        } else {
+            for (let i = targetRowIndex; i <= activeRowIndex; i++) {
+                $(tableRows[i]).addClass('active');
+            }
+        }
     } else if ($(this).closest('tr.clickable-row').hasClass('active')) {
         $(this).closest('tr.clickable-row').addClass('active').siblings().removeClass('active');
     } else {
