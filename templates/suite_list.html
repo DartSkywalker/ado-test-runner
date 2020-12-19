@@ -50,6 +50,13 @@
     <div class="navbar-collapse collapse  order-3 dual-collapse2">
         <ul class="navbar-nav ml-auto">
             <li class="nav-item dropdown">
+                <li class="nav-item active">
+                <a class="nav-link"><span class="help-icon" tabindex="0" data-toggle="popover" data-trigger="focus"
+                                                           data-content="🏃‍♀️ Test Runner: Click on a Suite name
+                                                                        <br />📈 Check Statistics: Expand rows by clicking on Passed/Failed/Blocked numbers
+                                                                        <br />📊️ Generate Report: MB3 -> Suite Report
+                                                                        <br />🗑 Delete Suite: MB3 -> Delete Suite" data-html="true"></span></a>
+            </li>
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Hello, {{ username }}
@@ -193,7 +200,7 @@
 <script>
     //--------------------------------------------------------------------------------------------
 //Suites statistics
-
+$('.help-icon').popover();
 let xCoord;
 let yCoord;
 let suiteId;
