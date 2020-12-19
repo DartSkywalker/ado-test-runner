@@ -152,10 +152,12 @@
             src="https://code.jquery.com/jquery-3.5.1.slim.js"
             integrity="sha256-DrT5NfxfbHvMHux31Lkhxg42LY6of8TaYyK50jnxRnM="
             crossorigin="anonymous"></script>
-            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script crossorigin="anonymous" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
-        src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+            src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.7.0"></script>
+
 
 </head>
 <body>
@@ -209,14 +211,16 @@
                        href="https://dev.azure.com/HAL-LMKRD/RESDEV/_workitems/edit/{{ tc_data[6] }}">{{ tc_data[6] }}</a>
                 </td>
                 <td>
-                    <p class="text-dark clickable-row accordion-toggle" data-toggle="collapse" data-target="#failed_{{ tc_id }}">{{ tc_data[0] }}</p>
+                    <p class="text-dark clickable-row accordion-toggle" data-toggle="collapse"
+                       data-target="#failed_{{ tc_id }}">{{ tc_data[0] }}</p>
                 </td>
-                <td width="160px" class="testCaseState clickable-row accordion-toggle" data-toggle="collapse" data-target="#failed_{{ tc_id }}">
+                <td width="160px" class="testCaseState clickable-row accordion-toggle" data-toggle="collapse"
+                    data-target="#failed_{{ tc_id }}">
                     <p class="text-dark">
                         {{ tc_data[1] }}
                     </p>
                 </td>
-                <td >
+                <td>
                     <div class="centered">
                         <p class="text-dark">{{ tc_data[2] }}</p>
                     </div>
@@ -232,25 +236,30 @@
                     </div>
                 </td>
             </tr>
-{#            {% if tc_data[1] == '❌ \xa0Failed' %}#}
-                {% for i in range(0, tc_data[5][0][0]|length) %}
+            {#            {% if tc_data[1] == '❌ \xa0Failed' %}#}
+            {% for i in range(0, tc_data[5][0][0]|length) %}
                 <tr>
 
-                    <td class="subtr hiddenRow" style="background-color: rgb(255,230,230); border-top: 2px solid #ff0000; vertical-align: top;">
-                        <div class="accordian-body collapse" style="text-align: center;" id="failed_{{ tc_id }}"><b>Step #: </b> {{ tc_data[5][0][0][i] }}</div>
+                    <td class="subtr hiddenRow"
+                        style="background-color: rgb(255,230,230); border-top: 2px solid #ff0000; vertical-align: top;">
+                        <div class="accordian-body collapse" style="text-align: center;" id="failed_{{ tc_id }}"><b>Step
+                            #: </b> {{ tc_data[5][0][0][i] }}</div>
                     </td>
                     <td class="subtr hiddenRow" style="background-color: rgb(255,230,230);">
-                        <div class="accordian-body collapse" style="text-align: left; border-bottom: 1px solid black; padding-left: 20px" id="failed_{{ tc_id }}">
+                        <div class="accordian-body collapse"
+                             style="text-align: left; border-bottom: 1px solid black; padding-left: 20px"
+                             id="failed_{{ tc_id }}">
                             <p style="text-align: left; padding-bottom: 0"><b>Step action:</b></p>
-                            <p style="">{{ tc_data[5][0][1][i] | safe}}</p>
+                            <p style="">{{ tc_data[5][0][1][i] | safe }}</p>
                             <p style="text-align: left; padding-bottom: 0"><b>Comment:</b></p>
                             {{ tc_data[5][0][3][i] }}
                         </div>
                     </td>
                     <td class="subtr hiddenRow" style="background-color: rgb(255,230,230); vertical-align: top;">
-                        <div class="accordian-body collapse" style="text-align: left; padding-left: 5px" id="failed_{{ tc_id }}">
+                        <div class="accordian-body collapse" style="text-align: left; padding-left: 5px"
+                             id="failed_{{ tc_id }}">
                             <p style="text-align: left"><b>Expected Result:</b></p>
-                            <p style="">{{ tc_data[5][0][2][i] | safe}}</p>
+                            <p style="">{{ tc_data[5][0][2][i] | safe }}</p>
                         </div>
                     </td>
                     <td class="subtr hiddenRow">
@@ -264,14 +273,15 @@
                     </td>
                 </tr>
 
-                {% endfor %}
-{#            {% endif %}#}
+            {% endfor %}
+            {#            {% endif %}#}
         {% endfor %}
 
     </table>
 
     <div class="footer">
-        <p><a href="https://trunner.herokuapp.com/" class="footer-link" style="margin: 0; padding-left: 10px !important;"> TRunner</a> All rights reserved © 2021</p>
+        <p><a href="https://trunner.herokuapp.com/" class="footer-link"
+              style="margin: 0; padding-left: 10px !important;"> TRunner</a> All rights reserved © 2021</p>
     </div>
 </div>
 
@@ -327,6 +337,22 @@
             title: {
                 display: true,
                 text: 'Total Result'
+            },
+            tooltips: {
+                enabled: true
+            },
+            plugins: {
+                datalabels: {
+                    formatter: (value, ctx) => {
+                        let sum = 0;
+                        let dataArr = ctx.chart.data.datasets[0].data;
+                        dataArr.map(data => {
+                            sum += data;
+                        });
+                        return Math.round((value * 100 / sum).toFixed(2)) + "%";
+                    },
+                    color: '#fff',
+                }
             }
         }
     });
@@ -355,7 +381,23 @@
                 display: true,
                 text: 'Executed By'
             },
-            responsive: true
+            responsive: true,
+                        tooltips: {
+                enabled: true
+            },
+            plugins: {
+                datalabels: {
+                    formatter: (value, ctx) => {
+                        let sum = 0;
+                        let dataArr = ctx.chart.data.datasets[0].data;
+                        dataArr.map(data => {
+                            sum += data;
+                        });
+                        return Math.round((value * 100 / sum).toFixed(2)) + "%";
+                    },
+                    color: '#fff',
+                }
+            }
 
         }
     });
