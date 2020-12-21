@@ -137,7 +137,8 @@ def save_test_result(test_case_id):
 def test_run(test_suite_id, test_case_id):
     steps_data_list = sql_api.get_test_case_steps_by_id(test_case_id)
     test_case_name = sql_api.get_test_case_name_by_id(test_case_id)
-    return render_template("run.html", test_case_name=test_case_name, steps_data_list=steps_data_list)
+    ado_id = sql_api.get_test_case_ado_id_by_id(test_case_id)
+    return render_template("run.html", test_case_name=test_case_name, steps_data_list=steps_data_list, ado_id=ado_id)
 
 
 @main.route('/cases/<suite_id>/<test_case_ado_id>/stat', methods=['GET', 'POST'])
