@@ -98,3 +98,12 @@ def test_get_test_case_states_for_suites(connection):
     for key, value in result.items():
         assert isinstance(key, int)
         assert isinstance(value, dict)
+        for key_sub, value_sub in value.items():
+            assert isinstance(key_sub, str)
+            assert isinstance(value_sub, int)
+    for key, value in result_detailed.items():
+        assert isinstance(key, int)
+        assert isinstance(value, dict)
+        for key_sub, value_sub in value.items():
+            assert isinstance(key_sub, str)
+            assert isinstance(value_sub, list)
