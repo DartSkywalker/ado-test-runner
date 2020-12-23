@@ -379,3 +379,9 @@ def create_suite_from_existing():
     else:
         return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
 
+@main.route("/debug")
+@login_required
+def debug():
+    # sql_api.update_test_case_to_the_latest_revision(386)
+    logger.warning(sql_api.update_test_case_to_the_latest_revision(682))
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}

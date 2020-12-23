@@ -1,4 +1,6 @@
 import pytest
+
+import utils.api.sql_connection
 from ...utils.api import sql_api
 
 TEST_SUITE_ID = 7
@@ -9,7 +11,7 @@ TC_NAME = "New Model, Built/Unbuilt, In Memory, Saved to OW - session save resto
 
 @pytest.fixture(scope="session")
 def connection():
-    conn, meta = sql_api.sql_connection()
+    conn, meta = utils.api.sql_connection.sql_connection()
     return conn, meta
 
 

@@ -9,7 +9,8 @@ from sqlalchemy import select
 
 from . import ado_parser
 from .ado_api import get_test_cases_urls_by_query_id, get_query_name_by_query_id
-from .sql_api import table_user, table_suites, table_cases, table_steps, get_current_user, connection
+from .sql_api import get_current_user, connection
+from .sql_connection import table_user, table_suites, table_cases, table_steps
 from ..constants import HEADERS, get_ado_token_for_user
 
 

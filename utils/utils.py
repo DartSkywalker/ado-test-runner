@@ -4,7 +4,7 @@ import os
 import sys
 from sqlalchemy.sql import table, column, select, update, insert
 from sqlalchemy import Table, MetaData, create_engine, and_, desc, join
-from .api.sql_api import sql_connection
+from .api.sql_connection import sql_connection
 from werkzeug.security import generate_password_hash
 from loguru import logger
 import random

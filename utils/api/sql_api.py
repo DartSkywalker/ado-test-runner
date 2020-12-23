@@ -1,43 +1,15 @@
 import datetime
-import sqlite3
-from sqlite3.dbapi2 import Error
 
 from flask import g
 from flask_login import current_user
 
 from loguru import logger
-from sqlalchemy import create_engine, MetaData, Table, select, desc, and_, join
-from sqlalchemy.pool import SingletonThreadPool
+from sqlalchemy import Table, select, and_, join
 
-my_sql = 'mysql+mysqlconnector://user:user@localhost:3306/ado'
-postgres = 'postgresql+psycopg2://user:user@localhost:5432/ado'
+from . import ado_api
+from .sql_connection import connection, meta, sql_connection, table_user, table_suites, table_cases, table_steps
+from ..constants import WORKITEM_LINK
 
-
-def sql_connection():
-    engine = create_engine(postgres, echo=False, pool_recycle=2)
-    connection = engine.connect()
-    meta = MetaData()
-    meta.reflect(bind=engine)
-    return connection, meta
-
-
-def create_db_connection(db_file):
-    """
-    Create a database connection to a SQLite database
-    """
-    conn = None
-    try:
-        conn = sqlite3.connect(db_file)
-        return conn
-    except Error as e:
-        logger.critical(f"Cannot connect to {db_file} database")
-
-
-connection, meta = sql_connection()
-table_user = Table('user', meta)
-table_suites = Table('TEST_SUITES', meta)
-table_cases = Table('TEST_CASES', meta)
-table_steps = Table('TEST_STEPS', meta)
 
 
 def get_test_suites_from_database():
@@ -53,6 +25,7 @@ def get_test_suites_from_database():
     else:
         result = dict(zip(test_suites_ids, test_suite_names))
     return result
+
 
 
 def get_test_suite_name_by_id(suite_id):
@@ -194,7 +167,7 @@ def get_test_case_ado_id_by_id(test_case_id):
         test_case_id = connection.execute(query).fetchone()[0]
         return test_case_id
     except Exception as e:
-        logger.critical("Test case: %s was not found in suite: %s" % (test_case_id))
+        logger.critical(f"Test case: {test_case_id} was not found in suite")
         logger.critical(e)
         return False
 
@@ -534,7 +507,8 @@ def add_test_case_to_the_suite(test_suite_id, test_case_id):
                                                        STATUS='Ready'))
         for test_steps in test_case_steps:
             test_sql_case_ids = connection.execute(select([table_cases.c.TEST_CASE_ID])
-                                                   .where(table_cases.c.TEST_CASE_ADO_ID == test_case_ado_id)).fetchall()
+                                                   .where(
+                table_cases.c.TEST_CASE_ADO_ID == test_case_ado_id)).fetchall()
             test_sql_case_id = sorted(test_sql_case_ids)[len(test_sql_case_ids) - 1][0]
             # print(test_sql_case_id)
             connection.execute(table_steps.insert().values(TEST_CASE_ID=int(test_sql_case_id),
@@ -561,7 +535,39 @@ def copy_test_cases_from_existing_suite(source_suite_id, target_suite_id):
 # copy_test_cases_from_existing_suite(23,35)
 
 
-# TODO
 def update_test_case_to_the_latest_revision(test_case_id):
-    pass
+    try:
+        test_case_ado_id = get_test_case_ado_id_by_id(test_case_id)
+        url = WORKITEM_LINK + str(test_case_ado_id)
+        test_case_name = ado_api.get_test_case_name(test_case_ado_id)
+        test_case_steps_list = ado_api.get_test_case_steps_by_url(url)
+
+        suite_id = connection.execute(select([table_cases.c.TEST_SUITE_ID]).
+                                    where(table_cases.c.TEST_CASE_ID == test_case_id)).fetchone()[0]
+
+        delete_test_case_from_suite(suite_id, test_case_ado_id)
+
+
+        connection.execute(table_cases.insert().values(TEST_SUITE_ID=str(suite_id),
+                                                       TEST_CASE_ADO_ID=str(test_case_ado_id),
+                                                       TEST_CASE_NAME=str(test_case_name),
+                                                       STATUS='Ready'))
+
+        step_number = 1
+
+        for test_steps in test_case_steps_list:
+            test_sql_case_ids = connection.execute(select([table_cases.c.TEST_CASE_ID])
+                                                   .where(table_cases.c.TEST_CASE_ADO_ID == test_case_ado_id)).fetchall()
+            test_sql_case_id = sorted(test_sql_case_ids)[len(test_sql_case_ids) - 1][0]
+            connection.execute(table_steps.insert().values(TEST_CASE_ID=int(test_sql_case_id),
+                                                           STEP_NUMBER=str(step_number),
+                                                           DESCRIPTION=test_steps[0],
+                                                           EXPECTED_RESULT=test_steps[1]))
+            step_number += 1
+
+        return True
+    except Exception as e:
+        logger.critical(e)
+        return False
+# update_test_case_to_the_latest_revision(682)
 
