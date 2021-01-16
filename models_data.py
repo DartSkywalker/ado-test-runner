@@ -6,7 +6,8 @@ from sqlalchemy import MetaData, Table
 from sqlalchemy.sql import func
 import os
 
-postgres = os.environ['DATABASE_URL']
+# postgres = os.environ['DATABASE_URL']
+postgres = os.environ['DB_URL_EXTERNAL']
 
 engine = create_engine(postgres, echo=False)
 connection = engine.connect()

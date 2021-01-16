@@ -10,7 +10,8 @@ def create_app():
     app = Flask(__name__)
 
     app.config['SECRET_KEY'] = 'secret-key-goes-here'
-    postgres = os.environ['DATABASE_URL']
+    # postgres = os.environ['DATABASE_URL']
+    postgres = os.environ['DB_URL_EXTERNAL']
 
     app.config['SQLALCHEMY_DATABASE_URI'] = postgres
 

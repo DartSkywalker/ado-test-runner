@@ -12,7 +12,8 @@ import os
 
 
 my_sql = 'mysql+mysqlconnector://user:user@localhost:3306/ado'
-postgres = os.environ['DATABASE_URL']
+# postgres = os.environ['DATABASE_URL']
+postgres = os.environ['DB_URL_EXTERNAL']
 
 
 def sql_connection():
