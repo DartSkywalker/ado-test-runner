@@ -9,6 +9,7 @@
 
     <!-- Title Page-->
     <title>Settings</title>
+    <link rel="icon" type="image/png" href="css/favicon.ico"/>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -38,10 +39,10 @@
     </button>
     <ul class="navbar-nav">
         <li class="nav-item active">
-            <a class="nav-link" href="/suites">Add Suite<span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="/suites">Test Suites<span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item active">
-            <a class="nav-link" href="/suitify">Available Suites<span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="/suites_manager">Suite Manager<span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item active">
             <a class="nav-link" href="/about">About<span class="sr-only">(current)</span></a>
@@ -72,7 +73,7 @@
         <div class="card card-4">
             <div class="card-body">
                 <h2 class="title">{{ username }}'s profile settings</h2>
-                <form method="POST" name="saveTokenName">
+{#                <form method="POST" name="saveTokenName">#}
                     <div class="row row-space">
                         <div class="col-12">
                             <div class="input-group">
@@ -87,13 +88,13 @@
                     <div class="row row-space">
                         <div class="col-12">
                             <div style="align-content: center; text-align: center">
-                                <button class="btn btn-default btn--radius-2 btn--blue width-50" name="saveTokenName" id="save"
-                                        value="SaveToken">Update Token</button>
+                                <input class="btn btn-default btn--radius-2 btn--blue width-50" type="submit" name="saveTokenName" id="save"
+                                        value="Update Token">
                             </div>
                         </div>
                     </div>
 
-                </form>
+{#                </form>#}
 
                 <div class="change-pass-form">
 {#                    <form>#}
@@ -147,7 +148,64 @@
 <script crossorigin="anonymous" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
         src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-<script src="../static/js/main.js"></script>
+<script>
+    $("#save").on("click", function (e) {
+
+    e.preventDefault();
+    let token = $("#token").val();
+
+    $.ajax({
+        type: "POST",
+        url: "/settings",
+        data: JSON.stringify({token: token}),
+        contentType: 'application/json',
+        success: function (result) {
+            $("#saveSuccess").css('display', 'flex')
+            $("#saveSuccess").fadeOut(3000)
+        },
+        error: function (result) {
+            $("#saveFailed").css('display', 'flex')
+            $('#token').addClass('errorHighlight');
+            setTimeout(function () {
+                $('#token').removeClass('errorHighlight');
+            }, 3000);
+            $("#saveFailed").fadeOut(3000)
+        }
+    });
+});
+
+$(document).on('click', '#savePassword', function (e) {
+    e.preventDefault();
+    let newPass = $("#newPass").val();
+    let newPassConfirm = $("#newPassConfirm").val();
+
+    if (newPass === newPassConfirm) {
+        $.ajax({
+            type: "POST",
+            url: "/changepass",
+            data: JSON.stringify({newpass: newPass}),
+            contentType: 'application/json',
+            success: function (result) {
+                $("#saveSuccess").css('display', 'flex')
+                $("#saveSuccess").fadeOut(3000)
+            },
+            error: function (result) {
+                $("#saveFailed").css('display', 'flex')
+                $('#newPass').addClass('errorHighlight');
+                $('#newPassConfirm').addClass('errorHighlight');
+                setTimeout(function () {
+                    $('#newPassConfirm').removeClass('errorHighlight');
+                    $('#newPass').removeClass('errorHighlight');
+                }, 3000);
+                $("#saveFailed").fadeOut(3000)
+            }
+        });
+    } else {
+        alert('Passwords are not the same. Please, check your input.');
+    }
+})
+
+</script>
 
 </body>
 

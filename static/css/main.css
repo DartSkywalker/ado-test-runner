@@ -308,6 +308,22 @@ h6 {
     font-family: "Poppins", "Arial", "Helvetica Neue", sans-serif;
 }
 
+.btn-2 {
+    display: inline-block;
+    padding: 0;
+    margin-right: 50px;
+    height: 20px;
+    line-height: 20px;
+    -webkit-transition: all 0.4s ease;
+    -o-transition: all 0.4s ease;
+    -moz-transition: all 0.4s ease;
+    transition: all 0.4s ease;
+    cursor: pointer;
+    font-size: 14px;
+    color: #fff;
+    font-family: "Poppins", "Arial", "Helvetica Neue", sans-serif;
+}
+
 .btn-index {
     display: inline-block;
     line-height: 50px;
@@ -1005,6 +1021,7 @@ td.subtr {
 
 .statPopUp {
     position: absolute;
+    position: fixed;
     margin-top: 70px;
     padding: 0;
     max-width: 620px;
@@ -1173,4 +1190,83 @@ td.subtr {
 .popover p {
     margin-bottom: 5px;
     border-bottom: 1px solid #DEE2E6;
+}
+
+.assign-to-submenu {
+    display: none;
+    z-index: 1000;
+    position: absolute;
+    overflow: hidden;
+    border: 1px solid #CCC;
+    white-space: nowrap;
+    font-family: sans-serif;
+    background: #FFF;
+    color: #333;
+    border-radius: 5px;
+    padding: 0;
+}
+
+.assign-to-submenu li {
+    padding: 8px 12px;
+    cursor: pointer;
+    list-style-type: none;
+    transition: all .3s ease;
+    user-select: none;
+}
+
+.assign-to-submenu li:hover {
+    background-color: #DEF;
+}
+
+#search_input {
+    margin-top: 20px !important;
+    padding-left: 10px;
+    font-size: 16px;
+}
+
+.dropdown-selector {
+    padding-left: 15px;
+}
+
+#suites-selector {
+    background: none;
+    border: 0;
+    color: #fff;
+    border-bottom: 1px solid #fff;
+    font-size: 14px;
+}
+
+.select-option {
+    background: #0878F8;
+    color: #fff;
+}
+
+.suite-create {
+    color: #fff !important;
+    border-bottom: 1px solid #fff;
+    margin-right: 20px !important;
+    border-radius: 0.25rem;
+}
+
+.action-items {
+    margin-right: 25px;
+    border-bottom: 1px solid #fff;
+    border-radius: 0.25rem;
+}
+
+.styled-input {
+    border: none;
+    border-bottom: 2px solid #0878F8;
+    border-radius: 0;
+    box-shadow: none;
+    background: #fff;
+}
+
+.pretty-select {
+    margin-bottom: 10px !important;
+    border: none;
+    border-bottom: 2px solid #0878F8;
+    border-radius: 0;
+    box-shadow: none;
+    background: #fff;
 }
