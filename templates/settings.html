@@ -66,7 +66,7 @@
 
 
 <div id='saveSuccess' class="inner success-save-settings" style="display: none">Saved</div>
-<div id='saveFailed' class="inner failed-save-settings" style="display: none">Check your input</div>
+<div id='saveFailed' class="inner failed-save-settings" style="display: none">Please, double check your input</div>
 
 <div class="page-wrapper bg-gra-03 p-t-130 p-b-100 font-poppins">
     <div class="wrapper wrapper--w680">
@@ -103,7 +103,10 @@
                             <div class="col-12">
                                 <div class="input-group">
                                     <input class="input--style-4" maxlength="53" type="password"
-                                           placeholder="New Password" id="newPass" name="newPass" value="">
+                                           placeholder="Old Password" id="oldPass" name="oldPass" value="" style="margin-top: 10px;">
+
+                                    <input class="input--style-4" maxlength="53" type="password"
+                                           placeholder="New Password" id="newPass" name="newPass" value="" style="margin-top: 10px;">
 
                                     <input class="input--style-4" maxlength="53" type="password"
                                            placeholder="Confirm password" id="newPassConfirm" name="newPassConfirm" value=""
@@ -174,16 +177,18 @@
     });
 });
 
+
 $(document).on('click', '#savePassword', function (e) {
     e.preventDefault();
-    let newPass = $("#newPass").val();
-    let newPassConfirm = $("#newPassConfirm").val();
+    const oldPass = $("#oldPass").val();
+    const newPass = $("#newPass").val();
+    const newPassConfirm = $("#newPassConfirm").val();
 
     if (newPass === newPassConfirm) {
         $.ajax({
             type: "POST",
             url: "/changepass",
-            data: JSON.stringify({newpass: newPass}),
+            data: JSON.stringify({newpass: newPass, oldpass: oldPass}),
             contentType: 'application/json',
             success: function (result) {
                 $("#saveSuccess").css('display', 'flex')
@@ -193,9 +198,11 @@ $(document).on('click', '#savePassword', function (e) {
                 $("#saveFailed").css('display', 'flex')
                 $('#newPass').addClass('errorHighlight');
                 $('#newPassConfirm').addClass('errorHighlight');
+                $('#oldPass').addClass('errorHighlight');
                 setTimeout(function () {
                     $('#newPassConfirm').removeClass('errorHighlight');
                     $('#newPass').removeClass('errorHighlight');
+                    $('#oldPass').removeClass('errorHighlight');
                 }, 3000);
                 $("#saveFailed").fadeOut(3000)
             }

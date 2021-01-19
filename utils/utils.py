@@ -10,6 +10,7 @@ from loguru import logger
 import random
 import string
 from flask_login import current_user
+from werkzeug.security import check_password_hash
 
 
 
@@ -113,18 +114,21 @@ def set_new_user_role(user_id, new_role):
         return False
 
 
-def change_password_for_user(new_pass):
+def change_password_for_user(new_pass, old_pass):
     connection, meta = sql_connection()
     table_users = Table('user', meta)
     user_id = current_user.get_id()
-    new_pass_encrypted = generate_password_hash(new_pass, method='sha256')
-    try:
-        update_statement = table_users.update().where(table_users.c.id == int(user_id)) \
-            .values(password=str(new_pass_encrypted))
-        connection.execute(update_statement)
-        return True
-    except Exception as e:
-        logger.critical(e)
+    old_pass_db = connection.execute(select([table_users.c.password]).where(table_users.c.id == int(user_id))).fetchone()[0]
+    if check_password_hash(old_pass_db, old_pass):
+        new_pass_encrypted = generate_password_hash(new_pass, method='sha256')
+        try:
+            update_statement = table_users.update().where(table_users.c.id == int(user_id)) \
+                .values(password=str(new_pass_encrypted))
+            connection.execute(update_statement)
+            return True
+        except Exception as e:
+            logger.critical(e)
+            return False
+    else:
         return False
-
 

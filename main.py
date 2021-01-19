@@ -232,7 +232,7 @@ def change_user_role(user_id, new_role):
 @login_required
 def change_user_password():
     data = request.get_json()
-    if change_password_for_user(data['newpass']):
+    if change_password_for_user(data['newpass'], data['oldpass']):
         return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
     else:
         return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
