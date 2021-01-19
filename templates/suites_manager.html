@@ -8,7 +8,7 @@
 
 
     <!-- Title Page-->
-    <title>{{ test_suite_name }}</title>
+    <title>Suite Manager</title>
     <link rel="icon" type="image/png" href="css/favicon.ico"/>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -200,10 +200,8 @@
                         </button>
                     </div>
                 </div>
-
             </div>
             <div class="modal-footer">
-
             </div>
         </div>
     </div>
@@ -250,6 +248,11 @@
 
 
 <div class="container-fluid">
+    <ul class='custom-menu'>
+        <li data-action="update-revision">🔄 &nbsp;Update from ADO</li>
+        {#        <li data-action="ado-export">📦 &nbsp;Export to ADO</li>#}
+        <li data-action="delete-cases" class="upper-border">🗑 &nbsp;Delete Selected</li>
+    </ul>
     <div class="shifted-list">
         <input type="text" id="search_input" onkeyup="searchTestCases('test_cases_table', 'search_input')"
                placeholder="Search for Test Cases..">
@@ -262,13 +265,6 @@
                 <th scope="col">Test Case</th>
             </tr>
             </thead>
-            {#            {% for tc_id, tc_name in tc_data.items() %}#}
-            {#                <tr class="test_case_row">#}
-            {#                    <td><input type="checkbox" class="checked_tc" id="{{ tc_id }}"></td>#}
-            {#                    <td>{{ tc_id }}</td>#}
-            {#                    <td>{{ tc_name }}</td>#}
-            {#                </tr>#}
-            {#            {% endfor %}#}
         </table>
     </div>
 
@@ -287,6 +283,7 @@
             crossorigin="anonymous"></script>
 
     <script src="../static/js/main.js"></script>
+
 
     <script>
         $(document).ready(function () {
@@ -451,7 +448,7 @@
             let tcsNamesToDelete = [];
             let suiteId = $('#suites-selector').val();
             $("#test_cases_table tr.active").each(function () {
-                var testCaseId = $(this).closest('tr').find('td.tcid').text().trim();
+                var testCaseId = $(this).closest('tr').find('td:nth-child(1) input').val();
                 var tcsName = $(this).closest('tr').find('td:nth-child(3)').text().trim();
                 tcsIdsToDelete.push(testCaseId);
                 tcsNamesToDelete.push(tcsName);
@@ -532,6 +529,74 @@
                 alert('Cannot copy the suite. Internal Server Error');
             });
 
+        });
+    </script>
+
+    <script>
+        //--------------------------------------------------------------------------------------------
+        //Suites statistics
+        let xCoord;
+        let yCoord;
+        $(document).on("contextmenu", 'tr.test_case_row', function (event) {
+            // Avoid the real one
+            event.preventDefault();
+            // Show contextmenu
+            $(".custom-menu").finish().toggle(50).
+                // In the right position (the mouse)
+                css({
+                    top: event.pageY + "px",
+                    left: event.pageX + "px"
+                });
+        });
+        // If the document is clicked somewhere
+        $(document).bind("mousedown", function (e) {
+            if (!$(e.target).parents(".custom-menu").length > 0) {
+                $(".custom-menu").hide(50);
+            }
+        });
+
+        const getSelectedIds = function () {
+            let selectedIds = [];
+            {#let suiteId = $('#suites-selector').val();#}
+            $("#test_cases_table tr.active").each(function () {
+                var testCaseId = $(this).closest('tr').find('td:nth-child(1) input').val();
+                selectedIds.push(testCaseId);
+            });
+            return selectedIds;
+        }
+
+        const deleteTestCasesByIds = function (idsArr) {
+            let suiteId = $('#suites-selector').val();
+            let tcsToRemove = {ado_ids: idsArr}
+            $.ajax({
+                url: '/delete_test_case/' + suiteId,
+                data: JSON.stringify(tcsToRemove),
+                type: 'POST',
+                contentType: 'application/json'
+            }).done(function (responseData) {
+                console.log('Done: ', responseData);
+                $("#test_cases_table tr.active").each(function () {
+                    $(this).remove();
+                });
+            }).fail(function () {
+                alert('Cannot delete the test case. Only managers allowed to remove test cases from suites.');
+            });
+        }
+        // If the menu element is clicked
+        $(".custom-menu li").click(function () {
+            switch ($(this).attr("data-action")) {
+                // A case for each action. Your actions here
+                case "update-revision":
+                    alert('See this functionality in the next release :)')
+                    break;
+                case "delete-cases":
+                    let opt = confirm("Do you really want to delete selected Test Cases?");
+                    if (opt) deleteTestCasesByIds(getSelectedIds())
+                    break;
+            }
+
+            // Hide it AFTER the action was triggered
+            $(".custom-menu").hide(100);
         });
     </script>
 </div>

@@ -445,11 +445,11 @@ def delete_test_suite(suite_id):
         return False
 
 
-def delete_test_case_from_suite(suite_id, test_case_ado_id):
+def delete_test_case_from_suite(suite_id, tc_id):
     try:
-        tc_id = get_test_case_id_by_ado_id(suite_id, test_case_ado_id)
-        if tc_id == False:
-            return False
+        # tc_id = get_test_case_id_by_ado_id(suite_id, test_case_ado_id)
+        # if tc_id == False:
+        #     return False
 
         connection.execute(table_steps.delete().where(table_steps.c.TEST_CASE_ID == tc_id))
         connection.execute(table_cases.delete().where(table_cases.c.TEST_CASE_ID == tc_id))
