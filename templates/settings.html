@@ -164,7 +164,7 @@
         contentType: 'application/json',
         success: function (result) {
             $("#saveSuccess").css('display', 'flex')
-            $("#saveSuccess").fadeOut(3000)
+            $("#saveSuccess").fadeOut(6000)
         },
         error: function (result) {
             $("#saveFailed").css('display', 'flex')
@@ -172,7 +172,7 @@
             setTimeout(function () {
                 $('#token').removeClass('errorHighlight');
             }, 3000);
-            $("#saveFailed").fadeOut(3000)
+            $("#saveFailed").fadeOut(6000)
         }
     });
 });
