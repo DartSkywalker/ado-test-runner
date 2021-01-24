@@ -1345,3 +1345,21 @@ td.subtr {
 .popover__blocked:focus {
     outline-color: #000000;
 }
+
+.borderless td, .borderless th , .borderless tr, .borderless{
+    border-left: none;
+    border-right: none;
+    border-top: none
+}
+
+.fixed-table-container thead th .both {
+
+}
+
+.fixed-table-container thead th .asc {
+    background-image: url(asc.png);
+}
+
+.fixed-table-container thead th .desc {
+    background-image: url(desc.png);
+}

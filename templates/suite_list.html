@@ -27,6 +27,9 @@
     <!-- Main CSS-->
     <link href="/static/css/main.css" rel="stylesheet" media="all">
 
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.css">
+
+
 </head>
 <nav class="navbar navbar-dark bg-primary navbar-expand-lg">
     <a class="navbar-brand" href="/suites">
@@ -78,17 +81,17 @@
         <li data-action="delete-suite" class="upper-border">🗑 &nbsp;Delete Suite</li>
     </ul>
 
-    <table class="table mt-3 table-hover" style="text-align: center;" id="mt-statistic">
+    <table class="table mt-3 table-hover borderless" style="text-align: center;" id="mt-statistic" data-toggle="table">
         <thead class="bg-primary font-weight-light" style="color: #ffffff;">
         <tr>
-            <th scope="col">Suite</th>
-            <th scope="col">Test Cases</th>
-            <th scope="col">Passed</th>
-            <th scope="col">Failed</th>
-            <th scope="col">Blocked</th>
-            <th scope="col">Not executed</th>
-            <th scope="col">Created By</th>
-            <th scope="col">Created Date</th>
+            <th scope="col" data-sortable="true">Suite</th>
+            <th scope="col" data-sortable="true">Test Cases</th>
+            <th scope="col" data-sortable="true">Passed</th>
+            <th scope="col" data-sortable="true">Failed</th>
+            <th scope="col" data-sortable="true">Blocked</th>
+            <th scope="col" data-sortable="true">Not executed</th>
+            <th scope="col" data-sortable="true">Created By</th>
+            <th scope="col" data-sortable="true">Created Date</th>
         </tr>
         </thead>
         {% for suite_id, suite_data_list in suite_info.items() %}
@@ -214,12 +217,16 @@
         src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 <script crossorigin="anonymous" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
         src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.js"></script>
+
 
 <script>
     //--------------------------------------------------------------------------------------------
     //Suites statistics
     $('.help-icon').popover();
-    $('.suite-list--popover').popover();
+    $('#mt-statistic').on('all.bs.table', function () {
+          $('.suite-list--popover').popover();
+        });
     let xCoord;
     let yCoord;
     let suiteId;
