@@ -1176,7 +1176,7 @@ td.subtr {
 
 .popover {
     z-index: 1010; /* A value higher than 1010 that solves the problem */
-    max-width: 350px;
+    max-width: 400px;
 }
 
 .popover-header {
@@ -1185,6 +1185,14 @@ td.subtr {
 }
 .popover-body {
     color: #343A40;
+}
+
+.popover a {
+    color: #037AFB;
+}
+
+.popover a:hover {
+    color: #003672;
 }
 
 .popover p {
@@ -1316,4 +1324,24 @@ td.subtr {
 .failed__update p {
     color: #FFFFFF;
     font-weight: bold;
+}
+
+.suite-list--popover {
+    display: block;
+    white-space: pre-wrap;
+    text-align: center;
+    padding: 0;
+    margin: 0 auto;
+}
+
+.popover__passed:focus {
+    outline-color: #05e745;
+}
+
+.popover__failed:focus {
+    outline-color: #e70505;
+}
+
+.popover__blocked:focus {
+    outline-color: #000000;
 }
