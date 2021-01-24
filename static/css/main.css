@@ -1270,3 +1270,50 @@ td.subtr {
     box-shadow: none;
     background: #fff;
 }
+@keyframes slideInFromTop {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.success__update {
+    position: absolute;
+    display: none;
+    width: 300px;
+    height: 100px;
+    background-image: linear-gradient(to right, #43e97b 0%, #38f9d7 100%);
+    color: #FFFFFF;
+    z-index: 100;
+    border-radius: 10px;
+    top: 15%;
+    left: 50%;
+    text-align: center;
+    line-height: 100px;
+    animation: 1s ease-out 0s 1 slideInFromTop;
+}
+
+.success__update p {
+    color: #FFFFFF;
+    font-weight: bold;
+}
+
+.failed__update {
+    position: absolute;
+    display: none;
+    background-image: linear-gradient(to top, #f43b47 0%, #453a94 100%);
+    z-index: 100;
+    border-radius: 10px;
+    top: 15%;
+    left: 50%;
+    text-align: center;
+    padding: 15px;
+    animation: 1s ease-out 0s 1 slideInFromTop;
+}
+
+.failed__update p {
+    color: #FFFFFF;
+    font-weight: bold;
+}

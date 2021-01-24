@@ -165,7 +165,7 @@ def test_statistics(suite_id, test_case_id):
 #                            suite_info_detailed=suite_info_dict_detailed)
 
 
-@main.route('/checkaccess/<test_case_id>', methods=['POST'])
+@main.route('/checkaccess/<test_case_id>', methods=['POST', 'GET'])
 @login_required
 def check_access_to_ado_item(test_case_id):
     if ado_api.check_access_to_test_case_ado(test_case_id):
@@ -379,9 +379,22 @@ def create_suite_from_existing():
     else:
         return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
 
-@main.route("/debug")
+@main.route("/update_tc_revision", methods=['POST'])
 @login_required
-def debug():
-    # sql_api.update_test_case_to_the_latest_revision(386)
-    logger.warning(sql_api.update_test_case_to_the_latest_revision(682))
-    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+def update_tc_revision():
+    role = get_user_role()
+    if role == 'manager' or role == 'admin':
+        data = request.get_json()
+        tcs_to_update = data['ids']
+        not_updated_tcs = {}
+        for tc_id in tcs_to_update:
+            tc_name = sql_api.get_test_case_name_by_id(tc_id)
+            tc_ado_id = sql_api.get_test_case_ado_id_by_id(tc_id)
+            if not sql_api.update_test_case_to_the_latest_revision(tc_id):
+                not_updated_tcs[tc_ado_id] = tc_name
+        if len(not_updated_tcs) == 0:
+            return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+        else:
+            return json.dumps({'success': False, 'notUpdated': not_updated_tcs}), 500, {'ContentType': 'application/json'}
+    else:
+        return json.dumps({'success': False}), 405, {'ContentType': 'application/json'}

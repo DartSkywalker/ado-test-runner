@@ -11,7 +11,6 @@ from .sql_connection import connection, meta, sql_connection, table_user, table_
 from ..constants import WORKITEM_LINK
 
 
-
 def get_test_suites_from_database():
     """
     Return suite with its id's
@@ -25,7 +24,6 @@ def get_test_suites_from_database():
     else:
         result = dict(zip(test_suites_ids, test_suite_names))
     return result
-
 
 
 def get_test_suite_name_by_id(suite_id):
@@ -51,8 +49,10 @@ def get_test_cases_from_db_by_suite_id(test_suite_id):
                             test_cases_ado_id_list]
 
     test_case_dict = dict(zip(test_cases_id_list, zip(test_cases_name_list, test_cases_link_list,
-                                                          test_cases_status, test_cases_executed, test_cases_ado_id_list)))
+                                                      test_cases_status, test_cases_executed, test_cases_ado_id_list)))
     return test_case_dict
+
+
 # print(len(get_test_cases_from_db_by_suite_id(31)))
 
 # get_test_cases_from_db_by_suite_name('Velocity Test Cases')
@@ -252,7 +252,7 @@ def get_failure_details_report(test_suite_id, case_ado_id):
          table_cases.c.EXECUTED_BY, table_cases.c.STATUS, table_cases.c.TEST_CASE_ID,
          table_suites.c.TEST_SUITE_ID]).select_from(
         join(table_suites, table_cases, table_suites.c.TEST_SUITE_ID == table_cases.c.TEST_SUITE_ID))
-                                   .where(
+        .where(
         and_(table_cases.c.TEST_CASE_ADO_ID == case_ado_id, table_cases.c.TEST_SUITE_ID == test_suite_id))).fetchall()
 
     state = [str(data[4]) for data in data_list]
@@ -489,6 +489,8 @@ def create_suite(test_suite_name):
     except Exception as e:
         logger.critical(e)
         return False
+
+
 # create_suite("source_suite")
 
 
@@ -507,7 +509,7 @@ def add_test_case_to_the_suite(test_suite_id, test_case_id):
                                                        STATUS='Ready'))
         for test_steps in test_case_steps:
             test_sql_case_ids = connection.execute(select([table_cases.c.TEST_CASE_ID])
-                                                   .where(
+                .where(
                 table_cases.c.TEST_CASE_ADO_ID == test_case_ado_id)).fetchall()
             test_sql_case_id = sorted(test_sql_case_ids)[len(test_sql_case_ids) - 1][0]
             # print(test_sql_case_id)
@@ -520,6 +522,8 @@ def add_test_case_to_the_suite(test_suite_id, test_case_id):
     except Exception as e:
         logger.critical(e)
         return False
+
+
 # add_test_case_to_the_suite(31,202)
 
 
@@ -540,13 +544,16 @@ def update_test_case_to_the_latest_revision(test_case_id):
         test_case_ado_id = get_test_case_ado_id_by_id(test_case_id)
         url = WORKITEM_LINK + str(test_case_ado_id)
         test_case_name = ado_api.get_test_case_name(test_case_ado_id)
+
+        if test_case_name is None:
+            return False
+
         test_case_steps_list = ado_api.get_test_case_steps_by_url(url)
 
         suite_id = connection.execute(select([table_cases.c.TEST_SUITE_ID]).
-                                    where(table_cases.c.TEST_CASE_ID == test_case_id)).fetchone()[0]
+                                      where(table_cases.c.TEST_CASE_ID == test_case_id)).fetchone()[0]
 
-        delete_test_case_from_suite(suite_id, test_case_ado_id)
-
+        delete_test_case_from_suite(suite_id, test_case_id)
 
         connection.execute(table_cases.insert().values(TEST_SUITE_ID=str(suite_id),
                                                        TEST_CASE_ADO_ID=str(test_case_ado_id),
@@ -557,7 +564,8 @@ def update_test_case_to_the_latest_revision(test_case_id):
 
         for test_steps in test_case_steps_list:
             test_sql_case_ids = connection.execute(select([table_cases.c.TEST_CASE_ID])
-                                                   .where(table_cases.c.TEST_CASE_ADO_ID == test_case_ado_id)).fetchall()
+                                                   .where(
+                table_cases.c.TEST_CASE_ADO_ID == test_case_ado_id)).fetchall()
             test_sql_case_id = sorted(test_sql_case_ids)[len(test_sql_case_ids) - 1][0]
             connection.execute(table_steps.insert().values(TEST_CASE_ID=int(test_sql_case_id),
                                                            STEP_NUMBER=str(step_number),
@@ -570,4 +578,3 @@ def update_test_case_to_the_latest_revision(test_case_id):
         logger.critical(e)
         return False
 # update_test_case_to_the_latest_revision(682)
-

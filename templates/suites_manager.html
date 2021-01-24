@@ -246,6 +246,12 @@
     </div>
 </div>
 
+<div class="success__update">
+    <p>Test Cases successfully updated</p>
+</div>
+
+<div class="failed__update">
+</div>
 
 <div class="container-fluid">
     <ul class='custom-menu'>
@@ -583,12 +589,70 @@
                 alert('Cannot delete the test case. Only managers allowed to remove test cases from suites.');
             });
         }
+
+        const checkAccessToTestCase = function (testCaseAdoId) {
+            $.ajax({
+                url: `/checkaccess/${testCaseAdoId}`,
+                type: 'GET',
+                contentType: 'application/json'
+            }).done(function (responseData) {
+                return true
+            }).fail(function () {
+                return false
+            });
+        }
+
+        const updateTcsRevision = function (idsArray) {
+            let tcsToUpdate = {ids: idsArray}
+            $.ajax({
+                url: '/update_tc_revision',
+                data: JSON.stringify(tcsToUpdate),
+                type: 'POST',
+                contentType: 'application/json'
+            }).done(function (responseData) {
+                console.log('Done: ', responseData);
+                $(".success__update").css('display', 'block')
+                $(".success__update").delay(2000).fadeOut(3000)
+            }).fail(function (responseData) {
+                if (responseData.status !== 405) {
+                    console.log('Failed: ', responseData);
+                    let response = JSON.parse(responseData.responseText)
+                    let failedString = '';
+                    for (let tcId in response['notUpdated']) {
+                        failedString += `${tcId} : ${response['notUpdated'][tcId]} <br>`
+                    }
+                    $(".failed__update").css('display', 'block')
+                    $('.failed__update').html(`
+                <p>Failed to update the following test cases:<br>
+                ${failedString}<br>
+                Please, check your ADO token :)
+                </p>`);
+                    $(".failed__update").delay(2000).fadeOut(3000);
+                } else {
+                    alert('Operation not Permitted\nOnly managers allowed to update test cases.');
+                }
+            });
+        }
+
+        const getUserRole = function () {
+
+        }
+
         // If the menu element is clicked
         $(".custom-menu li").click(function () {
             switch ($(this).attr("data-action")) {
                 // A case for each action. Your actions here
                 case "update-revision":
-                    alert('See this functionality in the next release :)')
+
+                    if ($('#test_cases_table tr.active').length !== 0) {
+                        let tcsToUpdate = [];
+                        for (element of $('#test_cases_table tr.active')) {
+                            let tcId = $(element).find('td:nth-child(1) input').val()
+                            tcsToUpdate.push(tcId)
+                        }
+                        updateTcsRevision(tcsToUpdate);
+
+                    }
                     break;
                 case "delete-cases":
                     let opt = confirm("Do you really want to delete selected Test Cases?");
