@@ -137,73 +137,7 @@
                 <td>
                     <p class="text-dark"> {{ suite_data_list[7] }}</p>
                 </td>
-
             </tr>
-
-            {% for i in range(0, ([suite_data_list[2], suite_data_list[3], suite_data_list[4]]|max)) %}
-                <tr>
-                    <td class="subtr hiddenRow">
-                        <div class="accordian-body collapse"></div>
-                    </td>
-                    <td class="subtr hiddenRow">
-                        <div class="accordian-body collapse"></div>
-                    </td>
-
-                    {% if suite_info_detailed[suite_id]['Passed'][i] %}
-                        <td class="subtr hiddenRow">
-                            <div class="accordian-body collapse" style="text-align: center;" id="passed_{{ suite_id }}"
-                                 data-toggle="tooltip" title="{{ suite_info_detailed[suite_id]['Passed'][i][2] }}">
-                                {% if suite_info_detailed[suite_id]['Passed'][i] %}<a class="text-dark substat-passed"
-                                                                                      href="/run/{{ suite_id }}/{{ suite_info_detailed[suite_id]['Passed'][i][0] }}">{{ suite_info_detailed[suite_id]['Passed'][i][1] }} </a>{% endif %}
-                            </div>
-                        </td>
-                    {% else %}
-                        <td class="subtr hiddenRow">
-                            <div class="accordian-body collapse" style="text-align: center;" id="passed_{{ suite_id }}"
-                                 data-toggle="tooltip">{% if suite_info_detailed[suite_id]['Passed'][i] %}
-                                <a class="text-dark substat-passed"
-                                   href="/run/{{ suite_id }}/{{ suite_info_detailed[suite_id]['Passed'][i][0] }}">{{ suite_info_detailed[suite_id]['Passed'][i][1] }} </a>{% endif %}
-                            </div>
-                        </td>
-                    {% endif %}
-
-                    {% if suite_info_detailed[suite_id]['Failed'][i] %}
-                        <td class="subtr hiddenRow">
-                            <div class="accordian-body collapse" style="text-align: center;" id="failed_{{ suite_id }}"
-                                 data-toggle="tooltip" title="{{ suite_info_detailed[suite_id]['Failed'][i][2] }}">
-                                {% if suite_info_detailed[suite_id]['Failed'][i] %}<a class="text-dark substat-failed"
-                                                                                      href="/run/{{ suite_id }}/{{ suite_info_detailed[suite_id]['Failed'][i][0] }}">{{ suite_info_detailed[suite_id]['Failed'][i][1] }} </a>{% endif %}
-                            </div>
-                        </td>
-                    {% else %}
-                        <td class="subtr hiddenRow">
-                            <div class="accordian-body collapse" style="text-align: center;" id="failed_{{ suite_id }}"
-                                 data-toggle="tooltip">{% if suite_info_detailed[suite_id]['Failed'][i] %}
-                                <a class="text-dark substat-failed"
-                                   href="/run/{{ suite_id }}/{{ suite_info_detailed[suite_id]['Failed'][i][0] }}">{{ suite_info_detailed[suite_id]['Failed'][i][1] }} </a>{% endif %}
-                            </div>
-                        </td>
-                    {% endif %}
-
-                    {% if suite_info_detailed[suite_id]['Blocked'][i] %}
-                        <td class="subtr hiddenRow">
-                            <div class="accordian-body collapse" style="text-align: center;" id="blocked_{{ suite_id }}"
-                                 data-toggle="tooltip" title="{{ suite_info_detailed[suite_id]['Blocked'][i][2] }}">
-                                {% if suite_info_detailed[suite_id]['Blocked'][i] %}<a class="text-dark substat-blocked"
-                                                                                       href="/run/{{ suite_id }}/{{ suite_info_detailed[suite_id]['Blocked'][i][0] }}">{{ suite_info_detailed[suite_id]['Blocked'][i][1] }} </a>{% endif %}
-                            </div>
-                        </td>
-                    {% else %}
-                        <td class="subtr hiddenRow">
-                            <div class="accordian-body collapse" style="text-align: center;" id="blocked_{{ suite_id }}"
-                                 data-toggle="tooltip">{% if suite_info_detailed[suite_id]['Blocked'][i] %}
-                                <a class="text-dark substat-blocked"
-                                   href="/run/{{ suite_id }}/{{ suite_info_detailed[suite_id]['Blocked'][i][0] }}">{{ suite_info_detailed[suite_id]['Blocked'][i][1] }} </a>{% endif %}
-                            </div>
-                        </td>
-                    {% endif %}
-                </tr>
-            {% endfor %}
         {% endfor %}
     </table>
 
