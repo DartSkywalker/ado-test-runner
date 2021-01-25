@@ -1353,13 +1353,19 @@ td.subtr {
 }
 
 .fixed-table-container thead th .both {
-
+    background-image: url("sort-solid.svg") !important;
+    background-size: 10px !important;
+    background-position: 90% 50% !important;
 }
 
 .fixed-table-container thead th .asc {
-    background-image: url(asc.png);
+    background-image: url("sort-up-solid.svg") !important;
+    background-size: 10px !important;
+    background-position: 90% 50% !important;
 }
 
 .fixed-table-container thead th .desc {
-    background-image: url(desc.png);
+    background-image: url("sort-down-solid.svg") !important;
+    background-size: 10px !important;
+    background-position: 90% 50% !important;
 }
