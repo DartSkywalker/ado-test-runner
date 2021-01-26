@@ -320,7 +320,8 @@ def set_test_case_state(test_case_id, json_with_step_states):
             test_case_result = list(statistic.values())[0]
             test_run_duration = list(statistic.values())[1]
             update_statement = table_cases.update().where(table_cases.c.TEST_CASE_ID == int(test_case_id)) \
-                .values(STATUS=str(test_case_result), EXECUTED_BY=str(user), DURATION_SEC=str(test_run_duration))
+                .values(STATUS=str(test_case_result), EXECUTED_BY=str(user), DURATION_SEC=str(test_run_duration),
+                        CHANGE_STATE_DATE=datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S.%f'))
             connection.execute(update_statement)
 
 

@@ -1327,7 +1327,7 @@ td.subtr {
     left: 60%;
     padding-left: 17px;
     padding-right: 17px;
-    display: block;
+    display: none;
     position: absolute;
     z-index: 100;
     color: #fff;
