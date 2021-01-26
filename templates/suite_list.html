@@ -121,10 +121,11 @@
                                                             " data-html="true">{{ suite_data_list[3] }}</span>
                 </td>
                 <td class="clickable-row accordion-toggle" data-toggle="" data-target="#blocked_{{ suite_id }}">
-                    <span class="suite-list--popover popover__blocked" tabindex="0" title="Blocked:" data-toggle="popover" data-trigger="focus"
-                                                           data-content="
+                    <span class="suite-list--popover popover__blocked" tabindex="0" title="Blocked:"
+                          data-toggle="popover" data-trigger="focus"
+                          data-content="
                                                         {% for i in range(suite_info_detailed[suite_id]['Blocked']| length) %}
-                                                        <a href='/run/{{ suite_id }}/{{ suite_info_detailed[suite_id]['Blocked'][i][0] }}'><b>{{suite_info_detailed[suite_id]['Blocked'][i][1]}}</b> : {{suite_info_detailed[suite_id]['Blocked'][i][2]}}</a><br>
+                                                        <a href='/run/{{ suite_id }}/{{ suite_info_detailed[suite_id]['Blocked'][i][0] }}'><b>{{ suite_info_detailed[suite_id]['Blocked'][i][1] }}</b> : {{ suite_info_detailed[suite_id]['Blocked'][i][2] }}</a><br>
                                                         {% endfor %}
                                                             " data-html="true">{{ suite_data_list[4] }}</span>
                 </td>
@@ -158,29 +159,26 @@
     //--------------------------------------------------------------------------------------------
     //Suites statistics
     $('.help-icon').popover();
-    $('#mt-statistic').on('all.bs.table', function () {
-          $('.suite-list--popover').popover();
-        });
     let xCoord;
     let yCoord;
     let suiteId;
-    $('tr.clickable-row').on("contextmenu", function (event) {
+    $('#mt-statistic').on('all.bs.table', function () {
+        $('.suite-list--popover').popover();
+        $('tr.clickable-row').on("contextmenu", function (event) {
 
-        // Avoid the real one
-        event.preventDefault();
+            // Avoid the real one
+            event.preventDefault();
 
-        let thisRow = $(this);
-        suiteId = $(thisRow).find('td.suite-link a').attr('href').split('/').pop();
-        // Show contextmenu
-        $(".custom-menu").finish().toggle(50).
-
-            // In the right position (the mouse)
-            css({
-                top: event.pageY + "px",
-                left: event.pageX + "px"
-            });
-
-
+            let thisRow = $(this);
+            suiteId = $(thisRow).find('td.suite-link a').attr('href').split('/').pop();
+            // Show contextmenu
+            $(".custom-menu").finish().toggle(50).
+                // In the right position (the mouse)
+                css({
+                    top: event.pageY + "px",
+                    left: event.pageX + "px"
+                });
+        });
     });
 
 
