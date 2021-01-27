@@ -1395,3 +1395,18 @@ div.action-result:empty:before {
   content: attr(data-placeholder);
   color: #8a8a8a;
 }
+
+#suites-finder {
+    border: none;
+    width: 210px;
+    background: none;
+    border-bottom: 1px solid #fff;
+    color: #fff;
+    display: block;
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
+#suites-finder::placeholder {
+    color: #fff;
+}

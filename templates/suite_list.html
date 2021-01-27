@@ -52,6 +52,8 @@
     </ul>
     <div class="navbar-collapse collapse  order-3 dual-collapse2">
         <ul class="navbar-nav ml-auto">
+            <li class="nav-item"><input id="suites-finder" placeholder="Find Suite..."
+                                        onkeyup="searchTestCases('mt-statistic', 'suites-finder')"></li>
             <li class="nav-item dropdown">
             <li class="nav-item active">
                 <a class="nav-link"><span class="help-icon" tabindex="0" data-toggle="popover" data-trigger="focus"
@@ -214,7 +216,30 @@
         $(".custom-menu").hide(100);
     });
 </script>
+<script>
+    function searchTestCases(tableId, inputId) {
+        // Declare variables
+        var input, filter, table, tr, td, td_id, i, txtValue;
+        input = document.getElementById(inputId);
+        filter = input.value.toUpperCase();
+        table = document.getElementById(tableId);
+        tr = table.getElementsByTagName("tr");
 
+        // Loop through all table rows, and hide those who don't match the search query
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[0];
+            td_id = tr[i].getElementsByTagName("td")[6];
+            if (td) {
+                txtValue = (td.textContent || td.innerText) + ' ' + (td_id.textContent || td_id.innerText);
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+</script>
 
 </body>
 </html>
