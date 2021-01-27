@@ -1390,3 +1390,8 @@ td.subtr {
     background-size: 10px !important;
     background-position: 90% 50% !important;
 }
+
+div.action-result:empty:before {
+  content: attr(data-placeholder);
+  color: #8a8a8a;
+}

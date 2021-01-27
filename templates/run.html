@@ -10,7 +10,7 @@
     <title>{{ test_case_name }}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="icon" type="image/png" href="/css/favicon.ico"/>
+    <link rel="icon" type="image/png" href="/img/favicon.ico"/>
 
 
     <!-- Icons font CSS-->
@@ -33,7 +33,7 @@
 <body>
 <nav class="navbar navbar-dark bg-primary navbar-expand-lg nav-fixed">
     <a class="navbar-brand" href="/suites">
-        <img src="{{ url_for('static', filename='css/running.svg') }}" width="30" height="30"
+        <img src="{{ url_for('static', filename='img/running.svg') }}" width="30" height="30"
              class="d-inline-block align-top" alt="">
         TRunner</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
@@ -56,9 +56,10 @@
         <ul class="navbar-nav ml-auto">
             <li class="nav-item active">
                 <a class="nav-link"><span class="help-icon" tabindex="0" data-toggle="popover" data-trigger="focus"
-                                                           data-content="💬️ Comment: Double-click on step
+                                          data-content="💬️ Comment: Double-click on step
                                                                         <br />📝️ Edit Step: Alt+Click
-                                                                        <br />📕️ Disable edit mode: Double-click" data-html="true"></span></a>
+                                                                        <br />📕️ Disable edit mode: Double-click"
+                                          data-html="true"></span></a>
             </li>
             <li class="nav-item active">
                 <a class="nav-link" id="backToSuite" href="">Back to Suite<span class="sr-only"></span></a>
@@ -69,6 +70,11 @@
 </nav>
 
 <div class="container-fluid">
+    <ul class='custom-menu'>
+        <li data-action="edit-step">✏️ &nbsp;Edit</li>
+        <li data-action="add-before" class="upper-border">⬆️ &nbsp;Add step before</li>
+        <li data-action="add-after">⬇️ &nbsp;Add step after</li>
+    </ul>
     <div class="row mt-2 mb-2 div-fixed" style="background: #fff; z-index: 90;">
         <div class="col-md-10" style="font-weight: 400; font-size: 16px">{{ ado_id }} - {{ test_case_name }}</div>
         <div id='saveSuccess' class="inner success-save" style="display: none">Saved</div>
@@ -92,7 +98,7 @@
                 <tr class="clickable-row">
                     <td>{{ step_data[0] }}</td>
                     <td class="step">
-                        <div class="action action-result" style="white-space: pre-line">{{ step_data[1] | safe }}</div>
+                        <div class="action action-result" style="white-space: pre-line; min-height: 15px;">{{ step_data[1] | safe }}</div>
                         <div class="expected action-result"
                              style="white-space: pre-line">{{ step_data[2] | safe }}</div>
                         {% if step_data[4] == None or step_data[4] == "" %}
@@ -151,17 +157,17 @@
     //Check if user has the access to the test case in ADO
     let userHasAdoAccess = '';
     let testCaseId = /[^/]*$/.exec(window.location.href)[0];
-    $(document).ready(function(){
-      var data = { "tcid": testCaseId};
+    $(document).ready(function () {
+        var data = {"tcid": testCaseId};
         $.ajax({
             url: "/checkaccess/" + testCaseId,
             data: JSON.stringify(data),
             type: 'POST',
             contentType: 'application/json'
-        }).done(function(responseData) {
+        }).done(function (responseData) {
             console.log('User have ADO access');
             userHasAdoAccess = true;
-        }).fail(function() {
+        }).fail(function () {
             console.log('User does not have ADO access');
             userHasAdoAccess = false;
         });
@@ -169,8 +175,6 @@
         startTime = Date.now()
     });
 </script>
-
-
 <script>
     (function ($) {
         var defaults = {
@@ -241,7 +245,6 @@
         }
     });
 </script>
-
 <script>
     $('input[type=radio]').on('click', function () {
         let tableRowsNumber = $('tr').length;
@@ -271,7 +274,6 @@
 
     });
 </script>
-
 <script>
     $('.navbar-brand').click(function () {
         // escape here if the confirm is false;
@@ -281,13 +283,11 @@
         return true;
     });
 </script>
-
 <script>
     $('input[type=radio][id=failed]').change(function () {
         $('#testStatus').val("failed").change();
     });
 </script>
-
 <script>
     $(window).resize(function () {
         $('div-fixed').css('padding-top', parseInt($('#nav-fixed').css("height")));
@@ -311,7 +311,7 @@
     })
 </script>
 <script>
-    $('td.step').on('dblclick', function () {
+    $('#tbl1').on('dblclick','td.step', function () {
         $(this).find('div:nth-child(3)').css('display', 'block')
     });
 
@@ -327,7 +327,7 @@
     $("#saveResult").click(function () {
 
         stopTime = Date.now()
-        testRunDuration = Math.round((stopTime - startTime)/1000).toString();
+        testRunDuration = Math.round((stopTime - startTime) / 1000).toString();
         let is_changed = 'False';
 
         testResults = {};
@@ -372,13 +372,25 @@
             $(this).find('#passed_label').each(function () {
                 if ($(this).hasClass('active')) {
                     {#isPassed = true;#}
-                    testResults[index] = {stepNum: index + 1, outcome: 'Passed', comment: comment, editedAction: edited_action, editedExpected: edited_expected}
+                    testResults[index] = {
+                        stepNum: index + 1,
+                        outcome: 'Passed',
+                        comment: comment,
+                        editedAction: edited_action,
+                        editedExpected: edited_expected
+                    }
                 }
             })
             $(this).find('#failed_label').each(function () {
                 if ($(this).hasClass('active')) {
                     {#isFailed = true;#}
-                    testResults[index] = {stepNum: index + 1, outcome: 'Failed', comment: comment, editedAction: edited_action, editedExpected: edited_expected}
+                    testResults[index] = {
+                        stepNum: index + 1,
+                        outcome: 'Failed',
+                        comment: comment,
+                        editedAction: edited_action,
+                        editedExpected: edited_expected
+                    }
                 }
             })
 
@@ -400,7 +412,7 @@
 <script>
     $("#saveResultClose").click(function () {
         stopTime = Date.now()
-        testRunDuration = Math.round((stopTime - startTime)/1000).toString();
+        testRunDuration = Math.round((stopTime - startTime) / 1000).toString();
         let is_changed = 'False';
 
         testResults = {};
@@ -442,12 +454,24 @@
 
             $(this).find('#passed_label').each(function () {
                 if ($(this).hasClass('active')) {
-                    testResults[index] = {stepNum: index + 1, outcome: 'Passed', comment: comment, editedAction: edited_action, editedExpected: edited_expected}
+                    testResults[index] = {
+                        stepNum: index + 1,
+                        outcome: 'Passed',
+                        comment: comment,
+                        editedAction: edited_action,
+                        editedExpected: edited_expected
+                    }
                 }
             })
             $(this).find('#failed_label').each(function () {
                 if ($(this).hasClass('active')) {
-                    testResults[index] = {stepNum: index + 1, outcome: 'Failed', comment: comment, editedAction: edited_action, editedExpected: edited_expected}
+                    testResults[index] = {
+                        stepNum: index + 1,
+                        outcome: 'Failed',
+                        comment: comment,
+                        editedAction: edited_action,
+                        editedExpected: edited_expected
+                    }
                 }
             })
 
@@ -467,6 +491,120 @@
 
     })
 </script>
+<script>
+    let stepNum;
+    let suiteId;
+    let tcId;
+    let rowToEdit;
+    $('#tbl1').on("contextmenu", "td.step", function (event) {
 
+        // Avoid the real one
+        event.preventDefault();
+
+        let thisRow = $(this);
+        rowToEdit = thisRow
+        stepNum = $(thisRow).parent().index();
+        console.log(stepNum)
+
+        // Show contextmenu
+        $(".custom-menu").finish().toggle(50).
+            // In the right position (the mouse)
+            css({
+                top: event.pageY + "px",
+                left: event.pageX + "px"
+            });
+    });
+    // If the document is clicked somewhere
+    $(document).bind("mousedown", function (e) {
+        if (!$(e.target).parents(".custom-menu").length > 0) {
+            $(".custom-menu").hide(50);
+        }
+    });
+
+    const recalcStepNumbers = function () {
+        let tableRows = $('#tbl1 tr')
+      for (let i = 0; i < tableRows.length; i++) {
+        $(tableRows[i]).find('td:nth-child(1)').text(i + 1)
+      }
+    };
+
+    // If the menu element is clicked
+    $(".custom-menu li").click(function () {
+        switch ($(this).attr("data-action")) {
+            // A case for each action. Your actions here
+            case "edit-step":
+                if (userHasAdoAccess === true) {
+                    if (rowToEdit.attr("contenteditable") !== 'true') {
+                        $(rowToEdit).attr("contenteditable", "true");
+                        $(rowToEdit).addClass("edited");
+                        let clickedDiv = $(this);
+                    } else {
+                        $(rowToEdit).attr("contenteditable", "false");
+                    }
+                } else {
+                    alert("You cannot update this test case in ADO.\nPlease, check your permissions and try again");
+                }
+                break;
+            case "add-before":
+                $("#tbl1  tbody tr.clickable-row").eq(stepNum).before(`
+                <tr class="clickable-row">
+                    <td>N</td>
+                    <td class="step">
+                        <div class="action action-result" data-placeholder="Action..." style="white-space: pre-line; min-height: 15px;"></div>
+                        <div class="expected action-result" data-placeholder="Expected Result..." style="white-space: pre-line; min-height: 15px;"></div>
+                            <div class style="display: none">
+                                <br/><label for="exampleFormControlTextarea1">Comment:</label>
+                                <textarea class="form-control comment" id="exampleFormControlTextarea1"
+                                          rows="3"></textarea>
+                            </div>
+
+                    </td>
+                    <td class="selector">
+                        <div class="btn-group btn-group-toggle " data-toggle="buttons">
+                            <label class="btn btn-passed" id="passed_label">
+                                <input type="radio" name="options" id="passed" autocomplete="off" value=""> Passed
+                            </label>
+                            <label class="btn btn-failed" id="failed_label">
+                                <input type="radio" name="options" id="failed" autocomplete="off"> Failed
+                            </label>
+                        </div>
+                    </td>
+                </tr>
+                `);
+                recalcStepNumbers();
+                break;
+            case "add-after":
+                $("#tbl1  tbody tr.clickable-row").eq(stepNum).after(`
+                <tr class="clickable-row">
+                    <td>N</td>
+                    <td class="step">
+                        <div class="action action-result" data-placeholder="Action..." style="white-space: pre-line; min-height: 15px;"></div>
+                        <div class="expected action-result" data-placeholder="Expected Result..." style="white-space: pre-line; min-height: 15px;"></div>
+                            <div class style="display: none">
+                                <br/><label for="exampleFormControlTextarea1">Comment:</label>
+                                <textarea class="form-control comment" id="exampleFormControlTextarea1"
+                                          rows="3"></textarea>
+                            </div>
+
+                    </td>
+                    <td class="selector">
+                        <div class="btn-group btn-group-toggle " data-toggle="buttons">
+                            <label class="btn btn-passed" id="passed_label">
+                                <input type="radio" name="options" id="passed" autocomplete="off" value=""> Passed
+                            </label>
+                            <label class="btn btn-failed" id="failed_label">
+                                <input type="radio" name="options" id="failed" autocomplete="off"> Failed
+                            </label>
+                        </div>
+                    </td>
+                </tr>
+                `);
+                recalcStepNumbers();
+                break;
+        }
+        // Hide it AFTER the action was triggered
+        $(".custom-menu").hide(100);
+    });
+</script>
 </body>
 </html>

@@ -192,9 +192,7 @@
 
     // If the menu element is clicked
     $(".custom-menu li").click(function () {
-
         switch ($(this).attr("data-action")) {
-
             // A case for each action. Your actions here
             case "suite-report":
                 window.open('/suitereport/' + suiteId);
@@ -212,11 +210,9 @@
                 alert("We are working hard on implementing this...");
                 break;
         }
-
         // Hide it AFTER the action was triggered
         $(".custom-menu").hide(100);
     });
-
 </script>
 
 
