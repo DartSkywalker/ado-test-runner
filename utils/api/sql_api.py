@@ -608,3 +608,31 @@ def add_step_to_existing_test_case(test_case_id, step_number, description, expec
         logger.critical(e)
         return False
 # add_step_to_existing_test_case(683, 3, "middle insert", "test Expected")
+
+
+def delete_test_step(test_case_id, step_number):
+    try:
+        test_case_steps_list = get_test_case_steps_by_id(test_case_id)
+
+        if step_number >= len(test_case_steps_list):
+            logger.critical("Step Number is incorrect")
+            raise Exception
+
+        test_case_steps_list.pop(step_number-1)
+
+        connection.execute(table_steps.delete().where(table_steps.c.TEST_CASE_ID == test_case_id))
+
+        step_number = 1
+
+        for test_steps in test_case_steps_list:
+            connection.execute(table_steps.insert().values(TEST_CASE_ID=int(test_case_id),
+                                                           STEP_NUMBER=str(step_number),
+                                                           DESCRIPTION=test_steps[1],
+                                                           EXPECTED_RESULT=test_steps[2]))
+            step_number += 1
+        return True
+
+    except Exception as e:
+        logger.critical(e)
+        return False
+# print(delete_test_step(1373, 1))
