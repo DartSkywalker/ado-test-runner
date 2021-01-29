@@ -579,3 +579,32 @@ def update_test_case_to_the_latest_revision(test_case_id):
         logger.critical(e)
         return False
 # update_test_case_to_the_latest_revision(682)
+
+
+def add_step_to_existing_test_case(test_case_id, step_number, description, expected_result):
+    try:
+        test_case_steps_list = get_test_case_steps_by_id(test_case_id)
+
+        if step_number <= len(test_case_steps_list) + 1 and len(test_case_steps_list) > 0:
+            test_case_steps_list.insert(step_number - 1, [step_number, description, expected_result])
+        elif len(test_case_steps_list) == 0:
+            test_case_steps_list = [[step_number, description, expected_result]]
+        else:
+            logger.critical("Step Number is incorrect")
+            raise Exception
+
+        connection.execute(table_steps.delete().where(table_steps.c.TEST_CASE_ID == test_case_id))
+
+        step_number = 1
+
+        for test_steps in test_case_steps_list:
+            connection.execute(table_steps.insert().values(TEST_CASE_ID=int(test_case_id),
+                                                           STEP_NUMBER=str(step_number),
+                                                           DESCRIPTION=test_steps[1],
+                                                           EXPECTED_RESULT=test_steps[2]))
+            step_number += 1
+        return True
+    except Exception as e:
+        logger.critical(e)
+        return False
+# add_step_to_existing_test_case(683, 3, "middle insert", "test Expected")
