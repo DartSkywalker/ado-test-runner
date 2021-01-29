@@ -31,6 +31,7 @@
 
 
 </head>
+<body class="suite__list">
 <nav class="navbar navbar-dark bg-primary navbar-expand-lg">
     <a class="navbar-brand" href="/suites">
         <img src="/static/img/running.svg" width="30" height="30" class="d-inline-block align-top" alt="">
@@ -82,7 +83,7 @@
         <li data-action="ado-export">📦 &nbsp;Export to ADO</li>
         <li data-action="delete-suite" class="upper-border">🗑 &nbsp;Delete Suite</li>
     </ul>
-
+    <div class="table-wrapper">
     <table class="table mt-3 table-hover borderless" style="text-align: center;" id="mt-statistic" data-toggle="table">
         <thead class="bg-primary font-weight-light" style="color: #ffffff;">
         <tr>
@@ -99,7 +100,7 @@
         {% for suite_id, suite_data_list in suite_info.items() %}
             <tr class="clickable-row">
                 <td class="suite-link">
-                    <a class="text-dark" href="/cases/{{ suite_id }}">{{ suite_data_list[0] }}</a>
+                    <a class="text-dark suite-link-name" href="/cases/{{ suite_id }}">{{ suite_data_list[0] }}</a>
                 </td>
                 <td>
                     <p class="text-dark"> {{ suite_data_list[1] }}</p>
@@ -137,13 +138,13 @@
                 <td>
                     <p class="text-dark"> {{ suite_data_list[6] }}</p>
                 </td>
-                <td>
-                    <p class="text-dark"> {{ suite_data_list[7] }}</p>
+                <td class="create-date">
+                    <p class="text-dark created-date-text"> {{ suite_data_list[7] }}</p>
                 </td>
             </tr>
         {% endfor %}
     </table>
-
+    </div>
 </div>
 <script
         src="https://code.jquery.com/jquery-3.5.1.min.js"

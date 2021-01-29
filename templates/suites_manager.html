@@ -32,7 +32,7 @@
 
 
 </head>
-<body>
+<body class="suite__list">
 <nav class="navbar navbar-dark bg-primary navbar-expand-lg nav-fixed">
     <a class="navbar-brand" href="/suites">
         <img src="/static/img/running.svg" width="30" height="30" class="d-inline-block align-top" alt="">
@@ -52,7 +52,7 @@
             <a class="nav-link" href="/about">About<span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item active dropdown-selector">
-            <select class="form-control" id="suites-selector">
+            <select class="form-control border-sharp" id="suites-selector">
                 {% for suite_id, suite_name in test_suite_dict.items() %}
                     <option class="select-option" value="{{ suite_id }}">{{ suite_name }}</option>
                 {% endfor %}
@@ -61,15 +61,15 @@
     </ul>
     <div class="navbar-collapse collapse  order-3 dual-collapse2">
         <ul class="navbar-nav ml-auto">
-            <li class="nav-item active action-items">
+            <li class="nav-item active action-items border-sharp">
                 <a class="nav-link" data-toggle="modal" data-target="#addCaseToSuite" data-backdrop="static"
                    data-keyboard="false">➕ Add<span class="sr-only">(current)</span></a>
             </li>
-            <li class="nav-item active action-items">
+            <li class="nav-item active action-items border-sharp">
                 <a class="nav-link" id="deleteCaseFromSuite">➖ Delete<span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle suite-create" href="#" id="navbarDropdownMenuLink" role="button"
+                <a class="nav-link dropdown-toggle suite-create border-sharp" href="#" id="navbarDropdownMenuLink" role="button"
                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Create Suite
                 </a>
@@ -144,9 +144,9 @@
 <div class="modal fade" id="addFromAdoQuery" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-mg" role="document">
-        <div class="modal-content">
+        <div class="modal-content glass-form">
             <div class="modal-header">
-                <h4 class="modal-title">Create Test Suite from ADO Query</h4>
+                <h4 class="modal-title" style="color: #fff;">Create Test Suite from ADO Query</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -178,9 +178,9 @@
 <div class="modal fade" id="createEmptySuite" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-mg" role="document">
-        <div class="modal-content">
+        <div class="modal-content glass-form">
             <div class="modal-header">
-                <h4 class="modal-title">Create Empty Suite</h4>
+                <h4 class="modal-title" style="color: #fff;">Create Empty Suite</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -210,9 +210,9 @@
 <div class="modal fade" id="copyFromExistingSuite" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-mg" role="document">
-        <div class="modal-content">
+        <div class="modal-content glass-form">
             <div class="modal-header">
-                <h4 class="modal-title">Copy Test Suite</h4>
+                <h4 class="modal-title" style="color: #fff;">Copy Test Suite</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -262,7 +262,7 @@
     <div class="shifted-list">
         <input type="text" id="search_input" onkeyup="searchTestCases('test_cases_table', 'search_input')"
                placeholder="Search for Test Cases..">
-
+        <div class="table-wrapper">
         <table class="table mt-3" style="text-align: center;" id="test_cases_table">
             <thead class="bg-primary font-weight-light" style="color: #ffffff;">
             <tr>
@@ -272,6 +272,7 @@
             </tr>
             </thead>
         </table>
+    </div>
     </div>
 
     <script
