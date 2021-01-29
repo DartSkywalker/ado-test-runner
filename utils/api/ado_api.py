@@ -2,14 +2,9 @@ import requests
 import json
 from loguru import logger
 from . import ado_parser
-
 from .sql_connection import connection, meta, sql_connection, table_cases
-# from .sql_api import get_current_user, get_test_case_steps_by_id
-
 from . import sql_api
-
 from ..constants import get_ado_token_for_user, QUERY_LINK, WIQL_LINK, HEADERS, WORKITEM_LINK
-# from utils.api import ado_parser
 from sqlalchemy.sql import select
 
 
@@ -154,3 +149,28 @@ def update_test_steps_in_ado(test_case_sql_id, data):
     return result
 # print(update_test_steps_in_ado(2, data_example))
 
+
+def get_test_case_attachements(test_case_ado_id):
+    list_of_attachements = []
+
+    r_query = requests.get(WORKITEM_LINK + str(test_case_ado_id) + "?$expand=all", headers=HEADERS,
+                           auth=('', "3cypx4hp7qfpkqntwdkprmr5eksgbcbtpm42d6gqs7rlfehbjyfq"))
+
+    if r_query.status_code == 200:
+        r_query.close()
+        parsed_data = json.loads(str(r_query.text))
+        try:
+            attachments = parsed_data['relations']
+            for instance in attachments:
+                if instance["rel"] == "AttachedFile":
+                    attachment_url = instance["url"]
+                    attachment_name = instance["attributes"]["name"]
+                    try:
+                        attachment_comment = instance["attributes"]["comment"]
+                    except Exception:
+                        attachment_comment = "None"
+                    list_of_attachements.append([attachment_url, attachment_name, attachment_comment])
+        except KeyError:
+            logger.warning(f"No relations child found for the test case: {test_case_ado_id}")
+        return list_of_attachements
+# print(get_test_case_attachements(49275))
