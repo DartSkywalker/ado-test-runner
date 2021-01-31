@@ -408,13 +408,13 @@ def update_tc_revision():
 @main.route("/delete_test_step", methods=['POST'])
 @login_required
 def delete_step_from_test_case():
-    # data = request.get_json()
-    # tc_id = data['tc_id']
-    # step_number_to_delete = data['step']
-    # logger.warning(tc_id)
-    # logger.warning(step_number_to_delete)
-    # if sql_api.delete_test_step(tc_id, step_number_to_delete):
-    #     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
-    # else:
-    #     return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
-    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+    data = request.get_json()
+    tc_id = data['tc_id']
+    step_number_to_delete = data['step']
+    logger.warning(tc_id)
+    logger.warning(step_number_to_delete)
+    if sql_api.delete_test_step(tc_id, step_number_to_delete):
+        return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+    else:
+        return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
+    # return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
