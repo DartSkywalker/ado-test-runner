@@ -614,7 +614,7 @@ def delete_test_step(test_case_id, step_number):
     try:
         test_case_steps_list = get_test_case_steps_by_id(test_case_id)
 
-        if step_number >= len(test_case_steps_list):
+        if step_number > len(test_case_steps_list):
             logger.critical("Step Number is incorrect")
             raise Exception
 

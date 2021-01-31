@@ -74,6 +74,7 @@
         <li data-action="edit-step">✏️ &nbsp;Edit</li>
         <li data-action="add-before" class="upper-border">⬆️ &nbsp;Add step before</li>
         <li data-action="add-after">⬇️ &nbsp;Add step after</li>
+        <li data-action="delete-step" class="upper-border">🗑️ &nbsp;Delete step</li>
     </ul>
     <div class="row mt-2 mb-2 div-fixed" style="background: #fff; z-index: 90;">
         <div class="col-md-10" style="font-weight: 400; font-size: 16px">{{ ado_id }} - {{ test_case_name }}</div>
@@ -114,6 +115,13 @@
                                           rows="3">{{ step_data[4] }}</textarea>
                             </div>
                         {% endif %}
+{#                            <div class="tc-attachments" style="display: block">#}
+{#                                <img class="attachment" src="/../img/pic.jpg">#}
+{#                                <img class="image-full" src="/../img/pic.jpg">#}
+{##}
+{#                                <img class="attachment" src="/../img/pic.jpg">#}
+{#                                <img class="image-full" src="/../img/pic.jpg">#}
+{#                            </div>#}
                     </td>
                     <td class="selector">
                         <div class="btn-group btn-group-toggle {{ step_data[3] }}" data-toggle="buttons">
@@ -494,7 +502,6 @@
 <script>
     let stepNum;
     let suiteId;
-    let tcId;
     let rowToEdit;
     $('#tbl1').on("contextmenu", "td.step", function (event) {
 
@@ -527,6 +534,26 @@
         $(tableRows[i]).find('td:nth-child(1)').text(i + 1)
       }
     };
+
+    const removeStepFromTable = function (realStepNumber) {
+        $(`#tbl1 tr:eq(${realStepNumber - 1})`).remove();
+        recalcStepNumbers();
+    };
+
+    const deleteTestStep = function(tcId, stepNumToDelete) {
+        let data = {tc_id: tcId, step: stepNumToDelete}
+        $.ajax({
+            url: "/delete_test_step",
+            data: JSON.stringify(data),
+            type: 'POST',
+            contentType: 'application/json'
+        }).done(function (responseData) {
+            console.log(`Step ${stepNumToDelete} successfully removed.`);
+            removeStepFromTable(stepNumToDelete);
+        }).fail(function () {
+            console.log(`Cannot delete step #${stepNumToDelete}. Internal Server Error...maybe :D`);
+        });
+    }
 
     // If the menu element is clicked
     $(".custom-menu li").click(function () {
@@ -601,10 +628,22 @@
                 `);
                 recalcStepNumbers();
                 break;
+            case "delete-step":
+                if (confirm(`Delete step #${stepNum + 1}?`)) {
+                    deleteTestStep(testCaseId, stepNum + 1);
+                }
+                break;
         }
         // Hide it AFTER the action was triggered
         $(".custom-menu").hide(100);
     });
+</script>
+<script>
+$(".attachment").hover(function(){
+      $(this).next(".image-full").show();
+}, function(){
+      $(this).next(".image-full").hide();
+});
 </script>
 </body>
 </html>

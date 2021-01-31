@@ -1486,3 +1486,21 @@ div.action-result:empty:before {
 #query_id::placeholder, #newSuiteName::placeholder, #copyFromNewName::placeholder  {
     color: #fff;
 }
+
+.tc-attachments {
+    margin-top: 5px;
+}
+
+.attachment {
+    width: 10%;
+    height: 10%;
+    padding-right: 15px;
+    z-index: 0;
+}
+
+.image-full {
+    display:none;
+    position:fixed;
+    top: 20%;
+
+}

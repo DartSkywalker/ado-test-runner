@@ -8,10 +8,10 @@ from loguru import logger
 from .models_data import create_table
 from io import StringIO
 import json
-from .utils.utils import get_invites_table, generate_invite_codes, get_user_role, get_users_dict, set_new_user_role, change_password_for_user
+from .utils.utils import get_invites_table, generate_invite_codes, get_user_role, get_users_dict, set_new_user_role, \
+    change_password_for_user
 from .utils.constants import USER_ROLES
 from werkzeug.wrappers import Response
-
 
 main = Blueprint('main', __name__, static_folder="static", static_url_path="")
 create_table()
@@ -189,7 +189,6 @@ def get_test_case_statistics(test_suite_id, case_ado_id):
         return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
 
 
-
 @main.route('/creator')
 @login_required
 def test_case_creator():
@@ -256,6 +255,7 @@ def suite_reporter(suite_id):
     #                    headers={"Content-Disposition":
     #                                 "attachment;filename=TReport.html"})
 
+
 @main.route('/suitereport/<suite_id>/download')
 @login_required
 def suite_reporter_download(suite_id):
@@ -264,8 +264,9 @@ def suite_reporter_download(suite_id):
     meta_string = (render_template('report_template.html', suite_name=suite_name, suite_data=suite_data_dict))
     return Response(meta_string,
                     mimetype="text/plain",
-                       headers={"Content-Disposition":
-                                    "attachment;filename=TReport.html"})
+                    headers={"Content-Disposition":
+                                 "attachment;filename=TReport.html"})
+
 
 @main.route('/deletesuite/<suite_id>')
 @login_required
@@ -309,20 +310,22 @@ def suites_manager():
     tc_dict = sql_api.get_all_test_cases()
 
     # logger.warning(tc_dict)
-    return render_template('suites_manager.html', all_cases_dict=tc_dict, username=sql_api.get_current_user(), test_suite_dict=sql_api.get_test_suites_from_database())
+    return render_template('suites_manager.html', all_cases_dict=tc_dict, username=sql_api.get_current_user(),
+                           test_suite_dict=sql_api.get_test_suites_from_database())
+
 
 @main.route('/add_test_suite_by_query_id/<query_id>')
 @login_required
 def add_new_test_suite(query_id):
-        # if query_id == "" or len(query_id) < 36 or len(query_id) > 36:
-        #     flash('Please, enter a valid Query ID')
-        #     return redirect(url_for('main.suites_manager'))
-        if ado_api.check_access_to_ado_query(query_id):
-            async_functions.create_new_test_suite_in_db(str(query_id))
-            return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
-        else:
-            flash('Access denied. Please check your ADO Token')
-            return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
+    # if query_id == "" or len(query_id) < 36 or len(query_id) > 36:
+    #     flash('Please, enter a valid Query ID')
+    #     return redirect(url_for('main.suites_manager'))
+    if ado_api.check_access_to_ado_query(query_id):
+        async_functions.create_new_test_suite_in_db(str(query_id))
+        return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+    else:
+        flash('Access denied. Please check your ADO Token')
+        return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
 
 
 @main.route("/add_cases_to_suite/", methods=['POST'])
@@ -379,6 +382,7 @@ def create_suite_from_existing():
     else:
         return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
 
+
 @main.route("/update_tc_revision", methods=['POST'])
 @login_required
 def update_tc_revision():
@@ -395,6 +399,22 @@ def update_tc_revision():
         if len(not_updated_tcs) == 0:
             return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
         else:
-            return json.dumps({'success': False, 'notUpdated': not_updated_tcs}), 500, {'ContentType': 'application/json'}
+            return json.dumps({'success': False, 'notUpdated': not_updated_tcs}), 500, {
+                'ContentType': 'application/json'}
     else:
         return json.dumps({'success': False}), 405, {'ContentType': 'application/json'}
+
+
+@main.route("/delete_test_step", methods=['POST'])
+@login_required
+def delete_step_from_test_case():
+    # data = request.get_json()
+    # tc_id = data['tc_id']
+    # step_number_to_delete = data['step']
+    # logger.warning(tc_id)
+    # logger.warning(step_number_to_delete)
+    # if sql_api.delete_test_step(tc_id, step_number_to_delete):
+    #     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+    # else:
+    #     return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
