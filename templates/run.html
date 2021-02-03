@@ -484,7 +484,6 @@
             })
 
         })
-
         let testCaseId = window.location.href.substr(window.location.href.lastIndexOf("/")).replace("/", "")
         $.ajax("/save_test_result/" + testCaseId, {
             data: JSON.stringify(testResults),

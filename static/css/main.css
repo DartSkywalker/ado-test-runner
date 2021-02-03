@@ -1127,6 +1127,13 @@ td.subtr {
     width: 50% !important;
     left: 50%;
 
+.custom-switch {
+    padding: 0.5rem 1rem;
+}
+
+.custom-control-label::before {
+    border: 1px solid;
+    border-color: #FFFFFF !important;
 }
 
 .custom-menu {
