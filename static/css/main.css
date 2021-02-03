@@ -1126,6 +1126,7 @@ td.subtr {
 .width-50 {
     width: 50% !important;
     left: 50%;
+}
 
 .custom-switch {
     padding: 0.5rem 1rem;

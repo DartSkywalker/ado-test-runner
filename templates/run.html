@@ -99,7 +99,8 @@
                 <tr class="clickable-row">
                     <td>{{ step_data[0] }}</td>
                     <td class="step">
-                        <div class="action action-result" style="white-space: pre-line; min-height: 15px;">{{ step_data[1] | safe }}</div>
+                        <div class="action action-result"
+                             style="white-space: pre-line; min-height: 15px;">{{ step_data[1] | safe }}</div>
                         <div class="expected action-result"
                              style="white-space: pre-line">{{ step_data[2] | safe }}</div>
                         {% if step_data[4] == None or step_data[4] == "" %}
@@ -115,13 +116,13 @@
                                           rows="3">{{ step_data[4] }}</textarea>
                             </div>
                         {% endif %}
-{#                            <div class="tc-attachments" style="display: block">#}
-{#                                <img class="attachment" src="/../img/pic.jpg">#}
-{#                                <img class="image-full" src="/../img/pic.jpg">#}
-{##}
-{#                                <img class="attachment" src="/../img/pic.jpg">#}
-{#                                <img class="image-full" src="/../img/pic.jpg">#}
-{#                            </div>#}
+                        {#                            <div class="tc-attachments" style="display: block">#}
+                        {#                                <img class="attachment" src="/../img/pic.jpg">#}
+                        {#                                <img class="image-full" src="/../img/pic.jpg">#}
+                        {##}
+                        {#                                <img class="attachment" src="/../img/pic.jpg">#}
+                        {#                                <img class="image-full" src="/../img/pic.jpg">#}
+                        {#                            </div>#}
                     </td>
                     <td class="selector">
                         <div class="btn-group btn-group-toggle {{ step_data[3] }}" data-toggle="buttons">
@@ -319,7 +320,7 @@
     })
 </script>
 <script>
-    $('#tbl1').on('dblclick','td.step', function () {
+    $('#tbl1').on('dblclick', 'td.step', function () {
         $(this).find('div:nth-child(3)').css('display', 'block')
     });
 
@@ -529,9 +530,9 @@
 
     const recalcStepNumbers = function () {
         let tableRows = $('#tbl1 tr')
-      for (let i = 0; i < tableRows.length; i++) {
-        $(tableRows[i]).find('td:nth-child(1)').text(i + 1)
-      }
+        for (let i = 0; i < tableRows.length; i++) {
+            $(tableRows[i]).find('td:nth-child(1)').text(i + 1)
+        }
     };
 
     const removeStepFromTable = function (realStepNumber) {
@@ -539,7 +540,7 @@
         recalcStepNumbers();
     };
 
-    const deleteTestStep = function(tcId, stepNumToDelete) {
+    const deleteTestStep = function (tcId, stepNumToDelete) {
         let data = {tc_id: tcId, step: stepNumToDelete}
         $.ajax({
             url: "/delete_test_step",
@@ -554,18 +555,71 @@
         });
     }
 
+    const updateTestCaseStep = function (tcId, stepNumber, descr, expected, isNewStep) {
+        if (isNewStep) {
+            let objUpdate = {
+                tc_id: tcId,
+                step_num: stepNumber,
+                descr: descr,
+                expected: expected
+            }
+            console.log(objUpdate)
+            $.ajax({
+                url: "/add_step_to_the_test_case",
+                data: JSON.stringify(objUpdate),
+                type: 'POST',
+                contentType: 'application/json'
+            }).done(function (responseData) {
+                console.log(`Updated`);
+            }).fail(function () {
+                console.log(`Internal Server Error...maybe :D`);
+            });
+        }
+    }
+
+    $(document).on('focusout', 'div.expected, div.action', function (e) {
+        if (!$(e.originalEvent.relatedTarget).hasClass("action")) {
+            if (!$(e.originalEvent.relatedTarget).hasClass("expected")) {
+                console.log(e.originalEvent.relatedTarget)
+                let stepNumber = $(this).parents('tr').first().index() + 1;
+                let parentTd = $(this).parent('td.step')
+                let tableLength = $('#tbl1 tr').length
+                let descr = '';
+                let expected = '';
+                let isNewStep = false;
+                if ($(parentTd).hasClass('new-step')) {
+                    isNewStep = true
+                }
+                if ($(this).hasClass('expected')) {
+                    expected = $(this).html()
+                    descr = $(this).parent().find('div.action').html()
+                } else if ($(this).hasClass('action')) {
+                    descr = $(this).html()
+                    expected = $(this).parent().find('div.expected').html()
+
+                    $(this).removeClass('')
+                }
+                updateTestCaseStep(testCaseId, stepNumber, descr, expected, isNewStep)
+                $(parentTd).removeClass('new-step');
+            }
+        }
+    });
+
+
     // If the menu element is clicked
     $(".custom-menu li").click(function () {
         switch ($(this).attr("data-action")) {
             // A case for each action. Your actions here
             case "edit-step":
                 if (userHasAdoAccess === true) {
-                    if (rowToEdit.attr("contenteditable") !== 'true') {
-                        $(rowToEdit).attr("contenteditable", "true");
+                    if (rowToEdit.find('div.action').attr("contenteditable") !== 'true' || rowToEdit.find('div.expected').attr("contenteditable") !== 'true') {
+                        $(rowToEdit).find('div.action').attr("contenteditable", "true");
+                        $(rowToEdit).find('div.expected').attr("contenteditable", "true");
                         $(rowToEdit).addClass("edited");
                         let clickedDiv = $(this);
                     } else {
-                        $(rowToEdit).attr("contenteditable", "false");
+                        $(rowToEdit).find('div.action').attr("contenteditable", "false");
+                        $(rowToEdit).find('div.expected').attr("contenteditable", "false");
                     }
                 } else {
                     alert("You cannot update this test case in ADO.\nPlease, check your permissions and try again");
@@ -575,7 +629,7 @@
                 $("#tbl1  tbody tr.clickable-row").eq(stepNum).before(`
                 <tr class="clickable-row">
                     <td>N</td>
-                    <td class="step">
+                    <td class="step new-step">
                         <div class="action action-result" data-placeholder="Action..." style="white-space: pre-line; min-height: 15px;"></div>
                         <div class="expected action-result" data-placeholder="Expected Result..." style="white-space: pre-line; min-height: 15px;"></div>
                             <div class style="display: none">
@@ -603,7 +657,7 @@
                 $("#tbl1  tbody tr.clickable-row").eq(stepNum).after(`
                 <tr class="clickable-row">
                     <td>N</td>
-                    <td class="step">
+                    <td class="step new-step">
                         <div class="action action-result" data-placeholder="Action..." style="white-space: pre-line; min-height: 15px;"></div>
                         <div class="expected action-result" data-placeholder="Expected Result..." style="white-space: pre-line; min-height: 15px;"></div>
                             <div class style="display: none">
@@ -638,11 +692,11 @@
     });
 </script>
 <script>
-$(".attachment").hover(function(){
-      $(this).next(".image-full").show();
-}, function(){
-      $(this).next(".image-full").hide();
-});
+    $(".attachment").hover(function () {
+        $(this).next(".image-full").show();
+    }, function () {
+        $(this).next(".image-full").hide();
+    });
 </script>
 </body>
 </html>

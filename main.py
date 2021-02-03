@@ -418,3 +418,18 @@ def delete_step_from_test_case():
     else:
         return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
     # return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+
+
+@main.route("/add_step_to_the_test_case", methods=['POST'])
+@login_required
+def add_step_to_the_test_case():
+    data = request.get_json()
+    tc_id = data['tc_id']
+    step_num = data['step_num']
+    step_descr = data['descr']
+    step_expected = data['expected']
+    if sql_api.add_step_to_existing_test_case(tc_id, step_num, step_descr, step_expected):
+        return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+    else:
+        return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
+
