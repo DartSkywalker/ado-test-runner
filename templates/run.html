@@ -55,6 +55,12 @@
     <div class="navbar-collapse collapse  order-3 dual-collapse2">
         <ul class="navbar-nav ml-auto">
             <li class="nav-item active">
+                <div class="custom-control custom-switch">
+                  <input type="checkbox" class="custom-control-input" id="adoSync">
+                  <label class="custom-control-label" for="adoSync" style="color: #fff;">Sync with Azure DevOps</label>
+                </div>
+            </li>
+            <li class="nav-item active">
                 <a class="nav-link"><span class="help-icon" tabindex="0" data-toggle="popover" data-trigger="focus"
                                           data-content="💬️ Comment: Double-click on step
                                                                         <br />📝️ Edit Step: Alt+Click
@@ -163,6 +169,7 @@
     let startTime;
     let stopTime;
     let testRunDuration;
+    let adoSync = false;
     //Check if user has the access to the test case in ADO
     let userHasAdoAccess = '';
     let testCaseId = /[^/]*$/.exec(window.location.href)[0];
@@ -179,10 +186,22 @@
         }).fail(function () {
             console.log('User does not have ADO access');
             userHasAdoAccess = false;
+            $('#adoSync').attr('disabled', true);
         });
 
         startTime = Date.now()
+
+        $('#adoSync').change(function() {
+        if(this.checked) {
+            var returnVal = confirm("Do you want to enable sync with Azure DevOps?");
+            $(this).prop("checked", returnVal);
+            adoSync = true;
+        }
+        $('#adoSync').val(this.checked);
     });
+    });
+
+
 </script>
 <script>
     (function ($) {

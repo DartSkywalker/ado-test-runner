@@ -121,6 +121,8 @@ def save_test_result(test_case_id):
         sql_api.set_test_case_state(test_case_id, data)
         return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
     else:
+        logger.warning(test_case_id)
+        logger.warning(data)
         ado_response = ado_api.update_test_steps_in_ado(test_case_id, data)
         if ado_response == '200':
             sql_api.update_test_steps_sql(test_case_id, data)
