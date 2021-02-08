@@ -555,7 +555,7 @@
         });
     }
 
-    const updateTestCaseStep = function (tcId, stepNumber, descr, expected, isNewStep) {
+    const updateTestCaseStep = function (tcId, stepNumber, descr, expected, isNewStep, updateStep) {
         if (isNewStep) {
             let objUpdate = {
                 tc_id: tcId,
@@ -563,9 +563,25 @@
                 descr: descr,
                 expected: expected
             }
-            console.log(objUpdate)
             $.ajax({
                 url: "/add_step_to_the_test_case",
+                data: JSON.stringify(objUpdate),
+                type: 'POST',
+                contentType: 'application/json'
+            }).done(function (responseData) {
+                console.log(`Updated`);
+            }).fail(function () {
+                console.log(`Internal Server Error...maybe :D`);
+            });
+        } else {
+            let objUpdate = {
+                tc_id: tcId,
+                step_num: stepNumber,
+                descr: descr,
+                expected: expected
+            }
+            $.ajax({
+                url: "/update_test_case_Step",
                 data: JSON.stringify(objUpdate),
                 type: 'POST',
                 contentType: 'application/json'
@@ -587,8 +603,11 @@
                 let descr = '';
                 let expected = '';
                 let isNewStep = false;
+                let updateStep = false;
                 if ($(parentTd).hasClass('new-step')) {
-                    isNewStep = true
+                    isNewStep = true;
+                } else {
+                    updateStep = true;
                 }
                 if ($(this).hasClass('expected')) {
                     expected = $(this).html()
@@ -599,7 +618,7 @@
 
                     $(this).removeClass('')
                 }
-                updateTestCaseStep(testCaseId, stepNumber, descr, expected, isNewStep)
+                updateTestCaseStep(testCaseId, stepNumber, descr, expected, isNewStep, updateStep)
                 $(parentTd).removeClass('new-step');
             }
         }

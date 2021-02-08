@@ -636,3 +636,15 @@ def delete_test_step(test_case_id, step_number):
         logger.critical(e)
         return False
 # print(delete_test_step(1373, 1))
+
+def update_test_step(tc_id, step_num, step_descr, step_expected):
+    try:
+        update_statement = table_steps.update().where(and_
+                                                      (table_steps.c.TEST_CASE_ID == tc_id,
+                                                       table_steps.c.STEP_NUMBER == step_num)) \
+            .values(DESCRIPTION=step_descr, EXPECTED_RESULT=step_expected)
+        connection.execute(update_statement)
+        return True
+    except Exception as e:
+        logger.critical(e)
+        return False
